@@ -21,20 +21,14 @@ class _FamilyTree extends StatelessWidget {
   const _FamilyTree();
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.fromLTRB(12, 22, 12, 24),
+    padding: const EdgeInsets.fromLTRB(4, 10, 4, 8),
     decoration: BoxDecoration(
-      color: Colors.transparent,
+      color: const Color(0xFFF8FCF9),
       borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: const Color(0x1A176B3A)),
     ),
-    child: Stack(
+    child: Column(
       children: [
-        Positioned.fill(
-          child: const HeritageParallaxBackground(
-            asset: 'assets/images/heritage_green_landscape.png',
-          ),
-        ),
-        Column(
-          children: [
             const _GenerationLabel('पहिली पिढी'),
             const SizedBox(height: 4),
             const FractionallySizedBox(
@@ -107,8 +101,6 @@ class _FamilyTree extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
       ],
     ),
   );
@@ -217,16 +209,9 @@ class _GenerationLabel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
     decoration: BoxDecoration(
-      color: const Color(0xEFFFFFFF),
+      color: const Color(0xFF176B3A),
       borderRadius: BorderRadius.circular(999),
-      border: Border.all(color: AppColors.heritageGold, width: 1.5),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x24000000),
-          blurRadius: 10,
-          offset: Offset(0, 4),
-        ),
-      ],
+      border: Border.all(color: const Color(0xFFE5BD64), width: 1),
     ),
     child: Text(
       text,
@@ -234,7 +219,7 @@ class _GenerationLabel extends StatelessWidget {
         fontFamily: 'NotoSansDevanagari',
         fontSize: 15,
         fontWeight: FontWeight.w900,
-        color: AppColors.heritageBrown,
+        color: Colors.white,
       ),
     ),
   );
@@ -259,7 +244,9 @@ class _Person extends StatelessWidget {
   final IconData icon;
   final bool featured;
   @override
-  Widget build(BuildContext context) => HeritageMotion(
+  Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 700;
+    return HeritageMotion(
     child: Semantics(
       button: true,
       label: '$name — जीवनप्रवास वाचा',
@@ -267,9 +254,31 @@ class _Person extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => Navigator.of(context).pushNamed('/profile/$slug'),
-          borderRadius: BorderRadius.circular(70),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+          borderRadius: BorderRadius.circular(22),
+          child: Ink(
+            padding: EdgeInsets.fromLTRB(
+              compact ? 9 : 14,
+              compact ? 14 : 18,
+              compact ? 9 : 14,
+              compact ? 12 : 15,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: featured
+                    ? const Color(0xFFD3A746)
+                    : const Color(0x2B176B3A),
+                width: featured ? 1.5 : 1,
+              ),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x130A3A22),
+                  blurRadius: 18,
+                  offset: Offset(0, 8),
+                ),
+              ],
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -277,11 +286,17 @@ class _Person extends StatelessWidget {
                   image: image,
                   icon: icon,
                   alignment: imageAlignment,
-                  size: featured ? 128 : 96,
+                  size: featured ? (compact ? 104 : 132) : (compact ? 82 : 100),
                   borderWidth: featured ? 3 : 2,
                 ),
-                const SizedBox(height: 12),
-                _PersonCopy(name: name, role: role, centered: true),
+                const SizedBox(height: 11),
+                _PersonCopy(
+                  name: name,
+                  role: role,
+                  institutions: institutions,
+                  centered: true,
+                  compact: compact,
+                ),
               ],
             ),
           ),
@@ -289,6 +304,7 @@ class _Person extends StatelessWidget {
       ),
     ),
   );
+  }
 }
 
 class _Portrait extends StatelessWidget {
@@ -311,13 +327,13 @@ class _Portrait extends StatelessWidget {
     height: size,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: const Color(0xFFF7EFD9),
-      border: Border.all(color: AppColors.heritageGold, width: borderWidth),
+      color: const Color(0xFFEAF5EC),
+      border: Border.all(color: const Color(0xFFD3A746), width: borderWidth),
       boxShadow: const [
         BoxShadow(
-          color: Color(0x50352A13),
-          blurRadius: 16,
-          offset: Offset(0, 9),
+          color: Color(0x25104B2A),
+          blurRadius: 13,
+          offset: Offset(0, 6),
         ),
       ],
     ),
@@ -333,11 +349,15 @@ class _PersonCopy extends StatelessWidget {
   const _PersonCopy({
     required this.name,
     required this.role,
+    required this.institutions,
     this.centered = false,
+    this.compact = false,
   });
   final String name;
   final String role;
+  final List<String> institutions;
   final bool centered;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -349,38 +369,59 @@ class _PersonCopy extends StatelessWidget {
       Text(
         name,
         textAlign: centered ? TextAlign.center : TextAlign.left,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'NotoSansDevanagari',
-          fontSize: 20,
-          height: 1.35,
+          fontSize: compact ? 14 : 18,
+          height: 1.28,
           fontWeight: FontWeight.w900,
           color: AppColors.navyText,
-          shadows: [
-            Shadow(color: Colors.white, blurRadius: 3),
-            Shadow(color: Colors.white, blurRadius: 6),
-          ],
         ),
       ),
       const SizedBox(height: 3),
       Text(
         role,
         textAlign: centered ? TextAlign.center : TextAlign.left,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'NotoSansDevanagari',
-          fontSize: 15,
-          height: 1.45,
-          fontWeight: FontWeight.w800,
-          color: AppColors.navyText,
-          shadows: [
-            Shadow(color: Colors.white, blurRadius: 3),
-            Shadow(color: Colors.white, blurRadius: 6),
-          ],
+          fontSize: compact ? 11 : 13,
+          height: 1.35,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textSecondary,
         ),
       ),
-      const SizedBox(height: 5),
-      const Row(
+      if (institutions.isNotEmpty) ...[
+        const SizedBox(height: 8),
+        Wrap(
+          alignment: centered ? WrapAlignment.center : WrapAlignment.start,
+          spacing: 4,
+          runSpacing: 4,
+          children: institutions
+              .map(
+                (item) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF5EC),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(
+                    item,
+                    style: TextStyle(
+                      fontFamily: 'NotoSansDevanagari',
+                      fontSize: compact ? 9 : 10,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.greenDark,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ],
+      const SizedBox(height: 9),
+      Row(
+        mainAxisAlignment: centered ? MainAxisAlignment.center : MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: const [
           Icon(Icons.menu_book_rounded, size: 19, color: AppColors.greenDark),
           SizedBox(width: 4),
           Text(
@@ -390,7 +431,6 @@ class _PersonCopy extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.w800,
               color: AppColors.greenDark,
-              shadows: [Shadow(color: Colors.white, blurRadius: 4)],
             ),
           ),
         ],
