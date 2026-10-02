@@ -32,6 +32,7 @@ class VoterSearchController extends ChangeNotifier {
   static const pageSize = 10;
 
   Timer? _suggestDebounce;
+  Timer? _liveSearchDebounce;
   Timer? _villageRetry;
   bool _suggestBusy = false;
   String? _queuedSuggestion;
@@ -144,6 +145,7 @@ class VoterSearchController extends ChangeNotifier {
   void onQueryChanged(String text) {
     query = text;
     _suggestDebounce?.cancel();
+    _liveSearchDebounce?.cancel();
     final minimumLength = selectedVillage.isEmpty ? 3 : 2;
     if (text.trim().length < minimumLength) {
       _queuedSuggestion = null;
@@ -153,6 +155,11 @@ class VoterSearchController extends ChangeNotifier {
       }
       return;
     }
+    _liveSearchDebounce = Timer(const Duration(milliseconds: 750), () {
+      if (!_disposed && query == text) {
+        unawaited(search(text, remember: false));
+      }
+    });
     _suggestDebounce = Timer(const Duration(milliseconds: 450), () {
       _queueSuggestion(text);
     });
@@ -189,12 +196,17 @@ class VoterSearchController extends ChangeNotifier {
     }
   }
 
-  Future<void> search(String text, {int toPage = 1}) async {
+  Future<void> search(
+    String text, {
+    int toPage = 1,
+    bool remember = true,
+  }) async {
     final q = text.trim();
     query = q;
     suggestions = const [];
     _queuedSuggestion = null;
     _suggestDebounce?.cancel();
+    _liveSearchDebounce?.cancel();
     if (q.isEmpty) {
       response = null;
       error = null;
@@ -215,7 +227,7 @@ class VoterSearchController extends ChangeNotifier {
       );
       if (seq != _searchSeq) return; // stale
       response = res;
-      if (toPage == 1) recent = await recentStore.add(q);
+      if (remember && toPage == 1) recent = await recentStore.add(q);
     } catch (e) {
       if (seq != _searchSeq) return;
       error = _msg(e);
@@ -242,6 +254,7 @@ class VoterSearchController extends ChangeNotifier {
   }
 
   void clear() {
+    _liveSearchDebounce?.cancel();
     query = '';
     response = null;
     error = null;
@@ -267,6 +280,7 @@ class VoterSearchController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _suggestDebounce?.cancel();
+    _liveSearchDebounce?.cancel();
     _villageRetry?.cancel();
     super.dispose();
   }

@@ -56,7 +56,7 @@ const sectorProfiles = <String, SectorProfile>{
   ),
   'education': SectorProfile(
     slug: 'education',
-    title: 'शिक्षण क्षेत्राचा वारसा',
+      title: 'शिक्षण क्षेत्राची परंपरा',
     icon: Icons.school_rounded,
     heroAsset: 'assets/images/heritage_school.jpg',
     intro:
@@ -146,7 +146,7 @@ const sectorProfiles = <String, SectorProfile>{
   ),
   'cooperation': SectorProfile(
     slug: 'cooperation',
-    title: 'सहकार व संस्थात्मक वारसा',
+      title: 'सहकार व संस्थात्मक परंपरा',
     icon: Icons.account_balance_rounded,
     heroAsset: 'assets/images/heritage_sugar_factory.jpg',
     intro:

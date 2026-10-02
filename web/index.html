@@ -97,23 +97,26 @@
       z-index: 10001;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      min-height: 40px;
-      padding: 0 14px;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
       border-radius: 999px;
       background: #148a45;
       color: #fff;
       box-shadow: 0 8px 20px rgba(8, 89, 43, .28);
-      font: 700 13px Arial, sans-serif;
+      font: 0/0 Arial, sans-serif;
       text-decoration: none;
+      transition: transform .25s ease, opacity .25s ease;
     }
-    #whatsapp-share::before { content: '↗'; font-size: 17px; }
+    #whatsapp-share::before { content: '↗'; font: 700 20px/1 Arial, sans-serif; }
+    #whatsapp-share.share-hidden { transform: translateY(-72px); opacity: 0; pointer-events: none; }
     @media (min-width: 700px) { #whatsapp-share { top: 14px; right: 28px; } }
   </style>
 </head>
 <body style="margin: 0; background: #FFFFFF;">
-  <a id="whatsapp-share" target="_blank" rel="noopener noreferrer"
-    href="https://wa.me/?text=%E0%A4%A7%E0%A5%88%E0%A4%B0%E0%A5%8D%E0%A4%AF%E0%A4%B6%E0%A5%80%E0%A4%B2%20%E0%A4%AE%E0%A5%8B%E0%A4%B9%E0%A4%BF%E0%A4%A4%E0%A5%87-%E0%A4%AA%E0%A4%BE%E0%A4%9F%E0%A5%80%E0%A4%B2%20%7C%20%E0%A4%AE%E0%A4%BE%E0%A4%A2%E0%A4%BE%20%E0%A4%B2%E0%A5%8B%E0%A4%95%E0%A4%B8%E0%A4%AD%E0%A4%BE%20%E0%A4%AE%E0%A4%A4%E0%A4%A6%E0%A4%BE%E0%A4%B0%20%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%0Ahttps%3A%2F%2Findependent-voter.madhaloksabha.workers.dev%2F">WhatsApp</a>
+  <a id="whatsapp-share" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp वर शेअर करा" title="WhatsApp वर शेअर करा"
+    href="https://wa.me/?text=%E0%A4%A7%E0%A5%88%E0%A4%B0%E0%A5%8D%E0%A4%AF%E0%A4%B6%E0%A5%80%E0%A4%B2%20%E0%A4%AE%E0%A5%8B%E0%A4%B9%E0%A4%BF%E0%A4%A4%E0%A5%87-%E0%A4%AA%E0%A4%BE%E0%A4%9F%E0%A5%80%E0%A4%B2%20%7C%20%E0%A4%AE%E0%A4%BE%E0%A4%A2%E0%A4%BE%20%E0%A4%B2%E0%A5%8B%E0%A4%95%E0%A4%B8%E0%A4%AD%E0%A4%BE%0Ahttps%3A%2F%2Findependent-voter.madhaloksabha.workers.dev%2F">WhatsApp</a>
   <div id="app-loading" role="status" aria-live="polite">
     <div class="app-loading-card">
       <div class="app-loading-mark" aria-hidden="true"></div>
@@ -122,6 +125,33 @@
     </div>
   </div>
   <script>
+    window.startMarathiVoiceSearch = () => new Promise((resolve) => {
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Recognition) { resolve(null); return; }
+      const recognition = new Recognition();
+      let finished = false;
+      const finish = (value) => {
+        if (finished) return;
+        finished = true;
+        resolve(value || null);
+      };
+      recognition.lang = 'mr-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.onresult = (event) => finish(event.results?.[0]?.[0]?.transcript);
+      recognition.onerror = () => finish(null);
+      recognition.onend = () => finish(null);
+      recognition.start();
+    });
+
+    let lastShareScrollY = 0;
+    window.addEventListener('scroll', () => {
+      const button = document.getElementById('whatsapp-share');
+      const current = window.scrollY;
+      button?.classList.toggle('share-hidden', current > lastShareScrollY && current > 120);
+      lastShareScrollY = current;
+    }, { passive: true });
+
     // Chrome only exposes its native install prompt once. Keep it until the
     // Flutter UI's "Install App" button asks to display it.
     let voterFinderInstallPrompt = null;

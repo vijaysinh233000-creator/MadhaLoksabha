@@ -7,7 +7,7 @@ class HeroHeader extends StatelessWidget {
   const HeroHeader({super.key});
 
   static final Uri _whatsAppShare = Uri.https('wa.me', '/', {
-    'text': 'धैर्यशील मोहिते-पाटील | माढा लोकसभा मतदार सेवा\n'
+    'text': 'धैर्यशील मोहिते-पाटील | माढा लोकसभा\n'
         'माझे नाव मतदार यादीत शोधा:\n'
         'https://independent-voter.madhaloksabha.workers.dev/',
   });
@@ -77,7 +77,7 @@ class HeroHeader extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'माढा लोकसभा मतदार सेवा',
+                            'माढा लोकसभा',
                             style: TextStyle(
                               fontFamily: 'NotoSansDevanagari',
                               fontSize: mobile ? 10.5 : 12.5,
@@ -92,7 +92,7 @@ class HeroHeader extends StatelessWidget {
                       const Padding(
                         padding: EdgeInsets.only(right: 6),
                         child: Text(
-                          'मतदार शोध  •  वारसा  •  सार्वजनिक कार्य',
+                          'मतदार शोध  •  लोकसेवा  •  सार्वजनिक कार्य',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             color: AppColors.textSecondary,

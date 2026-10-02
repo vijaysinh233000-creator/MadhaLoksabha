@@ -7,7 +7,7 @@ class HeritageStorySection extends StatelessWidget {
   const HeritageStorySection({super.key});
   @override
   Widget build(BuildContext context) => _Section(
-    eyebrow: 'मोहिते-पाटील वारसा',
+      eyebrow: 'मोहिते-पाटील कार्यपरंपरा',
     title: 'सहकारातून लोकसेवेपर्यंत',
     subtitle:
         'विविध पिढ्यांमधून पुढे आलेल्या सार्वजनिक आणि संस्थात्मक कार्याचा प्रवास.',
@@ -128,7 +128,7 @@ class _SugarInstitutionNames extends StatelessWidget {
     child: const Column(
       children: [
         Text(
-          'संस्थांचा वारसा',
+          'संस्थांचे कार्यविश्व',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'NotoSansDevanagari',
@@ -155,17 +155,13 @@ class _SugarInstitutionNames extends StatelessWidget {
         _InstitutionName(
           text: 'सोलापूर जिल्हा मध्यवर्ती सहकारी बँक — नेतृत्वातील योगदान',
         ),
-        _InstitutionName(
-          text: 'राजइंदिरा टेक्स्टाईल अँड गारमेंट्स',
-          last: true,
-        ),
       ],
     ),
   );
 }
 
 class _InstitutionName extends StatelessWidget {
-  const _InstitutionName({required this.text, this.last = false});
+  const _InstitutionName({required this.text}) : last = false;
   final String text;
   final bool last;
 
@@ -492,7 +488,7 @@ class InstitutionJourneySection extends StatelessWidget {
       (
         Icons.theater_comedy_rounded,
         'कला व संस्कृती',
-        'लोककला आणि सांस्कृतिक वारसा',
+        'लोककला आणि सांस्कृतिक परंपरा',
         'culture',
         'assets/images/sector_culture.png',
       ),
@@ -505,14 +501,38 @@ class InstitutionJourneySection extends StatelessWidget {
       ),
     ];
     return _Section(
-      eyebrow: 'संस्थात्मक वारसा',
-      title: 'संस्थांचा प्रवास',
+      eyebrow: 'समाजकारणाचा प्रवास',
+      title: 'लोकसेवेचा वसा',
       subtitle:
           'प्रत्येक क्षेत्रातील सविस्तर कार्य आणि संस्थात्मक प्रवास वाचा.',
       child: LayoutBuilder(
         builder: (context, c) {
-          final cols = c.maxWidth < 620 ? 1 : 2;
-          final width = (c.maxWidth - (cols - 1) * 10) / cols;
+          if (c.maxWidth < 620) {
+            return SizedBox(
+              height: 228,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(right: 18),
+                itemCount: items.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final x = items[index];
+                  return SizedBox(
+                    width: c.maxWidth * .84,
+                    child: _Institution(
+                      icon: x.$1,
+                      title: x.$2,
+                      text: x.$3,
+                      slug: x.$4,
+                      image: x.$5,
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+          final width = (c.maxWidth - 10) / 2;
           return Wrap(
             spacing: 10,
             runSpacing: 10,
@@ -811,7 +831,7 @@ class NewBrandFooter extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             const Text(
-              'माढा लोकसभा मतदार सेवा',
+                'माढा लोकसभा',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'NotoSansDevanagari',

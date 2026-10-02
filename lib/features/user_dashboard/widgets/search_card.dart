@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/models/models.dart';
+import '../../../core/services/voice_search.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../search_controller.dart';
@@ -17,6 +18,7 @@ class SearchCard extends StatefulWidget {
 class _SearchCardState extends State<SearchCard> {
   final _text = TextEditingController();
   final _focus = FocusNode();
+  bool _listening = false;
 
   @override
   void initState() {
@@ -46,6 +48,23 @@ class _SearchCardState extends State<SearchCard> {
     _text.selection = TextSelection.collapsed(offset: q.length);
     _focus.unfocus();
     c.search(q);
+  }
+
+  Future<void> _startVoiceSearch() async {
+    if (_listening) return;
+    setState(() => _listening = true);
+    final spoken = await startMarathiVoiceSearch();
+    if (!mounted) return;
+    setState(() => _listening = false);
+    if (spoken != null && spoken.trim().isNotEmpty) {
+      _submit(spoken.trim());
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('आवाज ऐकू आला नाही. मायक्रोफोन परवानगी तपासा.'),
+      ),
+    );
   }
 
   @override
@@ -104,15 +123,31 @@ class _SearchCardState extends State<SearchCard> {
       controller: _text,
       focusNode: _focus,
       textInputAction: TextInputAction.search,
-      onChanged: c.onQueryChanged,
+      onChanged: (value) {
+        c.onQueryChanged(value);
+        setState(() {});
+      },
       onSubmitted: _submit,
       style: const TextStyle(fontSize: 15),
       decoration: InputDecoration(
         hintText: 'उदा. विजयसिंह जाधव किंवा Vijaysinh Jadhav',
         prefixIcon: const Icon(Icons.person_search_rounded, color: AppColors.textMuted),
-        suffixIcon: _text.text.isEmpty
-            ? null
-            : IconButton(
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: 'मराठीत नाव बोला',
+              onPressed: _listening ? null : _startVoiceSearch,
+              icon: _listening
+                  ? const SizedBox(
+                      width: 19,
+                      height: 19,
+                      child: CircularProgressIndicator(strokeWidth: 2.3),
+                    )
+                  : const Icon(Icons.mic_rounded, color: AppColors.green),
+            ),
+            if (_text.text.isNotEmpty)
+              IconButton(
                 icon: const Icon(Icons.close_rounded, size: 20),
                 onPressed: () {
                   _text.clear();
@@ -120,6 +155,8 @@ class _SearchCardState extends State<SearchCard> {
                   setState(() {});
                 },
               ),
+          ],
+        ),
       ),
     );
   }

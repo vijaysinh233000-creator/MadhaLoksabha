@@ -59,6 +59,42 @@ class ResultsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        TweenAnimationBuilder<double>(
+          key: ValueKey('${c.query}-${r.total}'),
+          tween: Tween(begin: .82, end: 1),
+          duration: const Duration(milliseconds: 420),
+          curve: Curves.easeOutBack,
+          builder: (context, value, child) => Transform.scale(
+            scale: value,
+            child: Opacity(opacity: value.clamp(0, 1), child: child),
+          ),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            decoration: BoxDecoration(
+              color: AppColors.greenLight,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: AppColors.green.withValues(alpha: .25),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle_rounded, color: AppColors.green),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    '${Formatters.count(r.total)} मतदार सापडले',
+                    style: const TextStyle(
+                      color: AppColors.greenDark,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         if ((parsed['transliterated'] as String? ?? '').isNotEmpty)
           Container(
             margin: const EdgeInsets.fromLTRB(4, 0, 4, 10),
