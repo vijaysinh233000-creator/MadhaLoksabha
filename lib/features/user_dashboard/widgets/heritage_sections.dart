@@ -507,31 +507,6 @@ class InstitutionJourneySection extends StatelessWidget {
           'प्रत्येक क्षेत्रातील सविस्तर कार्य आणि संस्थात्मक प्रवास वाचा.',
       child: LayoutBuilder(
         builder: (context, c) {
-          if (c.maxWidth < 620) {
-            return SizedBox(
-              height: 228,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(right: 18),
-                itemCount: items.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  final x = items[index];
-                  return SizedBox(
-                    width: c.maxWidth * .84,
-                    child: _Institution(
-                      icon: x.$1,
-                      title: x.$2,
-                      text: x.$3,
-                      slug: x.$4,
-                      image: x.$5,
-                    ),
-                  );
-                },
-              ),
-            );
-          }
           final width = (c.maxWidth - 10) / 2;
           return Wrap(
             spacing: 10,
