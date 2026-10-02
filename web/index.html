@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="description" content="Electoral Roll Search - find voters in electoral roll PDFs by name, father/husband name or EPIC number.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Voter Finder">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>मतदार यादी शोध केंद्र | Voter Finder</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    #app-loading {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      color: #12305b;
+      font-family: Arial, sans-serif;
+      z-index: 9999;
+    }
+    .app-loading-card {
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      padding: 28px;
+      text-align: center;
+    }
+    .app-loading-mark {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #d9eee1;
+      border-top-color: #138a43;
+      border-radius: 50%;
+      animation: app-spin 0.8s linear infinite;
+    }
+    .app-loading-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .app-loading-copy {
+      margin: 0;
+      color: #55708e;
+      font-size: 14px;
+    }
+    @keyframes app-spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body style="margin: 0; background: #FFFFFF;">
+  <div id="app-loading" role="status" aria-live="polite">
+    <div class="app-loading-card">
+      <div class="app-loading-mark" aria-hidden="true"></div>
+      <p class="app-loading-title">मतदार यादी शोध केंद्र</p>
+      <p class="app-loading-copy">अॅप सुरू होत आहे…</p>
+    </div>
+  </div>
+  <script>
+    // Chrome only exposes its native install prompt once. Keep it until the
+    // Flutter UI's "Install App" button asks to display it.
+    let voterFinderInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      voterFinderInstallPrompt = event;
+    });
+    window.addEventListener('appinstalled', () => {
+      voterFinderInstallPrompt = null;
+    });
+    window.installVoterFinder = async () => {
+      if (!voterFinderInstallPrompt) return false;
+      voterFinderInstallPrompt.prompt();
+      const choice = await voterFinderInstallPrompt.userChoice;
+      voterFinderInstallPrompt = null;
+      return choice.outcome === 'accepted';
+    };
+    window.isVoterFinderStandalone = () =>
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

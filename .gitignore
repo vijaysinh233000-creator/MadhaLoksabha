@@ -1,0 +1,79 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+.venv/
+**/__pycache__/
+**/node_modules/
+**/.wrangler/
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Derived search index (rebuilt from PDFs)
+/index/
+/pdfs/
+server.log
+*.log
+
+# Local Codex/plugin artifacts (not part of VoteYadi)
+/chat-interaction-companion/
+/chat-interaction-companion*.zip
+/.firecrawl/
+/.agents/
+/.claude/
+/.codex/
+/.aws/
+/.github/modernize/
+/skills-lock.json
+/SOURCE_SNAPSHOT.md
+/android/.gradle/
+
+# Local visual-verification output
+/*-390.png
+/*-1280.png
+/fixed-*.png
+/verified-*.png
+/live-*.png

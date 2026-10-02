@@ -1,0 +1,12 @@
+name = "independent-voter"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[services]]
+binding = "API"
+service = "independent-voter-api"
+
+[assets]
+binding = "ASSETS"
+directory = "../../build/web"
+run_worker_first = false
