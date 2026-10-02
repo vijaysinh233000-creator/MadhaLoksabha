@@ -589,7 +589,7 @@ def parse_lines(lines: Iterable[str], page_no: int, part: str, section: str) -> 
         if m:
             _finish(current, records)
             current = VoterRecord(
-                name=_clean(m.group(1)),
+                name=mar.clean_name(_clean(m.group(1)), marathi_context=True),
                 epic=pending_epic,
                 serial=pending_serial,
                 part=part,
@@ -616,7 +616,7 @@ def parse_lines(lines: Iterable[str], page_no: int, part: str, section: str) -> 
         m = DEV_RELATION_RE.match(line)
         if m:
             rel_type = mar.relation_type_of(m.group(1)) or m.group(1)
-            value = _clean(m.group(2))
+            value = mar.clean_name(_clean(m.group(2)), marathi_context=True)
             if current is None or current.relation_name:
                 target = next((r for r in reversed(records) if not r.relation_name), None)
                 if target is not None and current is None:
@@ -948,15 +948,17 @@ def _card_record_from_text(
                 epic = epic_prefix + digits.group(1)
         match = tolerant_name.match(line)
         if match and not name:
-            name = mar.clean_name(_clean(match.group(1)))
+            name = mar.clean_name(_clean(match.group(1)), marathi_context=True)
             name_index = index
             continue
         match = DEV_RELATION_RE.match(line)
         if match and not relation:
             relation_type = mar.relation_type_of(match.group(1)) or match.group(1)
-            relation = mar.clean_name(_clean(match.group(2)))
+            relation = mar.clean_name(_clean(match.group(2)), marathi_context=True)
         elif name and not relation and index == name_index + 1 and line.startswith(":"):
-            relation = mar.clean_name(_clean(line.lstrip(":： ")))
+            relation = mar.clean_name(
+                _clean(line.lstrip(":： ")), marathi_context=True
+            )
         house_match = DEV_HOUSE_RE.search(line)
         if house_match and not house:
             house = _clean(house_match.group(1))

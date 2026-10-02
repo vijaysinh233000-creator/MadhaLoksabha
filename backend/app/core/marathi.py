@@ -97,7 +97,7 @@ def strip_honorifics(text: str) -> str:
     return t
 
 
-def clean_name(text: str) -> str:
+def clean_name(text: str, *, marathi_context: bool = False) -> str:
     """Drop labels/honourifics/OCR junk, keeping the person's name only.
 
     A Marathi OCR pass can occasionally hallucinate short Latin words inside
@@ -111,7 +111,9 @@ def clean_name(text: str) -> str:
     t = strip_honorifics(dev.repair_line(text or ""))
     if not t:
         return ""
-    marathi_field = dev.has_devanagari(t)
+    # A Marathi label (for example "नाव:") is useful context even when OCR
+    # has damaged the entire value into Latin-only debris such as "AGA".
+    marathi_field = marathi_context or dev.has_devanagari(t)
     out: list[str] = []
     for tok in t.split():
         bare = tok.strip(" .,:;-|/_()[]'\"")

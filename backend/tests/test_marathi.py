@@ -99,6 +99,8 @@ check("unsafe mixed-script token remains visible for quality review",
       mar.clean_name("राजkuमार जाधव"), "राजkuमार जाधव")
 check("genuine English name remains unchanged",
       mar.clean_name("Rajkumar Bharat Jadhav"), "Rajkumar Bharat Jadhav")
+check("Latin-only OCR debris rejected in Marathi-labelled field",
+      mar.clean_name("AGA", marathi_context=True), "")
 check("Latin-only debris is not restored as a voter", len(parse_page_text([
     "1", "नाव: AGA", "वडिलांचे नाव: मोहन गुंड",
 ], 1, "").records), 0)
