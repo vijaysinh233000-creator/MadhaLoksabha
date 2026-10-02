@@ -100,27 +100,19 @@ def strip_honorifics(text: str) -> str:
 def clean_name(text: str, *, marathi_context: bool = False) -> str:
     """Drop labels/honourifics/OCR junk, keeping the person's name only.
 
-    A Marathi OCR pass can occasionally hallucinate short Latin words inside
-    an otherwise Devanagari name (for example ``राजकुमार AGA गुंड``). Those
-    fragments are a second OCR alphabet leaking into the same field. Once a
-    field contains Devanagari, discard standalone ASCII words. A token that
-    mixes both scripts is left visible so the publication quality gate can
-    stop it for review rather than silently inventing a spelling. Pure Latin
-    fields are left alone so genuine English electoral rolls still work.
+    This is deliberately lossless for name words. OCR can mix Marathi and
+    English letters (for example ``राजकुमार AGA गुंड`` or ``राजkuमार``), but
+    every captured value must remain searchable. We therefore remove only
+    labels, honourifics, numbers and punctuation -- never alphabetic name
+    tokens merely because their script looks suspicious.
     """
     t = strip_honorifics(dev.repair_line(text or ""))
     if not t:
         return ""
-    # A Marathi label (for example "नाव:") is useful context even when OCR
-    # has damaged the entire value into Latin-only debris such as "AGA".
-    marathi_field = marathi_context or dev.has_devanagari(t)
     out: list[str] = []
     for tok in t.split():
         bare = tok.strip(" .,:;-|/_()[]'\"")
         if not bare:
-            continue
-        if (marathi_field and re.search(r"[A-Za-z]", bare)
-                and not dev.has_devanagari(bare)):
             continue
         if bare.isdigit():
             continue  # serial/house OCR leaked into the person's name

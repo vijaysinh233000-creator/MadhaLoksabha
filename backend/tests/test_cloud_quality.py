@@ -34,13 +34,11 @@ assert good["duplicate_serials"] == 0
 
 mixed = rows(100)
 mixed[24]["name"] = "राजकुमार AGA गुंड"
-try:
-    validate(mixed, pages=5, ocr_pages=5)
-except QualityError as error:
-    assert error.report["mixed_script_records"] == 1
-    assert error.report["mixed_script_examples"][0]["serial"] == "25"
-else:
-    raise AssertionError("Quality gate accepted English OCR noise in a Marathi name")
+mixed_report = validate(mixed, pages=5, ocr_pages=5)
+assert mixed_report["status"] == "passed"
+assert mixed_report["mixed_script_records"] == 1
+assert mixed_report["mixed_script_examples"][0]["serial"] == "25"
+assert any("retained and searchable" in warning for warning in mixed_report["warnings"])
 
 repeated_serial = rows(100)
 repeated_serial[24]["serial"] = "24"

@@ -113,7 +113,7 @@ def voter_rows(document: dict, result) -> list[dict]:
 
 
 def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
-    """Hold suspicious OCR for review instead of publishing it."""
+    """Reject only structurally broken OCR; retain every extracted name."""
     names = [r["name"] for r in rows]
     serials = [r["serial"] for r in rows if r["serial"]]
     blank_serials = len(rows) - len(serials)
@@ -199,7 +199,9 @@ def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
     if duplicate_records:
         report["warnings"].append(f"{duplicate_records} identical parsed voter blocks; retained for review")
     if mixed_script:
-        failures.append(f"{len(mixed_script)} Marathi voter names contain English OCR fragments")
+        report["warnings"].append(
+            f"{len(mixed_script)} names contain mixed Marathi/English OCR; retained and searchable"
+        )
     report["checks"] = failures or ["passed"]
     report["status"] = "review" if failures else "passed"
     if failures:
