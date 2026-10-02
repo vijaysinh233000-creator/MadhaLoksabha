@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/models/models.dart';
+import '../../../core/services/voter_share.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/common_widgets.dart';
@@ -733,6 +734,8 @@ class ResultCard extends StatelessWidget {
     BuildContext context,
     VoterResult voter,
   ) async {
+    final sharedImage = await shareVoterCard(voter);
+    if (sharedImage) return;
     final details = <String>[
       'मतदार माहिती',
       '',

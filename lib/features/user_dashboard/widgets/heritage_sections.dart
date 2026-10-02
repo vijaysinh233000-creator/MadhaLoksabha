@@ -246,8 +246,10 @@ class _Person extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 700;
-    return HeritageMotion(
-    child: Semantics(
+    return SizedBox(
+      height: compact ? 340 : 365,
+      child: HeritageMotion(
+        child: Semantics(
       button: true,
       label: '$name — जीवनप्रवास वाचा',
       child: Material(
@@ -302,8 +304,9 @@ class _Person extends StatelessWidget {
           ),
         ),
       ),
-    ),
-  );
+        ),
+      ),
+    );
   }
 }
 
@@ -463,21 +466,21 @@ class InstitutionJourneySection extends StatelessWidget {
         'शिक्षण',
         'शैक्षणिक संस्थांचा प्रवास',
         'education',
-        'assets/images/heritage_school.jpg',
+        'assets/images/heritage_college.png',
       ),
       (
         Icons.health_and_safety_rounded,
         'आरोग्य',
         'वैद्यकीय सेवा व मदतकार्य',
         'health',
-        'assets/images/sector_public_service.png',
+        'assets/images/sector_healthcare.png',
       ),
       (
         Icons.water_drop_rounded,
         'पाणी व सिंचन',
         'दुष्काळी भागाचा जलप्रवास',
         'water',
-        'assets/images/heritage_floating_landscape.png',
+        'assets/images/sector_water.png',
       ),
       (
         Icons.route_rounded,
