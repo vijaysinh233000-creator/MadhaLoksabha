@@ -4,8 +4,23 @@ import test from "node:test";
 import worker, {
   englishNameMatch,
   inferredMarathiQuery,
+  latinIndexVariants,
   rerankEnglish,
 } from "../src/index.js";
+
+test("single English sinh names produce OCR-index compatible variants", () => {
+  assert.deepEqual(latinIndexVariants("Ranjitsinh"), ["ranajitasinha"]);
+  assert.deepEqual(latinIndexVariants("Vijaysinh"), ["vijayasinha"]);
+});
+
+test("English single-name matching accepts indexed Marathi spellings", () => {
+  assert.ok(
+    englishNameMatch("Ranjitsinh", "रणजितसिंह विजयसिंह मोहितेपाटील").tier > 0,
+  );
+  assert.ok(
+    englishNameMatch("Vijaysinh", "रणजितसिंह विजयसिंह मोहितेपाटील").tier > 0,
+  );
+});
 
 test("Vijaysinh exactly matches the Marathi first-name token", () => {
   const first = englishNameMatch("Vijaysinh", "विजयसिंह भारत जाधव");

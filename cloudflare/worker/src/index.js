@@ -74,6 +74,39 @@ function isRomanName(value) {
   return /[a-z]/i.test(text) && !/[\u0900-\u097f]/.test(text);
 }
 
+// OCR stores deterministic Latin with inherent vowels (for example,
+// रणजितसिंह -> ranajitasinha), while people normally type Ranjitsinh.
+// These bounded variants only retrieve candidates; englishNameMatch still
+// decides whether a candidate is credible and how it should rank.
+function latinIndexVariants(value) {
+  const words = String(value || "")
+    .toLowerCase()
+    .normalize("NFKC")
+    .replace(/[^a-z\s-]/g, " ")
+    .split(/[\s-]+/)
+    .filter(Boolean);
+  if (!words.length) return [];
+
+  const canonicalWord = (word) => {
+    let result = word
+      .replace(/nj/g, "naj")
+      .replace(/dny/g, "jny")
+      .replace(/w/g, "v");
+    if (result.endsWith("sinh")) {
+      result = `${result.slice(0, -4)}asinha`;
+    } else if (!/[aeiou]$/.test(result)) {
+      result += "a";
+    }
+    return result;
+  };
+
+  const canonical = words.map(canonicalWord).join(" ");
+  const compact = canonical.replace(/\s+/g, "");
+  return [...new Set([canonical, compact])].filter(
+    (variant) => variant && variant !== words.join(" "),
+  );
+}
+
 // A vowel-insensitive Marathi name key. It intentionally merges aspirated
 // consonants (dh/d, bh/b, etc.), because informal English spellings vary.
 function phoneticKey(value) {
@@ -359,6 +392,27 @@ async function rankedSearch(env, searchText, villageName, page, pageSize) {
       return body;
     };
     const body = await rankedRpc(searchText);
+    if (isRomanName(searchText) && Number(body?.total || 0) === 0) {
+      const variantBodies = await Promise.all(
+        latinIndexVariants(searchText).map((variant) =>
+          rankedRpc(variant, 1, 100),
+        ),
+      );
+      const merged = new Map();
+      variantBodies.forEach((candidateBody) =>
+        (candidateBody?.results || []).forEach((item) =>
+          merged.set(String(item.id), item),
+        ),
+      );
+      if (merged.size) {
+        return rerankEnglish(
+          { ...body, results: [...merged.values()], total: merged.size },
+          searchText,
+          page,
+          pageSize,
+        );
+      }
+    }
     // Informal English spelling can differ from the deterministic index form
     // (for example vijaysinh vs vijayasinha). A small first result set gives
     // us a reliable printed-Marathi spelling. Expand it with one bounded RPC;
@@ -1044,4 +1098,9 @@ export default {
   },
 };
 
-export { englishNameMatch, inferredMarathiQuery, rerankEnglish };
+export {
+  englishNameMatch,
+  inferredMarathiQuery,
+  latinIndexVariants,
+  rerankEnglish,
+};
