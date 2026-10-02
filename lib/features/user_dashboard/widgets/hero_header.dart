@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_theme.dart';
 
 class HeroHeader extends StatelessWidget {
   const HeroHeader({super.key});
+
+  static final Uri _whatsAppShare = Uri.https('wa.me', '/', {
+    'text': 'धैर्यशील मोहिते-पाटील | माढा लोकसभा मतदार सेवा\n'
+        'माझे नाव मतदार यादीत शोधा:\n'
+        'https://independent-voter.madhaloksabha.workers.dev/',
+  });
+
+  Future<void> _shareOnWhatsApp(BuildContext context) async {
+    final opened = await launchUrl(
+      _whatsAppShare,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('WhatsApp उघडता आले नाही.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +89,27 @@ class HeroHeader extends StatelessWidget {
                       ),
                     ),
                     if (!mobile)
-                      const Text(
-                        'मतदार शोध  •  वारसा  •  सार्वजनिक कार्य',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
+                      const Padding(
+                        padding: EdgeInsets.only(right: 6),
+                        child: Text(
+                          'मतदार शोध  •  वारसा  •  सार्वजनिक कार्य',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
+                    Tooltip(
+                      message: 'WhatsApp वर शेअर करा',
+                      child: IconButton.filledTonal(
+                        onPressed: () => _shareOnWhatsApp(context),
+                        icon: const Icon(Icons.share_rounded),
+                        color: AppColors.greenDark,
+                        style: IconButton.styleFrom(
+                          backgroundColor: const Color(0xFFE4F5E9),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

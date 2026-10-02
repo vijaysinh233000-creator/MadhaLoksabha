@@ -20,7 +20,23 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="theme-color" content="#FFFFFF">
-  <meta name="description" content="Electoral Roll Search - find voters in electoral roll PDFs by name, father/husband name or EPIC number.">
+  <meta name="description" content="माढा लोकसभा मतदार सेवा — मतदार यादीमध्ये नाव शोधा.">
+  <!-- WhatsApp, Facebook and other messengers use these server-rendered tags
+       to create the rich preview. Keep the image URL public and absolute. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="माढा लोकसभा मतदार सेवा">
+  <meta property="og:title" content="धैर्यशील मोहिते-पाटील | माढा लोकसभा मतदार सेवा">
+  <meta property="og:description" content="माढा लोकसभा मतदार सेवेमध्ये आपले नाव शोधा.">
+  <meta property="og:url" content="https://independent-voter.madhaloksabha.workers.dev/">
+  <meta property="og:image" content="https://independent-voter.madhaloksabha.workers.dev/share/dhairysheel-mohite-patil.jpg">
+  <meta property="og:image:secure_url" content="https://independent-voter.madhaloksabha.workers.dev/share/dhairysheel-mohite-patil.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="2048">
+  <meta property="og:image:height" content="931">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="धैर्यशील मोहिते-पाटील | माढा लोकसभा मतदार सेवा">
+  <meta name="twitter:description" content="माढा लोकसभा मतदार सेवेमध्ये आपले नाव शोधा.">
+  <meta name="twitter:image" content="https://independent-voter.madhaloksabha.workers.dev/share/dhairysheel-mohite-patil.jpg">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -74,9 +90,30 @@
       font-size: 14px;
     }
     @keyframes app-spin { to { transform: rotate(360deg); } }
+    #whatsapp-share {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      right: 14px;
+      z-index: 10001;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: #148a45;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(8, 89, 43, .28);
+      font: 700 13px Arial, sans-serif;
+      text-decoration: none;
+    }
+    #whatsapp-share::before { content: '↗'; font-size: 17px; }
+    @media (min-width: 700px) { #whatsapp-share { top: 14px; right: 28px; } }
   </style>
 </head>
 <body style="margin: 0; background: #FFFFFF;">
+  <a id="whatsapp-share" target="_blank" rel="noopener noreferrer"
+    href="https://wa.me/?text=%E0%A4%A7%E0%A5%88%E0%A4%B0%E0%A5%8D%E0%A4%AF%E0%A4%B6%E0%A5%80%E0%A4%B2%20%E0%A4%AE%E0%A5%8B%E0%A4%B9%E0%A4%BF%E0%A4%A4%E0%A5%87-%E0%A4%AA%E0%A4%BE%E0%A4%9F%E0%A5%80%E0%A4%B2%20%7C%20%E0%A4%AE%E0%A4%BE%E0%A4%A2%E0%A4%BE%20%E0%A4%B2%E0%A5%8B%E0%A4%95%E0%A4%B8%E0%A4%AD%E0%A4%BE%20%E0%A4%AE%E0%A4%A4%E0%A4%A6%E0%A4%BE%E0%A4%B0%20%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%0Ahttps%3A%2F%2Findependent-voter.madhaloksabha.workers.dev%2F">WhatsApp</a>
   <div id="app-loading" role="status" aria-live="polite">
     <div class="app-loading-card">
       <div class="app-loading-mark" aria-hidden="true"></div>

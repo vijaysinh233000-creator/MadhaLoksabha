@@ -15,6 +15,13 @@ export default {
       return env.API.fetch(request);
     }
 
+    // Stable public image endpoint for rich WhatsApp/social previews. The
+    // Flutter build places the source image under its generated assets path.
+    if (requested.pathname === "/share/dhairysheel-mohite-patil.jpg") {
+      requested.pathname = "/assets/assets/images/madha_loksabha_banner.jpg";
+      return env.ASSETS.fetch(new Request(requested, request));
+    }
+
     if (["/pdf-viewer", "/pdf-viewer/", "/print-slip", "/print-slip/"].includes(requested.pathname)) {
       requested.pathname = requested.pathname.startsWith("/print-slip") ? "/print-slip/" : "/pdf-viewer/";
       return env.ASSETS.fetch(new Request(requested, request));
