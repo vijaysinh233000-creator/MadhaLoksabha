@@ -561,7 +561,9 @@ def _finish(current: VoterRecord | None, out: list[VoterRecord]) -> None:
     """
     if not current or not current.name:
         return
-    current.name = mar.clean_name(current.name) or current.name
+    # Never restore the unclean value. Doing so used to bring an OCR
+    # hallucination back when every captured token was rejected.
+    current.name = mar.clean_name(current.name)
     if current.relation_name:
         current.relation_name = mar.clean_name(current.relation_name)
     if not current.name:

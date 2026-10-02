@@ -91,6 +91,17 @@ check("smt honorific stripped", mar.strip_honorifics("श्रीमती अ�
 check("label-only word rejected", mar.is_label("नाव"), True)
 check("name word kept", mar.is_label("जाधव"), False)
 check("clean_name drops labels", mar.clean_name("नाव : श्री रामचंद्र जाधव"), "रामचंद्र जाधव")
+check("Latin OCR word removed from Marathi name",
+      mar.clean_name("राजकुमार AGA गुंड"), "राजकुमार गुंड")
+check("multiple Latin OCR words removed from Marathi name",
+      mar.clean_name("सविता agar Goats पाटील"), "सविता पाटील")
+check("unsafe mixed-script token remains visible for quality review",
+      mar.clean_name("राजkuमार जाधव"), "राजkuमार जाधव")
+check("genuine English name remains unchanged",
+      mar.clean_name("Rajkumar Bharat Jadhav"), "Rajkumar Bharat Jadhav")
+check("Latin-only debris is not restored as a voter", len(parse_page_text([
+    "1", "नाव: AGA", "वडिलांचे नाव: मोहन गुंड",
+], 1, "").records), 0)
 
 print("\n== cross-script query variants ==")
 check_true("jadhav has a devanagari variant", any(dev.has_devanagari(v) for v, _ in variants_of("jadhav")))
