@@ -215,11 +215,10 @@
       if (line) ctx.fillText(line, x, cursor);
       return cursor + lineHeight;
     };
-    window.shareVoterCard = async (
+    const createVoterCardFile = async (
       name, relationLabel, relationName, village, serial, part, epic,
       house, age, gender, page,
     ) => {
-      try {
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
         canvas.height = 1350;
@@ -276,13 +275,25 @@
         const file = new File([blob], `${safeName}-मतदार-माहिती.png`, {type: 'image/png'});
         const text = `मतदार माहिती\nनाव: ${name}\n${village ? `गाव: ${village}\n` : ''}` +
           `https://independent-voter.madhaloksabha.workers.dev/`;
+        return {file, text};
+    };
+
+    window.shareVoterCard = async (
+      name, relationLabel, relationName, village, serial, part, epic,
+      house, age, gender, page,
+    ) => {
+      try {
+        const {file, text} = await createVoterCardFile(
+          name, relationLabel, relationName, village, serial, part, epic,
+          house, age, gender, page,
+        );
         if (navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
           await navigator.share({title: 'मतदार माहिती', text, files: [file]});
           return true;
         }
 
         const download = document.createElement('a');
-        download.href = URL.createObjectURL(blob);
+        download.href = URL.createObjectURL(file);
         download.download = file.name;
         download.click();
         setTimeout(() => URL.revokeObjectURL(download.href), 3000);
@@ -291,6 +302,46 @@
       } catch (error) {
         if (error && error.name === 'AbortError') return true;
         console.error('Voter card sharing failed', error);
+        return false;
+      }
+    };
+
+    window.shareVoterCards = async (votersJson) => {
+      try {
+        const voters = JSON.parse(votersJson);
+        if (!Array.isArray(voters) || !voters.length || voters.length > 10) return false;
+        const cards = [];
+        for (const voter of voters) {
+          cards.push(await createVoterCardFile(
+            voter.name, voter.relationLabel, voter.relationName, voter.village,
+            voter.serial, voter.part, voter.epic, voter.house, voter.age,
+            voter.gender, voter.page,
+          ));
+        }
+        const files = cards.map((card) => card.file);
+        const text = `निवडलेल्या ${files.length} मतदारांची माहिती\n` +
+          voters.map((voter, index) => `${index + 1}. ${voter.name}`).join('\n') +
+          '\nhttps://independent-voter.madhaloksabha.workers.dev/';
+        if (navigator.share && navigator.canShare && navigator.canShare({files})) {
+          await navigator.share({title: 'निवडलेल्या मतदारांची माहिती', text, files});
+          return true;
+        }
+
+        // Desktop browsers commonly cannot attach multiple files to WhatsApp.
+        // Download each card separately, then open one WhatsApp text message.
+        for (const file of files) {
+          const download = document.createElement('a');
+          download.href = URL.createObjectURL(file);
+          download.download = file.name;
+          download.click();
+          setTimeout(() => URL.revokeObjectURL(download.href), 5000);
+          await new Promise((resolve) => setTimeout(resolve, 120));
+        }
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+        return true;
+      } catch (error) {
+        if (error && error.name === 'AbortError') return true;
+        console.error('Multiple voter card sharing failed', error);
         return false;
       }
     };

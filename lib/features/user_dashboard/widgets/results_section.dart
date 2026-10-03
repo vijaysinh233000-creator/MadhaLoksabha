@@ -11,8 +11,42 @@ import '../../pdf_viewer/pdf_viewer.dart';
 import '../search_controller.dart';
 
 /// Search results: loading / error / empty / list + pagination.
-class ResultsSection extends StatelessWidget {
+class ResultsSection extends StatefulWidget {
   const ResultsSection({super.key});
+
+  @override
+  State<ResultsSection> createState() => _ResultsSectionState();
+}
+
+class _ResultsSectionState extends State<ResultsSection> {
+  final Map<int, VoterResult> _selected = {};
+
+  void _toggle(VoterResult voter, bool selected) {
+    setState(() {
+      if (selected) {
+        if (_selected.length >= 10) {
+          showSnack(context, 'एकावेळी जास्तीत जास्त १० मतदार निवडा.');
+          return;
+        }
+        _selected[voter.id] = voter;
+      } else {
+        _selected.remove(voter.id);
+      }
+    });
+  }
+
+  Future<void> _shareSelected() async {
+    final voters = _selected.values.toList();
+    if (voters.isEmpty) return;
+    final shared = await shareVoterCards(voters);
+    if (!shared && mounted) {
+      showSnack(
+        context,
+        'या browserमध्ये अनेक images share करता आल्या नाहीत.',
+        error: true,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +64,8 @@ class ResultsSection extends StatelessWidget {
     final r = c.response;
     if (r == null) return const SizedBox.shrink();
     if (r.total == 0) return _NoResults(response: r, controller: c);
+    final visibleIds = r.results.map((item) => item.id).toSet();
+    _selected.removeWhere((id, _) => !visibleIds.contains(id));
 
     final parsed = r.query;
     final chips = <Widget>[];
@@ -73,9 +109,7 @@ class ResultsSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.greenLight,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: AppColors.green.withValues(alpha: .25),
-              ),
+              border: Border.all(color: AppColors.green.withValues(alpha: .25)),
             ),
             child: Row(
               children: [
@@ -198,6 +232,8 @@ class ResultsSection extends StatelessWidget {
                   ResultCard(
                     result: r.results[i],
                     rank: (r.page - 1) * r.pageSize + i + 1,
+                    selected: _selected.containsKey(r.results[i].id),
+                    onSelected: (value) => _toggle(r.results[i], value),
                   ),
                   if (i < r.results.length - 1) const SizedBox(height: 8),
                 ],
@@ -215,6 +251,14 @@ class ResultsSection extends StatelessWidget {
               ),
           ],
         ),
+        if (_selected.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          _SelectionBar(
+            count: _selected.length,
+            onClear: () => setState(_selected.clear),
+            onShare: _shareSelected,
+          ),
+        ],
         const SizedBox(height: 12),
         PaginationBar(
           page: r.page,
@@ -545,11 +589,99 @@ class _Step extends StatelessWidget {
   }
 }
 
+class _SelectionBar extends StatelessWidget {
+  const _SelectionBar({
+    required this.count,
+    required this.onClear,
+    required this.onShare,
+  });
+
+  final int count;
+  final VoidCallback onClear;
+  final VoidCallback onShare;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: AppColors.navy,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x330A345E),
+          blurRadius: 18,
+          offset: Offset(0, 7),
+        ),
+      ],
+    ),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final narrow = constraints.maxWidth < 520;
+        final message = Text(
+          '$count मतदार निवडले',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            fontSize: 15,
+          ),
+        );
+        final actions = [
+          TextButton(
+            onPressed: onClear,
+            child: const Text(
+              'निवड रद्द',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: onShare,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.whatsapp,
+            ),
+            icon: const _WhatsAppMark(),
+            label: const Text('एकत्र शेअर करा'),
+          ),
+        ];
+        if (narrow) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              message,
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(child: actions[0]),
+                  const SizedBox(width: 8),
+                  Expanded(child: actions[1]),
+                ],
+              ),
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: message),
+            ...actions,
+          ],
+        );
+      },
+    ),
+  );
+}
+
 /// One voter result card with Open / Open at page / Download buttons.
 class ResultCard extends StatelessWidget {
-  const ResultCard({required this.result, required this.rank, super.key});
+  const ResultCard({
+    required this.result,
+    required this.rank,
+    required this.selected,
+    required this.onSelected,
+    super.key,
+  });
   final VoterResult result;
   final int rank;
+  final bool selected;
+  final ValueChanged<bool> onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -577,22 +709,11 @@ class ResultCard extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width: 34,
-                            height: 34,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.saffronLight,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              r.name.isNotEmpty ? r.name[0].toUpperCase() : '?',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.saffronDark,
-                                fontSize: 16,
-                              ),
-                            ),
+                          Checkbox(
+                            value: selected,
+                            onChanged: (value) => onSelected(value ?? false),
+                            activeColor: AppColors.green,
+                            visualDensity: VisualDensity.compact,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -661,12 +782,13 @@ class ResultCard extends StatelessWidget {
                             color: const Color(0xFFE8F0FC),
                             textColor: AppColors.blue,
                           ),
-                          Pill(
-                            label: r.pdfName,
-                            icon: Icons.picture_as_pdf_rounded,
-                            color: AppColors.saffronLight,
-                            textColor: AppColors.saffronDark,
-                          ),
+                          if (!narrow)
+                            Pill(
+                              label: r.pdfName,
+                              icon: Icons.picture_as_pdf_rounded,
+                              color: AppColors.saffronLight,
+                              textColor: AppColors.saffronDark,
+                            ),
                           if (r.serial.isNotEmpty)
                             Pill(label: 'क्र. ${r.serial}'),
                           if (r.epic.isNotEmpty)
@@ -710,7 +832,7 @@ class ResultCard extends StatelessWidget {
                               Icons.find_in_page_rounded,
                               size: 18,
                             ),
-                            label: Text('पान ${r.page} वर उघडा'),
+                            label: const Text('PDF मध्ये पहा'),
                           ),
                           OutlinedButton.icon(
                             onPressed: () => viewer.printSlip(context, r.id),

@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'dart:convert';
 
 import '../models/models.dart';
 
@@ -31,5 +32,30 @@ Future<bool> shareVoterCard(VoterResult voter) async {
     voter.gender.toJS,
     '${voter.page}'.toJS,
   ).toDart;
+  return shared.toDart;
+}
+
+@JS('shareVoterCards')
+external JSPromise<JSBoolean> _shareVoterCards(JSString votersJson);
+
+Future<bool> shareVoterCards(List<VoterResult> voters) async {
+  final payload = voters
+      .map(
+        (voter) => {
+          'name': voter.name,
+          'relationLabel': voter.relationLabel,
+          'relationName': voter.relationName,
+          'village': voter.village,
+          'serial': voter.serial,
+          'part': voter.part,
+          'epic': voter.epic,
+          'house': voter.house,
+          'age': voter.age,
+          'gender': voter.gender,
+          'page': '${voter.page}',
+        },
+      )
+      .toList();
+  final shared = await _shareVoterCards(jsonEncode(payload).toJS).toDart;
   return shared.toDart;
 }
