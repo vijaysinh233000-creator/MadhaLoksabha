@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../pdf_viewer/pdf_viewer.dart';
 import '../search_controller.dart';
+import 'voter_slip_card.dart';
 
 /// Search results: loading / error / empty / list + pagination.
 class ResultsSection extends StatefulWidget {
@@ -16,6 +17,68 @@ class ResultsSection extends StatefulWidget {
 
   @override
   State<ResultsSection> createState() => _ResultsSectionState();
+}
+
+class _SearchSkeleton extends StatelessWidget {
+  const _SearchSkeleton();
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+    tween: Tween(begin: .35, end: .9),
+    duration: const Duration(milliseconds: 850),
+    curve: Curves.easeInOut,
+    builder: (context, opacity, child) =>
+        Opacity(opacity: opacity, child: child),
+    child: Column(
+      children: [
+        for (var index = 0; index < 3; index++) ...[
+          AppCard(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const _SkeletonBox(width: 36, height: 36, radius: 9),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      _SkeletonBox(width: double.infinity, height: 17),
+                      SizedBox(height: 9),
+                      _SkeletonBox(width: 210, height: 12),
+                      SizedBox(height: 14),
+                      _SkeletonBox(width: 280, height: 30, radius: 15),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (index < 2) const SizedBox(height: 8),
+        ],
+      ],
+    ),
+  );
+}
+
+class _SkeletonBox extends StatelessWidget {
+  const _SkeletonBox({
+    required this.width,
+    required this.height,
+    this.radius = 6,
+  });
+  final double width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: width,
+    height: height,
+    decoration: BoxDecoration(
+      color: const Color(0xFFE7ECE9),
+      borderRadius: BorderRadius.circular(radius),
+    ),
+  );
 }
 
 class _ResultsSectionState extends State<ResultsSection> {
@@ -80,9 +143,7 @@ class _ResultsSectionState extends State<ResultsSection> {
   Widget build(BuildContext context) {
     final c = context.watch<VoterSearchController>();
     if (c.loading && c.response == null) {
-      return const AppCard(
-        child: LoadingIndicator(message: 'मतदार यादीत शोधत आहे...'),
-      );
+      return const _SearchSkeleton();
     }
     if (c.error != null) {
       return AppCard(
@@ -827,7 +888,6 @@ class ResultCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          if (!narrow) _Meta(r: r),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -864,20 +924,69 @@ class ResultCard extends StatelessWidget {
                             Pill(label: 'क्र. ${r.serial}'),
                           if (r.epic.isNotEmpty)
                             Pill(label: r.epic, icon: Icons.badge_outlined),
-                          if (narrow &&
-                              (r.age.isNotEmpty || r.gender.isNotEmpty))
-                            Pill(
-                              label: [
-                                if (r.gender.isNotEmpty) _genderMr(r.gender),
-                                if (r.age.isNotEmpty) 'वय ${r.age}',
-                              ].join(' · '),
-                            ),
-                          if (r.house.isNotEmpty)
-                            Pill(
-                              label: 'घर ${r.house}',
-                              icon: Icons.home_outlined,
-                            ),
                         ],
+                      ),
+                      if (r.house.isNotEmpty ||
+                          r.age.isNotEmpty ||
+                          r.gender.isNotEmpty)
+                        Theme(
+                          data: Theme.of(context).copyWith(
+                            dividerColor: Colors.transparent,
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          child: ExpansionTile(
+                            tilePadding: EdgeInsets.zero,
+                            childrenPadding: const EdgeInsets.only(bottom: 6),
+                            title: const Text(
+                              'अधिक माहिती',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: [
+                                    if (r.house.isNotEmpty)
+                                      Pill(
+                                        label: 'घर ${r.house}',
+                                        icon: Icons.home_outlined,
+                                      ),
+                                    if (r.age.isNotEmpty)
+                                      Pill(label: 'वय ${r.age}'),
+                                    if (r.gender.isNotEmpty)
+                                      Pill(label: _genderMr(r.gender)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'OCR extracted slip',
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.2,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            VoterSlipCard(result: r),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Wrap(
@@ -1001,27 +1110,6 @@ class _WhatsAppMark extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: const Icon(Icons.phone_rounded, color: Colors.white, size: 14),
-    );
-  }
-}
-
-class _Meta extends StatelessWidget {
-  const _Meta({required this.r});
-  final VoterResult r;
-
-  @override
-  Widget build(BuildContext context) {
-    final parts = <String>[];
-    if (r.gender.isNotEmpty) parts.add(ResultCard._genderMr(r.gender));
-    if (r.age.isNotEmpty) parts.add('वय ${r.age}');
-    if (parts.isEmpty) return const SizedBox.shrink();
-    return Text(
-      parts.join(' · '),
-      style: const TextStyle(
-        fontSize: 12.5,
-        color: AppColors.textSecondary,
-        fontWeight: FontWeight.w600,
-      ),
     );
   }
 }

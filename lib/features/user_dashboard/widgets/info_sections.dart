@@ -4,7 +4,6 @@ import '../../../core/models/models.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/common_widgets.dart';
-import 'hero_header.dart';
 
 /// Stats row: villages / parts / voters / SIR updated.
 class StatsRow extends StatelessWidget {
@@ -15,10 +14,35 @@ class StatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = stats;
     final items = [
-      _Stat(icon: Icons.groups_rounded, color: AppColors.green, value: s == null ? '—' : '${s.totalVillages}', label: 'गावे', sub: 'उत्तर सोलापूरतील'),
-      _Stat(icon: Icons.description_rounded, color: AppColors.blue, value: s == null ? '—' : '${s.totalPdfs}', label: 'मतदार यादी Booth', sub: 'PDF फाईल्स'),
-      _Stat(icon: Icons.people_alt_rounded, color: AppColors.purple, value: s == null ? '—' : Formatters.countPlus(s.totalRecords), label: 'एकूण मतदार', sub: 'इंडेक्स केलेले'),
-      const _Stat(icon: Icons.check_circle_rounded, color: AppColors.saffron, value: 'सही व अद्यावत', label: 'SIR नंतरची यादी', sub: '', small: true),
+      _Stat(
+        icon: Icons.groups_rounded,
+        color: AppColors.green,
+        value: s == null ? '—' : '${s.totalVillages}',
+        label: 'गावे',
+        sub: 'उत्तर सोलापूरतील',
+      ),
+      _Stat(
+        icon: Icons.description_rounded,
+        color: AppColors.blue,
+        value: s == null ? '—' : '${s.totalPdfs}',
+        label: 'मतदार यादी Booth',
+        sub: 'PDF फाईल्स',
+      ),
+      _Stat(
+        icon: Icons.people_alt_rounded,
+        color: AppColors.purple,
+        value: s == null ? '—' : Formatters.countPlus(s.totalRecords),
+        label: 'एकूण मतदार',
+        sub: 'इंडेक्स केलेले',
+      ),
+      const _Stat(
+        icon: Icons.check_circle_rounded,
+        color: AppColors.saffron,
+        value: 'सही व अद्यावत',
+        label: 'SIR नंतरची यादी',
+        sub: '',
+        small: true,
+      ),
     ];
     return LayoutBuilder(
       builder: (context, c) {
@@ -35,7 +59,14 @@ class StatsRow extends StatelessWidget {
 }
 
 class _Stat extends StatelessWidget {
-  const _Stat({required this.icon, required this.color, required this.value, required this.label, required this.sub, this.small = false});
+  const _Stat({
+    required this.icon,
+    required this.color,
+    required this.value,
+    required this.label,
+    required this.sub,
+    this.small = false,
+  });
   final IconData icon;
   final Color color;
   final String value;
@@ -52,17 +83,44 @@ class _Stat extends StatelessWidget {
           Container(
             width: 36,
             height: 36,
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Icon(icon, color: color, size: 20),
           ),
           const SizedBox(height: 8),
           FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(value, style: TextStyle(fontSize: small ? 14 : 24, fontWeight: FontWeight.w900, color: color, height: 1.1)),
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: small ? 14 : 24,
+                fontWeight: FontWeight.w900,
+                color: color,
+                height: 1.1,
+              ),
+            ),
           ),
           const SizedBox(height: 4),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.navyText)),
-          if (sub.isNotEmpty) Text(sub, textAlign: TextAlign.center, style: const TextStyle(fontSize: 10.5, color: AppColors.textMuted)),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.navyText,
+            ),
+          ),
+          if (sub.isNotEmpty)
+            Text(
+              sub,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 10.5,
+                color: AppColors.textMuted,
+              ),
+            ),
         ],
       ),
     );
@@ -71,7 +129,12 @@ class _Stat extends StatelessWidget {
 
 /// "समाविष्ट गावे" card with chips; tapping a chip selects that village.
 class VillagesCard extends StatefulWidget {
-  const VillagesCard({required this.villages, required this.selected, required this.onSelect, super.key});
+  const VillagesCard({
+    required this.villages,
+    required this.selected,
+    required this.onSelect,
+    super.key,
+  });
   final List<Village> villages;
   final String selected;
   final ValueChanged<String> onSelect;
@@ -101,15 +164,29 @@ class _VillagesCardState extends State<VillagesCard> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(_all ? 'कमी दाखवा' : 'संपूर्ण यादी पहा', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-                  Icon(_all ? Icons.expand_less_rounded : Icons.arrow_forward_rounded, size: 16),
+                  Text(
+                    _all ? 'कमी दाखवा' : 'संपूर्ण यादी पहा',
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Icon(
+                    _all
+                        ? Icons.expand_less_rounded
+                        : Icons.arrow_forward_rounded,
+                    size: 16,
+                  ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 10),
           if (widget.villages.isEmpty)
-            const Text('अद्याप गावे जोडलेली नाहीत.', style: TextStyle(color: AppColors.textMuted))
+            const Text(
+              'अद्याप गावे जोडलेली नाहीत.',
+              style: TextStyle(color: AppColors.textMuted),
+            )
           else
             Wrap(
               spacing: 6,
@@ -123,15 +200,28 @@ class _VillagesCardState extends State<VillagesCard> {
                     labelStyle: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
-                      color: widget.selected == v.name ? AppColors.green : AppColors.textPrimary,
+                      color: widget.selected == v.name
+                          ? AppColors.green
+                          : AppColors.textPrimary,
                     ),
-                    avatar: v.records == 0 ? const Icon(Icons.hourglass_empty_rounded, size: 13, color: AppColors.textMuted) : null,
-                    onSelected: (_) => widget.onSelect(widget.selected == v.name ? '' : v.name),
+                    avatar: v.records == 0
+                        ? const Icon(
+                            Icons.hourglass_empty_rounded,
+                            size: 13,
+                            color: AppColors.textMuted,
+                          )
+                        : null,
+                    onSelected: (_) => widget.onSelect(
+                      widget.selected == v.name ? '' : v.name,
+                    ),
                   ),
                 if (!_all && more > 0)
                   ActionChip(
                     label: Text('आणि इतर $more...'),
-                    labelStyle: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
+                    labelStyle: const TextStyle(
+                      fontSize: 12.5,
+                      color: AppColors.textSecondary,
+                    ),
                     onPressed: () => setState(() => _all = true),
                   ),
               ],
@@ -150,15 +240,30 @@ class HowToCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const items = [
       (Icons.person_outline_rounded, 'पूर्ण नाव टाका', 'उदा. विजयसिंह जाधव'),
-      (Icons.people_outline_rounded, 'वडिलांचे / पतीचे नाव टाका', 'उदा. भारत हरिभाऊ जाधव'),
-      (Icons.search_rounded, 'अचूक किंवा साधारण नाव चालेल', 'स्पेलिंग वेगवेगळे असले तरी चालेल'),
+      (
+        Icons.people_outline_rounded,
+        'वडिलांचे / पतीचे नाव टाका',
+        'उदा. भारत हरिभाऊ जाधव',
+      ),
+      (
+        Icons.search_rounded,
+        'अचूक किंवा साधारण नाव चालेल',
+        'स्पेलिंग वेगवेगळे असले तरी चालेल',
+      ),
     ];
     return AppCard(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('नाव कसे शोधाल?', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.navyText)),
+          const Text(
+            'नाव कसे शोधाल?',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: AppColors.navyText,
+            ),
+          ),
           const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, c) {
@@ -171,7 +276,10 @@ class HowToCard extends StatelessWidget {
                       Container(
                         width: 30,
                         height: 30,
-                        decoration: BoxDecoration(color: AppColors.greenLight, borderRadius: BorderRadius.circular(8)),
+                        decoration: BoxDecoration(
+                          color: AppColors.greenLight,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: Icon(it.$1, size: 17, color: AppColors.green),
                       ),
                       const SizedBox(width: 10),
@@ -179,8 +287,21 @@ class HowToCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(it.$2, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.navyText)),
-                            Text(it.$3, style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted)),
+                            Text(
+                              it.$2,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.navyText,
+                              ),
+                            ),
+                            Text(
+                              it.$3,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: AppColors.textMuted,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -188,7 +309,9 @@ class HowToCard extends StatelessWidget {
                   ),
               ];
               if (horizontal) {
-                return Row(children: [for (final ch in children) Expanded(child: ch)]);
+                return Row(
+                  children: [for (final ch in children) Expanded(child: ch)],
+                );
               }
               return Column(
                 children: [
@@ -222,9 +345,19 @@ class FooterBand extends StatelessWidget {
           padding: const EdgeInsets.all(3),
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(colors: [AppColors.green, Colors.white, AppColors.saffron], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: LinearGradient(
+              colors: [AppColors.green, Colors.white, AppColors.saffron],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-          child: ClipOval(child: Image.asset('assets/images/bharat_jadhav.jpg', fit: BoxFit.cover, alignment: Alignment.topCenter)),
+          child: ClipOval(
+            child: Image.asset(
+              'assets/images/bharat_jadhav.jpg',
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+            ),
+          ),
         ),
         const SizedBox(width: 12),
         const Flexible(
@@ -232,35 +365,72 @@ class FooterBand extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('भारत जाधव', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.navyText)),
-              Text('अध्यक्ष', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.saffronDark)),
-              Text('उत्तर सोलापूर काँग्रेस', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.green)),
+              Text(
+                'भारत जाधव',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.navyText,
+                ),
+              ),
+              Text(
+                'अध्यक्ष',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.saffronDark,
+                ),
+              ),
+              Text(
+                'उत्तर सोलापूर काँग्रेस',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.green,
+                ),
+              ),
             ],
           ),
         ),
       ],
     );
     final slogan = Column(
-      crossAxisAlignment: narrow ? CrossAxisAlignment.center : CrossAxisAlignment.end,
+      crossAxisAlignment: narrow
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.end,
       children: [
         Text(
           'उत्तर सोलापूरतील नागरिकांच्या सेवेसाठी',
           textAlign: narrow ? TextAlign.center : TextAlign.right,
-          style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontSize: 12.5,
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         Text(
           'आम्ही सदैव आपल्या सोबत!',
           textAlign: narrow ? TextAlign.center : TextAlign.right,
-          style: const TextStyle(fontSize: 17, color: AppColors.navyText, fontWeight: FontWeight.w900),
+          style: const TextStyle(
+            fontSize: 17,
+            color: AppColors.navyText,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         const SizedBox(height: 6),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(width: 40, height: 3, color: AppColors.saffron),
-            const SizedBox(width: 6),
-            const CongressHand(size: 26, showLabel: false),
-            const SizedBox(width: 6),
+            const SizedBox(width: 10),
+            Container(width: 42, height: 3, color: AppColors.navy),
+            const SizedBox(width: 10),
             Container(width: 40, height: 3, color: AppColors.green),
           ],
         ),
@@ -271,7 +441,9 @@ class FooterBand extends StatelessWidget {
       children: [
         Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [Color(0xFFFFF4EC), Colors.white, Color(0xFFEDF7F0)]),
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFF4EC), Colors.white, Color(0xFFEDF7F0)],
+            ),
             border: Border(top: BorderSide(color: AppColors.border)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -279,8 +451,16 @@ class FooterBand extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1100),
               child: narrow
-                  ? Column(children: [leader, const SizedBox(height: 14), slogan])
-                  : Row(children: [Flexible(child: leader), const SizedBox(width: 16), Flexible(child: slogan)]),
+                  ? Column(
+                      children: [leader, const SizedBox(height: 14), slogan],
+                    )
+                  : Row(
+                      children: [
+                        Flexible(child: leader),
+                        const SizedBox(width: 16),
+                        Flexible(child: slogan),
+                      ],
+                    ),
             ),
           ),
         ),
@@ -298,13 +478,29 @@ class FooterBand extends StatelessWidget {
                   const Text.rich(
                     TextSpan(
                       children: [
-                        WidgetSpan(alignment: PlaceholderAlignment.middle, child: Icon(Icons.shield_rounded, size: 14, color: Colors.white70)),
-                        TextSpan(text: '  आपली माहिती सुरक्षित आहे. कोणतीही वैयक्तिक माहिती संग्रहित केली जात नाही.'),
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: Icon(
+                            Icons.shield_rounded,
+                            size: 14,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              '  आपली माहिती सुरक्षित आहे. कोणतीही वैयक्तिक माहिती संग्रहित केली जात नाही.',
+                        ),
                       ],
                     ),
                     style: TextStyle(fontSize: 10.5, color: Colors.white70),
                   ),
-                  Text('© ${DateTime.now().year} Electoral Roll Search  |  सर्व हक्क राखीव', style: const TextStyle(fontSize: 10.5, color: Colors.white70)),
+                  Text(
+                    '© ${DateTime.now().year} Electoral Roll Search  |  सर्व हक्क राखीव',
+                    style: const TextStyle(
+                      fontSize: 10.5,
+                      color: Colors.white70,
+                    ),
+                  ),
                 ],
               ),
             ),

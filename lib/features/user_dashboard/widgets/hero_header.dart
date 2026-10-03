@@ -7,7 +7,8 @@ class HeroHeader extends StatelessWidget {
   const HeroHeader({super.key});
 
   static final Uri _whatsAppShare = Uri.https('wa.me', '/', {
-    'text': 'धैर्यशील मोहिते-पाटील | माढा लोकसभा\n'
+    'text':
+        'धैर्यशील मोहिते-पाटील | माढा लोकसभा\n'
         'माझे नाव मतदार यादीत शोधा:\n'
         'https://independent-voter.madhaloksabha.workers.dev/',
   });
@@ -18,9 +19,9 @@ class HeroHeader extends StatelessWidget {
       mode: LaunchMode.externalApplication,
     );
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('WhatsApp उघडता आले नाही.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('WhatsApp उघडता आले नाही.')));
     }
   }
 
@@ -41,26 +42,6 @@ class HeroHeader extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      width: mobile ? 44 : 52,
-                      height: mobile ? 44 : 52,
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.heritageGold,
-                          width: 2,
-                        ),
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/ncp_sp_logo.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 11),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,20 +116,4 @@ class HeroHeader extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Kept only for legacy admin/widget compatibility; it is not rendered by the
-/// new public design.
-class CongressHand extends StatelessWidget {
-  const CongressHand({
-    super.key,
-    this.size = 44,
-    this.showLabel = true,
-    this.labelSize,
-  });
-  final double size;
-  final bool showLabel;
-  final double? labelSize;
-  @override
-  Widget build(BuildContext context) => SizedBox(width: size, height: size);
 }

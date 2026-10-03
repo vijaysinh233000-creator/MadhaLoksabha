@@ -31,6 +31,23 @@ function slug(value) {
   );
 }
 
+function buildVoterLocatorBox({ slot = 0, columns = 3 } = {}) {
+  const safeSlot = Math.max(0, Number.isFinite(slot) ? Number(slot) : 0);
+  // Electoral-roll cards are numbered across each row (left to right), then
+  // continue on the next row. Keep the physical 3 x 10 page grid fixed even
+  // on a partly filled last page; deriving row height from record count makes
+  // the highlight grow and drift away from the printed card.
+  const column = safeSlot % columns;
+  const row = Math.min(9, Math.floor(safeSlot / columns));
+
+  return {
+    x: 0.021 + column * 0.326,
+    y: 0.072 + row * 0.088,
+    width: 0.306,
+    height: 0.083,
+  };
+}
+
 const DEVANAGARI_CONSONANTS = {
   क: "k",
   ख: "k",
@@ -383,7 +400,14 @@ async function searchCandidates(env, searchText, villageName) {
     : rpcCandidates(env, searchText, villageName, 20);
 }
 
-async function rankedSearch(env, searchText, villageName, page, pageSize) {
+async function rankedSearch(
+  env,
+  searchText,
+  villageName,
+  page,
+  pageSize,
+  searchField = "all",
+) {
   try {
     const rankedRpc = async (
       text,
@@ -395,6 +419,7 @@ async function rankedSearch(env, searchText, villageName, page, pageSize) {
         body: JSON.stringify({
           search_text: text,
           village_name: villageName,
+          search_field: searchField,
           page_number: requestedPage,
           page_size: requestedSize,
         }),
@@ -727,12 +752,19 @@ async function handle(request, env, context) {
       Math.max(1, Number(url.searchParams.get("page_size") || 20)),
     );
     const villageName = url.searchParams.get("village") || "";
+    const requestedField = url.searchParams.get("field") || "all";
+    const searchField = ["all", "name", "relative", "epic"].includes(
+      requestedField,
+    )
+      ? requestedField
+      : "all";
     const result = await rankedSearch(
       env,
       searchText,
       villageName,
       requestedPage,
       requestedSize,
+      searchField,
     );
     result.took_ms = Date.now() - started;
     return json(result, 200, {
@@ -743,6 +775,12 @@ async function handle(request, env, context) {
   if (request.method === "GET" && p === "/api/suggest") {
     const searchText = url.searchParams.get("q") || "";
     const villageName = url.searchParams.get("village") || "";
+    const requestedField = url.searchParams.get("field") || "all";
+    const searchField = ["all", "name", "relative", "epic"].includes(
+      requestedField,
+    )
+      ? requestedField
+      : "all";
     const limit = Math.min(20, Number(url.searchParams.get("limit") || 8));
     const started = Date.now();
     const rankedBody = await rankedSearch(
@@ -751,6 +789,7 @@ async function handle(request, env, context) {
       villageName,
       1,
       limit,
+      searchField,
     );
     const items = rankedBody.results.map((item) => ({
       text: item.name,
@@ -799,21 +838,15 @@ async function handle(request, env, context) {
       Number.isFinite(currentSerial) && serials.length
         ? currentSerial - Math.min(...serials)
         : -1;
-    const slot = serialSlot >= 0 && serialSlot < 30 ? serialSlot : ordinal;
-    const column = slot % 3;
-    const row = Math.floor(slot / 3);
+    const slot =
+      serialSlot >= 0 && serialSlot < records.length ? serialSlot : ordinal;
     return json({
       voter_id: voter.id,
       name: voter.name,
       page: voter.page,
       serial: voter.serial,
       slot,
-      box: {
-        x: 0.021 + column * 0.326,
-        y: 0.072 + row * 0.088,
-        width: 0.306,
-        height: 0.083,
-      },
+      box: buildVoterLocatorBox({ slot, columns: 3 }),
     });
   }
 
@@ -1109,6 +1142,7 @@ export default {
 };
 
 export {
+  buildVoterLocatorBox,
   englishNameMatch,
   inferredMarathiQuery,
   latinIndexVariants,

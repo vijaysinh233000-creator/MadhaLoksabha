@@ -115,6 +115,7 @@ class ApiClient {
   Future<SearchResponse> search(
     String q, {
     String village = '',
+    String field = 'all',
     int page = 1,
     int pageSize = 20,
     bool ai = true,
@@ -122,6 +123,7 @@ class ApiClient {
     final j = await _get('/api/search', {
       'q': q,
       'village': village,
+      'field': field,
       'page': '$page',
       'page_size': '$pageSize',
       'ai': ai ? 'true' : 'false',
@@ -132,11 +134,13 @@ class ApiClient {
   Future<List<Suggestion>> suggest(
     String q, {
     String village = '',
+    String field = 'all',
     int limit = 8,
   }) async {
     final j = await _get('/api/suggest', {
       'q': q,
       'village': village,
+      'field': field,
       'limit': '$limit',
     });
     final items = (j['items'] as List?) ?? const [];

@@ -3,10 +3,26 @@ import test from "node:test";
 
 import worker, {
   englishNameMatch,
+  buildVoterLocatorBox,
   inferredMarathiQuery,
   latinIndexVariants,
   rerankEnglish,
 } from "../src/index.js";
+
+test("voter locator follows the printed row-major 3 by 10 grid", () => {
+  const first = buildVoterLocatorBox({ slot: 0 });
+  const nextColumn = buildVoterLocatorBox({ slot: 1 });
+  const nextRow = buildVoterLocatorBox({ slot: 3 });
+  const last = buildVoterLocatorBox({ slot: 29 });
+
+  assert.ok(first.x > 0.01 && first.x < 0.04);
+  assert.equal(nextColumn.y, first.y);
+  assert.ok(nextColumn.x > first.x);
+  assert.ok(nextRow.y > first.y);
+  assert.equal(nextRow.x, first.x);
+  assert.ok(last.x + last.width <= 1);
+  assert.ok(last.y + last.height <= 1);
+});
 
 test("single English sinh names produce OCR-index compatible variants", () => {
   assert.deepEqual(latinIndexVariants("Ranjitsinh"), ["ranajitasinha"]);
@@ -333,9 +349,44 @@ test("live search route uses one ranked database RPC", async () => {
     assert.deepEqual(calls[0].body, {
       search_text: "bharat jadhav",
       village_name: "",
+      search_field: "all",
       page_number: 1,
       page_size: 10,
     });
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("search mode is validated and forwarded to the ranked RPC", async () => {
+  const originalFetch = globalThis.fetch;
+  const fields = [];
+  globalThis.fetch = async (_url, init) => {
+    fields.push(JSON.parse(init.body).search_field);
+    return new Response(
+      JSON.stringify({
+        results: [],
+        total: 100,
+        page: 1,
+        page_size: 10,
+        query: { text: "ganpat" },
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+  };
+  try {
+    for (const field of ["name", "relative", "epic", "not-valid"]) {
+      const response = await worker.fetch(
+        new Request(`https://api.test/api/search?q=ganpat&field=${field}`),
+        {
+          SUPABASE_URL: "https://database.test",
+          SUPABASE_SECRET_KEY: "test-secret",
+        },
+        { waitUntil() {} },
+      );
+      assert.equal(response.status, 200);
+    }
+    assert.deepEqual(fields, ["name", "relative", "epic", "all"]);
   } finally {
     globalThis.fetch = originalFetch;
   }

@@ -19,6 +19,7 @@ class _SearchCardState extends State<SearchCard> {
   final _text = TextEditingController();
   final _focus = FocusNode();
   bool _listening = false;
+  String? _voicePending;
 
   @override
   void initState() {
@@ -27,7 +28,9 @@ class _SearchCardState extends State<SearchCard> {
       if (!_focus.hasFocus) {
         // small delay so a tap on a suggestion registers before hiding
         Future.delayed(const Duration(milliseconds: 150), () {
-          if (mounted && !_focus.hasFocus) context.read<VoterSearchController>().clearSuggestions();
+          if (mounted && !_focus.hasFocus) {
+            context.read<VoterSearchController>().clearSuggestions();
+          }
         });
       } else {
         setState(() {});
@@ -47,6 +50,7 @@ class _SearchCardState extends State<SearchCard> {
     _text.text = q;
     _text.selection = TextSelection.collapsed(offset: q.length);
     _focus.unfocus();
+    setState(() => _voicePending = null);
     c.search(q);
   }
 
@@ -57,7 +61,11 @@ class _SearchCardState extends State<SearchCard> {
     if (!mounted) return;
     setState(() => _listening = false);
     if (spoken != null && spoken.trim().isNotEmpty) {
-      _submit(spoken.trim());
+      final value = spoken.trim();
+      _text.text = value;
+      _text.selection = TextSelection.collapsed(offset: value.length);
+      context.read<VoterSearchController>().onQueryChanged(value);
+      setState(() => _voicePending = value);
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
@@ -76,7 +84,11 @@ class _SearchCardState extends State<SearchCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SectionTitle(icon: Icons.search_rounded, title: 'नाव शोधा', center: true),
+          const SectionTitle(
+            icon: Icons.search_rounded,
+            title: 'नाव शोधा',
+            center: true,
+          ),
           const SizedBox(height: 4),
           const Text(
             'मतदाराचे नाव मराठीत किंवा English मध्ये टाका आणि यादीत शोधा',
@@ -84,7 +96,31 @@ class _SearchCardState extends State<SearchCard> {
             style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 14),
-          _VillageDropdown(villages: c.villages, value: c.selectedVillage, onChanged: c.selectVillage),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 7,
+            runSpacing: 7,
+            children: [
+              for (final item in const [
+                ('all', 'सर्व प्रकारे', Icons.auto_awesome_rounded),
+                ('name', 'मतदाराचे नाव', Icons.person_rounded),
+                ('relative', 'वडील / पती', Icons.people_rounded),
+                ('epic', 'EPIC', Icons.badge_rounded),
+              ])
+                ChoiceChip(
+                  selected: c.searchField == item.$1,
+                  avatar: Icon(item.$3, size: 15),
+                  label: Text(item.$2),
+                  onSelected: (_) => c.selectSearchField(item.$1),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _VillageDropdown(
+            villages: c.villages,
+            value: c.selectedVillage,
+            onChanged: c.selectVillage,
+          ),
           const SizedBox(height: 10),
           if (narrow) ...[
             _input(c),
@@ -99,19 +135,82 @@ class _SearchCardState extends State<SearchCard> {
                 SizedBox(height: 52, child: _button(c)),
               ],
             ),
-          if (c.suggestions.isNotEmpty && _focus.hasFocus) _Suggestions(items: c.suggestions, query: _text.text, onTap: _submit),
+          if (c.suggestions.isNotEmpty && _focus.hasFocus)
+            _Suggestions(
+              items: c.suggestions,
+              query: _text.text,
+              onTap: _submit,
+            ),
+          if (_voicePending != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(11),
+              decoration: BoxDecoration(
+                color: AppColors.greenLight,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.hearing_rounded, color: AppColors.green),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'मी ऐकले: “$_voicePending”',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 7),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() => _voicePending = null);
+                          _focus.requestFocus();
+                        },
+                        child: const Text('बदला'),
+                      ),
+                      const SizedBox(width: 6),
+                      FilledButton(
+                        onPressed: () => _submit(_voicePending!),
+                        child: const Text('शोधा'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               Icon(Icons.verified_rounded, size: 15, color: AppColors.green),
               SizedBox(width: 5),
-              Text('शोध पूर्णपणे मोफत आहे', style: TextStyle(fontSize: 12, color: AppColors.green, fontWeight: FontWeight.w700)),
+              Text(
+                'शोध पूर्णपणे मोफत आहे',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.green,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
           if (c.recent.isNotEmpty && c.response == null && !c.loading) ...[
             const SizedBox(height: 12),
-            _Recent(items: c.recent, onTap: _submit, onRemove: c.removeRecent, onClear: c.clearRecent),
+            _Recent(
+              items: c.recent,
+              onTap: _submit,
+              onRemove: c.removeRecent,
+              onClear: c.clearRecent,
+            ),
           ],
         ],
       ),
@@ -130,8 +229,15 @@ class _SearchCardState extends State<SearchCard> {
       onSubmitted: _submit,
       style: const TextStyle(fontSize: 15),
       decoration: InputDecoration(
-        hintText: 'उदा. विजयसिंह जाधव किंवा Vijaysinh Jadhav',
-        prefixIcon: const Icon(Icons.person_search_rounded, color: AppColors.textMuted),
+        hintText: switch (c.searchField) {
+          'relative' => 'वडील किंवा पतीचे नाव टाका',
+          'epic' => 'उदा. MMQ0594309',
+          _ => 'उदा. विजयसिंह जाधव किंवा Vijaysinh Jadhav',
+        },
+        prefixIcon: const Icon(
+          Icons.person_search_rounded,
+          color: AppColors.textMuted,
+        ),
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -165,7 +271,14 @@ class _SearchCardState extends State<SearchCard> {
     return ElevatedButton.icon(
       onPressed: c.loading ? null : () => _submit(_text.text),
       icon: c.loading
-          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.4,
+                color: Colors.white,
+              ),
+            )
           : const Icon(Icons.search_rounded, size: 22),
       label: const Text('शोधा', style: TextStyle(fontSize: 16)),
     );
@@ -173,7 +286,11 @@ class _SearchCardState extends State<SearchCard> {
 }
 
 class _VillageDropdown extends StatelessWidget {
-  const _VillageDropdown({required this.villages, required this.value, required this.onChanged});
+  const _VillageDropdown({
+    required this.villages,
+    required this.value,
+    required this.onChanged,
+  });
   final List<Village> villages;
   final String value;
   final ValueChanged<String> onChanged;
@@ -181,7 +298,10 @@ class _VillageDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <DropdownMenuItem<String>>[
-      const DropdownMenuItem(value: '', child: Text('सर्व गावे (संपूर्ण मतदार यादी)')),
+      const DropdownMenuItem(
+        value: '',
+        child: Text('सर्व गावे (संपूर्ण मतदार यादी)'),
+      ),
       ...villages.map(
         (v) => DropdownMenuItem(
           value: v.name,
@@ -189,9 +309,18 @@ class _VillageDropdown extends StatelessWidget {
             children: [
               Expanded(child: Text(v.name, overflow: TextOverflow.ellipsis)),
               if (v.records > 0)
-                Text('${v.records}', style: const TextStyle(fontSize: 12, color: AppColors.textMuted))
+                Text(
+                  '${v.records}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textMuted,
+                  ),
+                )
               else
-                const Text('यादी नाही', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                const Text(
+                  'यादी नाही',
+                  style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                ),
             ],
           ),
         ),
@@ -203,7 +332,10 @@ class _VillageDropdown extends StatelessWidget {
       isExpanded: true,
       onChanged: (v) => onChanged(v ?? ''),
       selectedItemBuilder: (context) => [
-        const Text('सर्व गावे (संपूर्ण मतदार यादी)', overflow: TextOverflow.ellipsis),
+        const Text(
+          'सर्व गावे (संपूर्ण मतदार यादी)',
+          overflow: TextOverflow.ellipsis,
+        ),
         ...villages.map((v) => Text(v.name, overflow: TextOverflow.ellipsis)),
       ],
       decoration: const InputDecoration(
@@ -216,7 +348,11 @@ class _VillageDropdown extends StatelessWidget {
 }
 
 class _Suggestions extends StatelessWidget {
-  const _Suggestions({required this.items, required this.query, required this.onTap});
+  const _Suggestions({
+    required this.items,
+    required this.query,
+    required this.onTap,
+  });
   final List<Suggestion> items;
   final String query;
   final ValueChanged<String> onTap;
@@ -230,7 +366,13 @@ class _Suggestions extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 12, offset: Offset(0, 6))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -240,7 +382,11 @@ class _Suggestions extends StatelessWidget {
             color: AppColors.surface,
             child: Text(
               'यादीतील जुळणारी नावे  ·  ${items.length}',
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textMuted),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textMuted,
+              ),
             ),
           ),
           for (var i = 0; i < items.length; i++) ...[
@@ -248,17 +394,29 @@ class _Suggestions extends StatelessWidget {
             InkWell(
               onTap: () => onTap(items[i].text),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 9,
+                ),
                 child: Row(
                   children: [
                     Container(
                       width: 30,
                       height: 30,
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(color: AppColors.saffronLight, borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(
+                        color: AppColors.saffronLight,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Text(
-                        items[i].text.isNotEmpty ? items[i].text[0].toUpperCase() : '?',
-                        style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.saffronDark, fontSize: 13),
+                        items[i].text.isNotEmpty
+                            ? items[i].text[0].toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.saffronDark,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -267,22 +425,34 @@ class _Suggestions extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _Highlighted(text: items[i].text, query: query),
-                          if (items[i].relationName.isNotEmpty || items[i].village.isNotEmpty)
+                          if (items[i].relationName.isNotEmpty ||
+                              items[i].village.isNotEmpty)
                             Text(
                               [
-                                if (items[i].relationName.isNotEmpty) '${_relLabel(items[i].relationType)}: ${_title(items[i].relationName)}',
-                                if (items[i].village.isNotEmpty) items[i].village,
-                                if (items[i].page > 0 && items[i].pdf.isNotEmpty) 'पान ${items[i].page}',
+                                if (items[i].relationName.isNotEmpty)
+                                  '${_relLabel(items[i].relationType)}: ${_title(items[i].relationName)}',
+                                if (items[i].village.isNotEmpty)
+                                  items[i].village,
+                                if (items[i].page > 0 &&
+                                    items[i].pdf.isNotEmpty)
+                                  'पान ${items[i].page}',
                               ].join('  ·  '),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Icon(Icons.north_west_rounded, size: 15, color: AppColors.textMuted),
+                    const Icon(
+                      Icons.north_west_rounded,
+                      size: 15,
+                      color: AppColors.textMuted,
+                    ),
                   ],
                 ),
               ),
@@ -306,7 +476,10 @@ class _Suggestions extends StatelessWidget {
 
   static String _title(String s) {
     if (s != s.toUpperCase()) return s;
-    return s.split(' ').map((w) => w.isEmpty ? w : w[0] + w.substring(1).toLowerCase()).join(' ');
+    return s
+        .split(' ')
+        .map((w) => w.isEmpty ? w : w[0] + w.substring(1).toLowerCase())
+        .join(' ');
   }
 }
 
@@ -318,27 +491,60 @@ class _Highlighted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = query.toLowerCase().split(RegExp(r'\s+')).where((t) => t.length >= 2).toList();
-    const base = TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: AppColors.navyText);
-    const hit = TextStyle(fontSize: 14.5, fontWeight: FontWeight.w900, color: AppColors.saffronDark);
-    if (tokens.isEmpty) return Text(text, maxLines: 1, overflow: TextOverflow.ellipsis, style: base);
+    final tokens = query
+        .toLowerCase()
+        .split(RegExp(r'\s+'))
+        .where((t) => t.length >= 2)
+        .toList();
+    const base = TextStyle(
+      fontSize: 14.5,
+      fontWeight: FontWeight.w600,
+      color: AppColors.navyText,
+    );
+    const hit = TextStyle(
+      fontSize: 14.5,
+      fontWeight: FontWeight.w900,
+      color: AppColors.saffronDark,
+    );
+    if (tokens.isEmpty) {
+      return Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: base,
+      );
+    }
     final spans = <TextSpan>[];
     for (final word in text.split(' ')) {
       final lw = word.toLowerCase();
-      final match = tokens.firstWhere((t) => lw.startsWith(t), orElse: () => '');
+      final match = tokens.firstWhere(
+        (t) => lw.startsWith(t),
+        orElse: () => '',
+      );
       if (match.isEmpty) {
         spans.add(TextSpan(text: '$word ', style: base));
       } else {
         spans.add(TextSpan(text: word.substring(0, match.length), style: hit));
-        spans.add(TextSpan(text: '${word.substring(match.length)} ', style: base));
+        spans.add(
+          TextSpan(text: '${word.substring(match.length)} ', style: base),
+        );
       }
     }
-    return Text.rich(TextSpan(children: spans), maxLines: 1, overflow: TextOverflow.ellipsis);
+    return Text.rich(
+      TextSpan(children: spans),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }
 
 class _Recent extends StatelessWidget {
-  const _Recent({required this.items, required this.onTap, required this.onRemove, required this.onClear});
+  const _Recent({
+    required this.items,
+    required this.onTap,
+    required this.onRemove,
+    required this.onClear,
+  });
   final List<String> items;
   final ValueChanged<String> onTap;
   final ValueChanged<String> onRemove;
@@ -351,11 +557,25 @@ class _Recent extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.history_rounded, size: 16, color: AppColors.textSecondary),
+            const Icon(
+              Icons.history_rounded,
+              size: 16,
+              color: AppColors.textSecondary,
+            ),
             const SizedBox(width: 6),
-            const Text('अलीकडील शोध', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+            const Text(
+              'अलीकडील शोध',
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textSecondary,
+              ),
+            ),
             const Spacer(),
-            TextButton(onPressed: onClear, child: const Text('साफ करा', style: TextStyle(fontSize: 12))),
+            TextButton(
+              onPressed: onClear,
+              child: const Text('साफ करा', style: TextStyle(fontSize: 12)),
+            ),
           ],
         ),
         Wrap(

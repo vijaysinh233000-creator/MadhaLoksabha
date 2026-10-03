@@ -69,8 +69,12 @@ class _UserDashboardView extends StatelessWidget {
                       ],
                       const InstallAppBanner(),
                       const SizedBox(height: 12),
-                      const HeritageStorySection(),
-                      const InstitutionJourneySection(),
+                      if (hasResults)
+                        const _CollapsedHeritage()
+                      else ...[
+                        const HeritageStorySection(),
+                        const InstitutionJourneySection(),
+                      ],
                       const SizedBox(height: 28),
                       if (c.bootLoading)
                         const LoadingIndicator()
@@ -96,4 +100,29 @@ class _UserDashboardView extends StatelessWidget {
       ),
     );
   }
+}
+
+class _CollapsedHeritage extends StatelessWidget {
+  const _CollapsedHeritage();
+
+  @override
+  Widget build(BuildContext context) => AppCard(
+    padding: EdgeInsets.zero,
+    child: ExpansionTile(
+      leading: const Icon(
+        Icons.account_balance_rounded,
+        color: AppColors.heritageBrown,
+      ),
+      title: const Text(
+        'मोहिते-पाटील कार्यप्रवास पहा',
+        style: TextStyle(
+          fontWeight: FontWeight.w800,
+          color: AppColors.navyText,
+        ),
+      ),
+      subtitle: const Text('परिवार आणि संस्थांच्या कार्याची सविस्तर माहिती'),
+      childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 18),
+      children: const [HeritageStorySection(), InstitutionJourneySection()],
+    ),
+  );
 }

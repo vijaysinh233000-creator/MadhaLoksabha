@@ -27,8 +27,9 @@ class PdfViewer {
       mode: LaunchMode.externalApplication,
       webOnlyWindowName: '_blank',
     );
-    if (!ok && context.mounted)
+    if (!ok && context.mounted) {
       showSnack(context, 'PDF उघडता आले नाही', error: true);
+    }
   }
 
   Future<void> download(BuildContext context, String pdfId) async {
@@ -38,8 +39,9 @@ class PdfViewer {
       mode: LaunchMode.externalApplication,
       webOnlyWindowName: '_blank',
     );
-    if (!ok && context.mounted)
+    if (!ok && context.mounted) {
       showSnack(context, 'PDF डाउनलोड करता आले नाही', error: true);
+    }
   }
 
   Future<void> printSlip(BuildContext context, int voterId) async {
@@ -48,8 +50,9 @@ class PdfViewer {
       mode: LaunchMode.externalApplication,
       webOnlyWindowName: '_blank',
     );
-    if (!ok && context.mounted)
+    if (!ok && context.mounted) {
       showSnack(context, 'मतदार स्लिप तयार करता आली नाही', error: true);
+    }
   }
 
   Future<void> preview(

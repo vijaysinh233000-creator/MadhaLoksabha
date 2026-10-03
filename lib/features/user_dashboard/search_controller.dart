@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/models/models.dart';
 import '../../core/services/api_client.dart';
@@ -22,6 +23,7 @@ class VoterSearchController extends ChangeNotifier {
 
   // Search state ----------------------------------------------------------
   String selectedVillage = ''; // '' = all villages
+  String searchField = 'all';
   String query = '';
   SearchResponse? response;
   bool loading = false;
@@ -142,6 +144,16 @@ class VoterSearchController extends ChangeNotifier {
     if (query.trim().isNotEmpty) search(query);
   }
 
+  void selectSearchField(String field) {
+    const allowed = {'all', 'name', 'relative', 'epic'};
+    final next = allowed.contains(field) ? field : 'all';
+    if (searchField == next) return;
+    searchField = next;
+    suggestions = const [];
+    notifyListeners();
+    if (query.trim().isNotEmpty) unawaited(search(query, remember: false));
+  }
+
   void onQueryChanged(String text) {
     query = text;
     _suggestDebounce?.cancel();
@@ -174,7 +186,11 @@ class VoterSearchController extends ChangeNotifier {
         final requested = _queuedSuggestion!;
         _queuedSuggestion = null;
         try {
-          final result = await api.suggest(requested, village: selectedVillage);
+          final result = await api.suggest(
+            requested,
+            village: selectedVillage,
+            field: searchField,
+          );
           if (query == requested) {
             suggestions = result;
             notifyListeners();
@@ -222,11 +238,13 @@ class VoterSearchController extends ChangeNotifier {
       final res = await api.search(
         q,
         village: selectedVillage,
+        field: searchField,
         page: toPage,
         pageSize: pageSize,
       );
       if (seq != _searchSeq) return; // stale
       response = res;
+      if (res.total > 0) unawaited(HapticFeedback.mediumImpact());
       if (remember && toPage == 1) recent = await recentStore.add(q);
     } catch (e) {
       if (seq != _searchSeq) return;
