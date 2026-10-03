@@ -20,6 +20,7 @@ const zoomLevel = document.querySelector('#zoom-level');
 const download = document.querySelector('#download');
 const pageWrap = document.querySelector('#page-wrap');
 const voterHighlight = document.querySelector('#voter-highlight');
+const focusVoter = document.querySelector('#focus-voter');
 
 let pdf = null;
 let pageNumber = requestedPage;
@@ -27,6 +28,7 @@ let zoom = 1;
 let renderTask = null;
 let resizeTimer = null;
 let locator = null;
+let focusMode = false;
 
 function downloadUrl(url) {
   return url.replace('/pdf/view/', '/pdf/download/');
@@ -44,6 +46,9 @@ function updateControls() {
   previous.disabled = !pdf || pageNumber <= 1;
   next.disabled = !pdf || pageNumber >= pdf.numPages;
   zoomLevel.textContent = `${Math.round(zoom * 100)}%`;
+  focusVoter.disabled = !locator?.box || locator.page !== pageNumber;
+  focusVoter.textContent = focusMode ? '▣' : '◎';
+  focusVoter.title = focusMode ? 'संपूर्ण पान पहा' : 'मतदारावर लक्ष केंद्रित करा';
   status.textContent = pdf
     ? `पान ${pageNumber} / ${pdf.numPages}${locator?.name ? ` · शोधलेला मतदार: ${locator.name}` : ''}`
     : 'PDF उघडत आहे…';
@@ -94,8 +99,15 @@ async function render() {
     positionHighlight();
     setLoading(false);
     if (locator?.page === pageNumber) {
-      const target = pageWrap.offsetTop + voterHighlight.offsetTop - stage.clientHeight * .3;
-      stage.scrollTo({ top: Math.max(0, target), left: 0, behavior: 'smooth' });
+      const top = pageWrap.offsetTop + voterHighlight.offsetTop +
+        voterHighlight.offsetHeight / 2 - stage.clientHeight * .42;
+      const left = pageWrap.offsetLeft + voterHighlight.offsetLeft +
+        voterHighlight.offsetWidth / 2 - stage.clientWidth / 2;
+      stage.scrollTo({
+        top: Math.max(0, top),
+        left: Math.max(0, left),
+        behavior: 'smooth',
+      });
     }
   } catch (error) {
     if (error?.name === 'RenderingCancelledException') return;
@@ -116,8 +128,16 @@ previous.addEventListener('click', () => goTo(pageNumber - 1));
 next.addEventListener('click', () => goTo(pageNumber + 1));
 pageInput.addEventListener('change', () => goTo(pageInput.value));
 pageInput.addEventListener('keydown', event => { if (event.key === 'Enter') goTo(pageInput.value); });
-document.querySelector('#zoom-in').addEventListener('click', () => { zoom = Math.min(2.5, zoom + .25); render(); });
-document.querySelector('#zoom-out').addEventListener('click', () => { zoom = Math.max(.5, zoom - .25); render(); });
+document.querySelector('#zoom-in').addEventListener('click', () => { focusMode = false; zoom = Math.min(2.5, zoom + .25); render(); });
+document.querySelector('#zoom-out').addEventListener('click', () => { focusMode = false; zoom = Math.max(.5, zoom - .25); render(); });
+focusVoter.addEventListener('click', () => {
+  if (!locator?.box || locator.page !== pageNumber) return;
+  focusMode = !focusMode;
+  zoom = focusMode
+    ? Math.min(2.5, Math.max(1, .84 / Math.max(locator.box.width, .05)))
+    : 1;
+  render();
+});
 window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(render, 180); });
 
 async function start() {
@@ -129,6 +149,10 @@ async function start() {
     if (response.ok) {
       locator = await response.json();
       pageNumber = Math.max(1, Number(locator.page) || requestedPage);
+      if (locator?.box?.width) {
+        focusMode = true;
+        zoom = Math.min(2.5, Math.max(1, .84 / Math.max(locator.box.width, .05)));
+      }
     }
   }
   const loadingTask = pdfjsLib.getDocument({ url: fileUrl, rangeChunkSize: 262144 });

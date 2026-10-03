@@ -22,17 +22,45 @@ class _ResultsSectionState extends State<ResultsSection> {
   final Map<int, VoterResult> _selected = {};
 
   void _toggle(VoterResult voter, bool selected) {
+    if (selected && _selected.length >= 10) {
+      showSnack(context, 'एकावेळी जास्तीत जास्त १० मतदार निवडा.');
+      return;
+    }
     setState(() {
       if (selected) {
-        if (_selected.length >= 10) {
-          showSnack(context, 'एकावेळी जास्तीत जास्त १० मतदार निवडा.');
-          return;
-        }
         _selected[voter.id] = voter;
       } else {
         _selected.remove(voter.id);
       }
     });
+  }
+
+  String _matchReason(
+    VoterResult voter,
+    Map<String, dynamic> parsed,
+    bool relaxed,
+  ) {
+    String clean(Object? value) => (value?.toString() ?? '')
+        .toLowerCase()
+        .replaceAll(RegExp(r'[\s\-_]+'), '');
+    final epic = clean(parsed['epic']);
+    final relation = clean(parsed['relation_name']);
+    final name = clean(parsed['name']);
+    if (epic.isNotEmpty && clean(voter.epic) == epic) {
+      return 'मतदार ओळखपत्राशी अचूक जुळले';
+    }
+    if (relation.isNotEmpty && clean(voter.relationName).contains(relation)) {
+      return 'वडील / पतीच्या नावाशी जुळले';
+    }
+    if ((parsed['transliterated'] as String? ?? '').isNotEmpty) {
+      return 'इंग्रजी नावावरून मराठी निकाल सापडला';
+    }
+    if (name.isNotEmpty && clean(voter.name).contains(name)) {
+      return 'मतदाराच्या नावाशी अचूक जुळले';
+    }
+    return relaxed
+        ? 'स्पेलिंगच्या जवळच्या पर्यायातून सापडले'
+        : 'शोधाशी जुळणारा मतदार';
   }
 
   Future<void> _shareSelected() async {
@@ -121,6 +149,24 @@ class _ResultsSectionState extends State<ResultsSection> {
                     style: const TextStyle(
                       color: AppColors.greenDark,
                       fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(
+                    '${(r.tookMs / 1000).toStringAsFixed(1)} सेकंदात',
+                    style: const TextStyle(
+                      color: AppColors.greenDark,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
@@ -232,6 +278,7 @@ class _ResultsSectionState extends State<ResultsSection> {
                   ResultCard(
                     result: r.results[i],
                     rank: (r.page - 1) * r.pageSize + i + 1,
+                    matchReason: _matchReason(r.results[i], parsed, r.relaxed),
                     selected: _selected.containsKey(r.results[i].id),
                     onSelected: (value) => _toggle(r.results[i], value),
                   ),
@@ -674,12 +721,14 @@ class ResultCard extends StatelessWidget {
   const ResultCard({
     required this.result,
     required this.rank,
+    required this.matchReason,
     required this.selected,
     required this.onSelected,
     super.key,
   });
   final VoterResult result;
   final int rank;
+  final String matchReason;
   final bool selected;
   final ValueChanged<bool> onSelected;
 
@@ -753,6 +802,28 @@ class ResultCard extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.verified_rounded,
+                                      size: 14,
+                                      color: AppColors.green,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Flexible(
+                                      child: Text(
+                                        matchReason,
+                                        style: const TextStyle(
+                                          color: AppColors.greenDark,
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
