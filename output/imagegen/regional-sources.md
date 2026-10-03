@@ -2,6 +2,16 @@
 
 Reviewed 2026-10-04.
 
+## Updated visual direction
+
+User subsequently requested the generated reference visual style, without real photos, retaining Krishna–Bhima and changing the journey to Akluj–Mumbai–Delhi. The regional section now uses `assets/images/regional_journey.png` and `assets/images/regional_water.png`, generated with built-in imagegen from reference `exec-868e3e4f-3852-4643-906d-779fb0e1f05d.png`.
+
+Journey prompt: clean full-bleed cinematic forest-green landscape, symbolic Akluj/Mumbai/Delhi architecture joined by gold paths, dark left-side text space, no lettering or device frames, realistic illustrated terrain, no surveyed boundaries.
+
+Water prompt: match reference irrigation panel, reservoir/dam/fields and blue conceptual water route, dark left-side text space, no lettering or device frames; symbolic envisioned irrigation rather than a completed project photograph.
+
+These visuals are labelled AI concept illustrations in the UI. The earlier campus image and AI restoration are not used by this section. The historical research below remains as provenance; no new current project-status claim is introduced.
+
 - Original campus image: https://www.smsmpitr.edu.in/images/college-image.png
 - Institution identity and description: https://www.smsmpitr.edu.in/
 - Krishna–Bhima historical proposal: Lok Sabha question 3836, answered 18 March 2021, https://sansad.in/getFile/loksabhaquestions/annex/175/AU3836.pdf?source=pqals

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'heritage_motion.dart';
+
+const _gold = Color(0xFFE9C779);
+const _ink = Color(0xFF061E27);
 
 class RegionalStorySection extends StatelessWidget {
   const RegionalStorySection({super.key});
@@ -8,151 +10,246 @@ class RegionalStorySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(top: 28),
-    child: Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF102C25),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: const EdgeInsets.all(20),
-      child: DefaultTextStyle(
-        style: const TextStyle(
-          fontFamily: 'NotoSansDevanagari',
-          color: Color(0xFFE1EAE5),
-          fontSize: 14,
-          height: 1.65,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const _Title('अकलूज ते माढा'),
-            const Text('संस्था, पाणी आणि लोकप्रतिनिधित्व'),
-            const SizedBox(height: 22),
-            HeritageMotion(
-              enableTilt: false,
-              child: Image.asset(
-                'assets/images/regional_college_reference.png',
-                width: double.infinity,
-                fit: BoxFit.contain,
-                semanticLabel:
-                    'SMSMPITR, शंकरनगर-अकलूजचे अधिकृत प्रवेशद्वार छायाचित्र',
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: ColoredBox(
+        color: _ink,
+        child: DefaultTextStyle(
+          style: const TextStyle(
+            fontFamily: 'NotoSansDevanagari',
+            color: Colors.white,
+            height: 1.5,
+            fontSize: 14,
+          ),
+          child: Column(
+            children: [
+              _Scene(
+                asset: 'assets/images/regional_journey.png',
+                title: 'अकलूज → मुंबई → दिल्ली',
+                subtitle: 'विकास आणि नेतृत्वाचा प्रवास',
+                description:
+                    'सहकार आणि स्थानिक नेतृत्वापासून राज्याच्या विधिमंडळापर्यंत, लोकसभा आणि राज्यसभेपर्यंतचा सार्वजनिक प्रवास.',
+                child: const _JourneyStops(),
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'SMSMPITR, शंकरनगर-अकलूज • अधिकृत वेबसाइटवरील मूळ छायाचित्र',
-              style: TextStyle(fontSize: 11, color: Colors.white70),
-            ),
-            const SizedBox(height: 16),
-            const _Title('अकलूजचे शैक्षणिक कार्यविश्व'),
-            const Text(
-              'सहकार महर्षी शंकरराव मोहिते-पाटील इन्स्टिट्यूट ऑफ टेक्नॉलॉजी अँड रिसर्च ग्रामीण विद्यार्थ्यांना अभियांत्रिकी शिक्षण उपलब्ध करून देते. संस्था शंकरराव मोहिते-पाटील चॅरिटेबल हॉस्पिटल ट्रस्ट अंतर्गत कार्यरत आहे.',
-            ),
-            const _Reference(
-              'संस्थेची अधिकृत माहिती',
-              'https://www.smsmpitr.edu.in/',
-            ),
-            const Divider(height: 40, color: Colors.white24),
-            const _Title('कृष्णा–भीमा स्थिरीकरण'),
-            const Text(
-              '१८ मार्च २०२१ रोजी लोकसभेत दिलेल्या जलशक्ती मंत्रालयाच्या उत्तरानुसार, महाराष्ट्राने वरच्या कृष्णा उपखोऱ्यातील पूरपाणी गुरुत्वाकर्षणाने विविध जोडमार्गांतून वळवण्याची कृष्णा–भीमा स्थिरीकरण संकल्पना मांडली होती. राष्ट्रीय जलविकास अभिकरणाने पूर्वव्यवहार्यता अहवाल तयार करून २०११ मध्ये राज्य शासनाला पाठवला होता.',
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'ही दिनांकित ऐतिहासिक नोंद आहे; प्रकल्प पूर्ण झाल्याचा किंवा आजच्या मंजुरीस्थितीचा दावा नाही.',
-              style: TextStyle(fontSize: 12, color: Colors.white70),
-            ),
-            const _Reference(
-              'लोकसभेतील अधिकृत उत्तर · १८ मार्च २०२१',
-              'https://sansad.in/getFile/loksabhaquestions/annex/175/AU3836.pdf?source=pqals',
-            ),
-            const Divider(height: 40, color: Colors.white24),
-            const _Title('माढा लोकसभा मतदारसंघ'),
-            const Text('सोलापूर आणि सातारा जिल्ह्यांतील सहा विधानसभा क्षेत्रे'),
-            const SizedBox(height: 12),
-            LayoutBuilder(
-              builder: (context, constraints) => Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final name in [
-                    'करमाळा',
-                    'माढा',
-                    'सांगोला',
-                    'माळशिरस',
-                    'फलटण',
-                    'माण',
-                  ])
-                    Container(
-                      width: (constraints.maxWidth - 8) / 2,
-                      padding: const EdgeInsets.all(12),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: Colors.white24),
-                        ),
-                      ),
-                      child: Text(
-                        name,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+              const Divider(height: 1, color: Color(0x668EAB9A)),
+              _Scene(
+                asset: 'assets/images/regional_water.png',
+                title: 'कृष्णा–भीमा स्थिरीकरण',
+                subtitle: 'पाण्याचा प्रत्येक थेंब भविष्याशी जोडलेला',
+                description:
+                    'कृष्णा खोऱ्यातील अतिरिक्त पाणी दुष्काळी भागाकडे वळवण्याची जलसंकल्पना. पाणी, शेती आणि ग्रामीण भविष्याचा महत्त्वाचा विषय.',
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: _gold,
+                      side: const BorderSide(color: _gold),
+                    ),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed('/sector/water'),
+                    child: const Text('पाणी व सिंचनाचा प्रवास वाचा →'),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'माढा लोकसभा — सहा विधानसभा क्षेत्रे',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                ],
+                    const SizedBox(height: 14),
+                    LayoutBuilder(
+                      builder: (context, c) {
+                        final columns = c.maxWidth >= 800 ? 6 : 2;
+                        return Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            for (final name in [
+                              'करमाळा',
+                              'माढा',
+                              'सांगोला',
+                              'माळशिरस',
+                              'फलटण',
+                              'माण',
+                            ])
+                              Container(
+                                width:
+                                    (c.maxWidth - (columns - 1) * 10) / columns,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                  horizontal: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF164739), _ink],
+                                  ),
+                                  border: Border.all(
+                                    color: const Color(0x668EAC8F),
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  name,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: _gold,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'AI संकल्पचित्रे • प्रवास व जलसंकल्पनेचे प्रतीकात्मक दृश्य; वास्तविक भूसीमा किंवा पूर्ण झालेल्या प्रकल्पाचा नकाशा नाही.',
+                      style: TextStyle(fontSize: 10, color: Colors.white60),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _Scene extends StatelessWidget {
+  const _Scene({
+    required this.asset,
+    required this.title,
+    required this.subtitle,
+    required this.description,
+    required this.child,
+  });
+  final String asset, title, subtitle, description;
+  final Widget child;
+
+  Widget _copy(bool compact) => Padding(
+    padding: EdgeInsets.all(compact ? 20 : 32),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: compact ? 27 : 34,
+            height: 1.25,
+            fontWeight: FontWeight.w900,
+            color: _gold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: compact ? 18 : 21,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFFF2DCA6),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(description, style: const TextStyle(color: Color(0xFFE4ECE8))),
+        const SizedBox(height: 20),
+        child,
+      ],
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) => HeritageMotion(
+    enableTilt: false,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 800;
+        if (compact) {
+          return Column(
+            children: [
+              _copy(true),
+              Image.asset(
+                asset,
+                width: double.infinity,
+                fit: BoxFit.contain,
+                excludeFromSemantics: true,
+              ),
+            ],
+          );
+        }
+        return Stack(
+          alignment: Alignment.centerLeft,
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                asset,
+                fit: BoxFit.cover,
+                excludeFromSemantics: true,
               ),
             ),
-            const _Reference(
-              'जिल्हा निवडणूक शाखा · मतदारसंघाची माहिती',
-              'https://solapur.gov.in/en/election-branch/',
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xF5061E27),
+                      const Color(0xB3061E27),
+                      Colors.transparent,
+                    ],
+                    stops: const [0, .34, .72],
+                  ),
+                ),
+              ),
+            ),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 440),
+              child: SizedBox(
+                width: constraints.maxWidth * .48,
+                child: _copy(false),
+              ),
             ),
           ],
-        ),
-      ),
-    ),
-  );
-}
-
-class _Title extends StatelessWidget {
-  const _Title(this.text);
-  final String text;
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 8),
-    child: Text(
-      text,
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w800,
-        color: Colors.white,
-      ),
-    ),
-  );
-}
-
-class _Reference extends StatelessWidget {
-  const _Reference(this.label, this.url);
-  final String label;
-  final String url;
-  @override
-  Widget build(BuildContext context) => TextButton(
-    style: TextButton.styleFrom(foregroundColor: const Color(0xFFDFCA91)),
-    onPressed: () async {
-      try {
-        final opened = await launchUrl(
-          Uri.parse(url),
-          mode: LaunchMode.externalApplication,
         );
-        if (!opened && context.mounted) _failed(context);
-      } catch (_) {
-        if (context.mounted) _failed(context);
-      }
-    },
-    child: Text(
-      label,
-      style: const TextStyle(fontFamily: 'NotoSansDevanagari', fontSize: 12),
+      },
     ),
   );
-  void _failed(BuildContext context) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('संदर्भ उघडता आला नाही. पुन्हा प्रयत्न करा.'),
-        ),
-      );
+}
+
+class _JourneyStops extends StatelessWidget {
+  const _JourneyStops();
+  @override
+  Widget build(BuildContext context) => const Wrap(
+    spacing: 14,
+    runSpacing: 10,
+    children: [
+      _Stop('अकलूज', 'सहकार व लोकसेवा'),
+      _Stop('मुंबई', 'विधिमंडळ व मंत्रिपदे'),
+      _Stop('दिल्ली', 'लोकसभा व राज्यसभा'),
+    ],
+  );
+}
+
+class _Stop extends StatelessWidget {
+  const _Stop(this.name, this.office);
+  final String name, office;
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        name,
+        style: const TextStyle(color: _gold, fontWeight: FontWeight.w900),
+      ),
+      Text(office, style: const TextStyle(fontSize: 10, color: Colors.white70)),
+    ],
+  );
 }

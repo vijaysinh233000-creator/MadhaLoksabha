@@ -26,7 +26,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      expect(find.text('अकलूज ते माढा'), findsOneWidget);
+      expect(find.text('अकलूज → मुंबई → दिल्ली'), findsOneWidget);
       expect(find.text('कृष्णा–भीमा स्थिरीकरण'), findsOneWidget);
     });
   }
