@@ -64,7 +64,16 @@ createServer((req, res) => {
     res.writeHead(403).end();
     return;
   }
+  const requestedPath = urlPath === "/" ? "" : urlPath;
+  const hasFileExtension = extname(requestedPath) !== "";
   if (!existsSync(file) || statSync(file).isDirectory()) {
+    // Only application routes should fall back to Flutter's shell. Returning
+    // index.html for a missing JavaScript or font asset causes the browser to
+    // report `Unexpected token '<'` when it tries to parse the HTML as code.
+    if (hasFileExtension) {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" }).end("Not found");
+      return;
+    }
     file = join(root, "index.html");
   }
   if (!existsSync(file)) {
