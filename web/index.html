@@ -345,6 +345,46 @@
         return false;
       }
     };
+
+    window.shareDuplicateVoterList = async (title, groupsJson) => {
+      try {
+        const groups = JSON.parse(groupsJson);
+        if (!Array.isArray(groups) || !groups.length) return false;
+        const value = (input) => String(input || '').trim() || '—';
+        const verification = {
+          confirmed: 'पुष्टी झालेली जुळणी',
+          strong_match: 'मजबूत जुळणी',
+          manual_review: 'प्रत्यक्ष पडताळणी आवश्यक',
+        };
+        const lines = [title, `एकूण गट: ${groups.length}`, ''];
+        groups.forEach((group, groupIndex) => {
+          lines.push(`${groupIndex + 1}. ${value(group.label)} — ${verification[group.verification] || verification.manual_review}`);
+          if (group.relationLabel) lines.push(`नातेवाईक: ${group.relationLabel}`);
+          (group.records || []).forEach((voter, voterIndex) => {
+            lines.push(
+              `  ${voterIndex + 1}) नाव: ${value(voter.name)}`,
+              `     नातेवाईक: ${value(voter.relationName)}`,
+              `     गाव: ${value(voter.village)} | भाग: ${value(voter.part)} | अनुक्रमांक: ${value(voter.serial)}`,
+              `     EPIC: ${value(voter.epic)} | घर: ${value(voter.house)} | वय: ${value(voter.age)} | लिंग: ${value(voter.gender)}`,
+              `     PDF: ${value(voter.pdfName)} | पान: ${value(voter.page)}`,
+            );
+          });
+          lines.push('');
+        });
+        lines.push('https://independent-voter.madhaloksabha.workers.dev/');
+        const text = lines.join('\n');
+        if (navigator.share) {
+          await navigator.share({title, text});
+          return true;
+        }
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+        return true;
+      } catch (error) {
+        if (error && error.name === 'AbortError') return true;
+        console.error('Duplicate voter list sharing failed', error);
+        return false;
+      }
+    };
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

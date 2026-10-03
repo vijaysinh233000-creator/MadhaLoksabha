@@ -95,6 +95,11 @@ class DuplicateRecord {
   final String relationName;
   final String epic;
   final String serial;
+  final String relationType;
+  final String part;
+  final String house;
+  final String age;
+  final String gender;
   final int page;
   final String village;
   final String pdf;
@@ -106,6 +111,11 @@ class DuplicateRecord {
     required this.relationName,
     required this.epic,
     required this.serial,
+    required this.relationType,
+    required this.part,
+    required this.house,
+    required this.age,
+    required this.gender,
     required this.page,
     required this.village,
     required this.pdf,
@@ -118,6 +128,11 @@ class DuplicateRecord {
     relationName: j['relation_name'] as String? ?? '',
     epic: j['epic'] as String? ?? '',
     serial: j['serial'] as String? ?? '',
+    relationType: j['relation_type'] as String? ?? '',
+    part: j['part'] as String? ?? '',
+    house: j['house'] as String? ?? '',
+    age: j['age']?.toString() ?? '',
+    gender: j['gender'] as String? ?? '',
     page: (j['page'] as num?)?.toInt() ?? 1,
     village: j['village'] as String? ?? '',
     pdf: j['pdf'] as String? ?? '',
@@ -129,12 +144,16 @@ class DuplicateGroup {
   final String key;
   final String label;
   final String relationLabel;
+  final String verification;
+  final List<String> reasons;
   final List<DuplicateRecord> records;
 
   const DuplicateGroup({
     required this.key,
     required this.label,
     required this.relationLabel,
+    required this.verification,
+    required this.reasons,
     required this.records,
   });
 
@@ -142,6 +161,8 @@ class DuplicateGroup {
     key: j['key'] as String? ?? '',
     label: j['label'] as String? ?? '',
     relationLabel: j['relation_label'] as String? ?? '',
+    verification: j['verification'] as String? ?? 'manual_review',
+    reasons: ((j['reasons'] as List?) ?? const []).map((e) => '$e').toList(),
     records: ((j['records'] as List?) ?? const [])
         .map((e) => DuplicateRecord.fromJson(e as Map<String, dynamic>))
         .toList(),
@@ -154,6 +175,8 @@ class DuplicateOverview {
   final List<DuplicateGroup> sameRelativeAcrossVillages;
   final List<DuplicateGroup> differentRelativeAcrossVillages;
   final bool crossVillageSetupRequired;
+  final String verifiedAt;
+  final String latestIndexedAt;
 
   const DuplicateOverview({
     required this.epic,
@@ -161,6 +184,8 @@ class DuplicateOverview {
     required this.sameRelativeAcrossVillages,
     required this.differentRelativeAcrossVillages,
     required this.crossVillageSetupRequired,
+    required this.verifiedAt,
+    required this.latestIndexedAt,
   });
 
   factory DuplicateOverview.fromJson(Map<String, dynamic> j) =>
@@ -179,6 +204,8 @@ class DuplicateOverview {
                 .map((e) => DuplicateGroup.fromJson(e as Map<String, dynamic>))
                 .toList(),
         crossVillageSetupRequired: j['setup_required'] == true,
+        verifiedAt: j['verified_at'] as String? ?? '',
+        latestIndexedAt: j['latest_indexed_at'] as String? ?? '',
       );
 }
 

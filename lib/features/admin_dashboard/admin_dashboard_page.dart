@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/models/models.dart';
 import '../../core/services/api_client.dart';
+import '../../core/services/voter_share.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/common_widgets.dart';
 import '../pdf_viewer/pdf_viewer.dart';
@@ -81,6 +82,20 @@ class _AdminViewState extends State<_AdminView> {
     if (_showDuplicates) {
       setState(
         () => _duplicatesFuture = context.read<ApiClient>().adminDuplicates(),
+      );
+    }
+  }
+
+  Future<void> _shareDuplicateList(
+    String title,
+    List<DuplicateGroup> groups,
+  ) async {
+    final shared = await shareDuplicateGroups(title, groups);
+    if (!shared && mounted) {
+      showSnack(
+        context,
+        'Could not open sharing for this duplicate list.',
+        error: true,
       );
     }
   }
@@ -464,10 +479,49 @@ class _AdminViewState extends State<_AdminView> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    '${groups.length} matching groups · $records voter records',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 10,
+                    runSpacing: 8,
+                    children: [
+                      Text(
+                        '${groups.length} matching groups · $records voter records',
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      Wrap(
+                        spacing: 6,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _selectDuplicates,
+                            icon: const Icon(Icons.verified_rounded, size: 18),
+                            label: const Text('Verify latest index'),
+                          ),
+                          FilledButton.icon(
+                            onPressed: groups.isEmpty
+                                ? null
+                                : () => _shareDuplicateList(
+                                    'Duplicate voter review',
+                                    groups,
+                                  ),
+                            icon: const Icon(Icons.share_rounded, size: 18),
+                            label: const Text('Share full list'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
+                  if (overview.verifiedAt.isNotEmpty) ...[
+                    const SizedBox(height: 5),
+                    Text(
+                      'Re-verified from current ready PDFs: '
+                      '${overview.verifiedAt.replaceFirst('T', ' ').replaceFirst('Z', ' UTC')}',
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
                   if (_duplicateSection == 2) ...[
                     const SizedBox(height: 4),
                     Text(
@@ -513,12 +567,32 @@ class _AdminViewState extends State<_AdminView> {
                     '${group.records.length} possible matches',
         ),
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: Row(
+              children: [
+                _verificationBadge(group.verification),
+                const Spacer(),
+                TextButton.icon(
+                  onPressed: () => _shareDuplicateList(
+                    'Duplicate voter group: ${group.label}',
+                    [group],
+                  ),
+                  icon: const Icon(Icons.share_rounded, size: 18),
+                  label: const Text('Share all details'),
+                ),
+              ],
+            ),
+          ),
           for (final record in group.records)
             ListTile(
               isThreeLine: true,
               title: Text(record.name),
               subtitle: Text(
-                '${record.relationName}\n${record.village} · EPIC ${record.epic.isEmpty ? "—" : record.epic} · Serial ${record.serial.isEmpty ? "—" : record.serial}\n${record.pdfName} · Page ${record.page}',
+                '${record.relationName}\n'
+                '${record.village} · Part ${record.part.isEmpty ? "—" : record.part} · Serial ${record.serial.isEmpty ? "—" : record.serial}\n'
+                'EPIC ${record.epic.isEmpty ? "—" : record.epic} · House ${record.house.isEmpty ? "—" : record.house} · Age ${record.age.isEmpty ? "—" : record.age} · ${record.gender.isEmpty ? "Gender —" : record.gender}\n'
+                '${record.pdfName} · Page ${record.page}',
               ),
               trailing: IconButton(
                 tooltip: 'Open PDF at this voter',
@@ -531,6 +605,45 @@ class _AdminViewState extends State<_AdminView> {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _verificationBadge(String verification) {
+    final (label, color, icon) = switch (verification) {
+      'confirmed' => (
+        'Confirmed duplicate',
+        AppColors.danger,
+        Icons.verified_rounded,
+      ),
+      'strong_match' => (
+        'Strong match',
+        AppColors.heritageGold,
+        Icons.rule_rounded,
+      ),
+      _ => (
+        'Manual review',
+        AppColors.textSecondary,
+        Icons.fact_check_outlined,
+      ),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: color),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(color: color, fontWeight: FontWeight.w700),
+          ),
         ],
       ),
     );
