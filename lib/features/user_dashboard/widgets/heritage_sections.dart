@@ -37,7 +37,7 @@ class _FamilyTree extends StatelessWidget {
             slug: 'shankarrao',
             name: 'सहकार महर्षी शंकरराव मोहिते-पाटील',
             role: 'सहकार आणि लोकसेवेच्या वारशाचे शिल्पकार',
-            highestPosition: 'विधानसभा सदस्य (आमदार)',
+            highestPosition: 'माजी विधानसभा सदस्य (आमदार)',
             highestPeriod: '१९५२–१९७७ · सलग २५ वर्षे',
             institutions: ['सहकार महर्षी साखर कारखाना', 'शिक्षण प्रसारक मंडळ'],
             image: 'assets/images/shankarrao_mohite_patil.jpg',
@@ -56,8 +56,9 @@ class _FamilyTree extends StatelessWidget {
                 slug: 'vijaysinh',
                 name: 'विजयसिंह मोहिते-पाटील',
                 role: 'राज्य व प्रादेशिक सार्वजनिक जीवन',
-                highestPosition: 'उपमुख्यमंत्री, महाराष्ट्र राज्य',
-                highestPeriod: '२००३–२००४',
+                highestPosition:
+                    'माजी उपमुख्यमंत्री, महाराष्ट्र राज्य\nमाजी कॅबिनेट मंत्री — PWD, पर्यटन, क्रीडा व जलसंपदा\nमाजी खासदार — माढा लोकसभा\nमाजी आमदार — माळशिरस विधानसभा',
+                highestPeriod: 'माजी अध्यक्ष, सोलापूर जिल्हा परिषद · १९७१–१९७९',
                 institutions: ['सिंचन', 'शिक्षण', 'सहकार'],
                 image: 'assets/images/vijaysinh_mohite_patil.jpg',
               ),
@@ -85,8 +86,10 @@ class _FamilyTree extends StatelessWidget {
                 slug: 'ranjitsinh',
                 name: 'रणजितसिंह मोहिते-पाटील',
                 role: 'युवा नेतृत्व आणि सहकार',
-                highestPosition: 'खासदार, राज्यसभा',
-                highestPeriod: '२००९–२०१२',
+                highestPosition:
+                    'माजी खासदार — राज्यसभा\nमाजी आमदार — महाराष्ट्र विधान परिषद',
+                highestPeriod:
+                    'राज्यसभा २००९–२०१२ · विधान परिषद २००४–२००९, २०२०–२०२६',
                 institutions: ['DCC बँक', 'युवा संघटन'],
                 image: 'assets/images/ranjitsinh_mohite_patil.jpg',
                 featured: true,
@@ -98,7 +101,7 @@ class _FamilyTree extends StatelessWidget {
                 slug: 'dhairyasheel',
                 name: 'धैर्यशील (भैयासाहेब) मोहिते-पाटील',
                 role: 'माढा लोकसभा मतदारसंघाचे प्रतिनिधित्व',
-                highestPosition: 'खासदार, लोकसभा',
+                highestPosition: 'खासदार — माढा लोकसभा मतदारसंघ',
                 highestPeriod: '२०२४ पासून विद्यमान',
                 institutions: ['शिवमृत दूध संघ', 'शिवरत्न शिक्षण संस्था'],
                 image: 'assets/images/dhairyashil_mohite_patil.jpg',
@@ -253,7 +256,7 @@ class _Person extends StatelessWidget {
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 700;
     return SizedBox(
-      height: compact ? 405 : 430,
+      height: compact ? 465 : 490,
       child: HeritageMotion(
         child: Semantics(
           button: true,
@@ -421,37 +424,15 @@ class _PersonCopy extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.workspace_premium_rounded,
-                  size: compact ? 13 : 16,
-                  color: AppColors.heritageBrown,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'सर्वोच्च पद',
-                  style: TextStyle(
-                    fontFamily: 'NotoSansDevanagari',
-                    fontSize: compact ? 9 : 11,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.heritageBrown,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 3),
             Text(
               highestPosition,
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 7,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontFamily: 'NotoSansDevanagari',
-                fontSize: compact ? 10 : 13,
-                height: 1.25,
+                fontSize: compact ? 9.5 : 12.5,
+                height: 1.35,
                 fontWeight: FontWeight.w900,
                 color: AppColors.navyText,
               ),
