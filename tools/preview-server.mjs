@@ -3,9 +3,10 @@
 import { createServer } from "node:http";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { spawn } from "node:child_process";
-import { extname, join, normalize } from "node:path";
+import { dirname, extname, join, normalize } from "node:path";
 
-const root = join(process.cwd(), "build", "web");
+const projectRoot = dirname(dirname(new URL(import.meta.url).pathname));
+const root = join(projectRoot, "build", "web");
 const sdkDir = "/vercel/share/flutter-sdk";
 const flutterBin = join(sdkDir, "bin", "flutter");
 const requiredBuildFiles = ["index.html", "flutter_bootstrap.js", "main.dart.js"];
