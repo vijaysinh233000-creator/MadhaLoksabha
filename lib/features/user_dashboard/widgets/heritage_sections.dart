@@ -27,8 +27,11 @@ class HeritageStorySection extends StatelessWidget {
   );
 }
 
-class _ImpactAtlas extends StatelessWidget {
+class _ImpactAtlas extends StatefulWidget {
   const _ImpactAtlas();
+
+  @override
+  State<_ImpactAtlas> createState() => _ImpactAtlasState();
 
   static const _domains = <({IconData icon, String title, String detail, Color color})>[
     (icon: Icons.water_drop_rounded, title: 'कृष्णा–भीमा', detail: 'उजनी, सिंचन आणि नदी-जोडणीची जीवनरेषा', color: Color(0xFF66D9FF)),
@@ -37,11 +40,23 @@ class _ImpactAtlas extends StatelessWidget {
     (icon: Icons.alt_route_rounded, title: 'जोडणारे रस्ते', detail: 'गाव, बाजार आणि संधी जोडणारी वाहतूक', color: Color(0xFFFFA07A)),
     (icon: Icons.sports_martial_arts_rounded, title: 'मातीचा खेळ', detail: 'कुस्ती, कला आणि क्रीडेतून घडणारी ओळख', color: Color(0xFFC9A7FF)),
   ];
+}
+
+class _ImpactAtlasState extends State<_ImpactAtlas> with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
 
   @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    height: 430,
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: _pulse,
+    builder: (context, _) => Container(
+      width: double.infinity,
+      height: 430,
     clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
       gradient: const LinearGradient(colors: [Color(0xFF061522), Color(0xFF102D36), Color(0xFF173F35)], begin: Alignment.topLeft, end: Alignment.bottomRight),
@@ -49,7 +64,7 @@ class _ImpactAtlas extends StatelessWidget {
       boxShadow: const [BoxShadow(color: Color(0x44072D26), blurRadius: 30, offset: Offset(0, 16))],
     ),
     child: Stack(children: [
-      Positioned.fill(child: CustomPaint(painter: _AtlasPainter())),
+      Positioned.fill(child: CustomPaint(painter: _AtlasPainter(phase: _pulse.value))),
       const Positioned(top: 18, left: 20, child: Text('MADHA / A LIVING LANDSCAPE', style: TextStyle(color: Color(0xFF9BC9BD), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.8))),
       const Positioned(top: 42, left: 20, child: Text('पाण्यापासून प्रगतीपर्यंत', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w900, height: 1.1))),
       const Positioned(top: 76, left: 20, right: 22, child: Text('कृष्णा–भीमा खोरे • उजनी • शेतमाती • ज्ञान • खेळ', style: TextStyle(color: Color(0xC8FFFFFF), fontSize: 12, height: 1.3))),
@@ -67,7 +82,8 @@ class _ImpactAtlas extends StatelessWidget {
         Text('एक मतदारसंघ. अनेक शक्यता.', style: TextStyle(color: Color(0xFFD9F4E5), fontSize: 11, fontWeight: FontWeight.w800)),
       ])),
     ]),
-  );
+      ),
+    );
 }
 
 class _LivingChapters extends StatelessWidget {
@@ -168,17 +184,32 @@ class _OrbitNode extends StatelessWidget {
 }
 
 class _AtlasPainter extends CustomPainter {
+  const _AtlasPainter({required this.phase});
+  final double phase;
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width * .5, size.height * .59);
     final radius = size.width < 500 ? size.width * .29 : 145.0;
     final paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x447BD6C2);
     for (final r in [radius * .55, radius, radius * 1.45]) canvas.drawCircle(center, r, paint);
+    final river = Path()
+      ..moveTo(size.width * .04, size.height * .76)
+      ..cubicTo(size.width * .22, size.height * (.54 + phase * .04), size.width * .38, size.height * (.82 - phase * .05), size.width * .55, size.height * .68)
+      ..cubicTo(size.width * .72, size.height * (.54 + phase * .03), size.width * .83, size.height * .75, size.width * 1.02, size.height * .58);
+    final riverPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.5
+      ..strokeCap = StrokeCap.round
+      ..color = const Color(0xAA67D9F0);
+    canvas.drawPath(river, riverPaint);
+    final glow = Paint()..color = const Color(0x2267D9F0)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+    canvas.drawPath(river, glow..style = PaintingStyle.stroke..strokeWidth = 12);
     final dot = Paint()..style = PaintingStyle.fill..color = const Color(0x667BD6C2);
     for (var i = 0; i < 30; i++) canvas.drawCircle(Offset((i * 83.0) % size.width, 110 + ((i * 47.0) % (size.height - 120))), i % 3 == 0 ? 1.5 : .7, dot);
   }
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _AtlasPainter oldDelegate) => oldDelegate.phase != phase;
 }
 
 class _DomainPill extends StatelessWidget {
