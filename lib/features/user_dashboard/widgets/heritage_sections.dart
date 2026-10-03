@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -27,61 +29,79 @@ class _ImpactAtlas extends StatelessWidget {
   const _ImpactAtlas();
 
   static const _domains = <({IconData icon, String title, String detail, Color color})>[
-    (icon: Icons.water_drop_rounded, title: 'पाणी आणि सिंचन', detail: 'कृष्णा–भीमा खोऱ्यातील जलसंधारण, सिंचन आणि ग्रामीण पाणीप्रश्न', color: Color(0xFF1976A8)),
-    (icon: Icons.agriculture_rounded, title: 'शेती आणि सहकार', detail: 'ऊस, शेतकरी, दूध आणि सहकारी संस्थांना जोडणारे स्थानिक अर्थविश्व', color: Color(0xFF2F7D4B)),
-    (icon: Icons.factory_rounded, title: 'साखर उद्योग', detail: 'सहकारातून रोजगार, उत्पादन आणि गावांच्या अर्थव्यवस्थेला आधार', color: Color(0xFFB7791F)),
-    (icon: Icons.school_rounded, title: 'शाळा आणि महाविद्यालये', detail: 'अकलूज परिसरातील शिक्षण संस्था, कौशल्य आणि पुढच्या पिढीची वाट', color: Color(0xFF6D4AA2)),
-    (icon: Icons.sports_martial_arts_rounded, title: 'कुस्ती, कला आणि क्रीडा', detail: 'मातीशी जोडलेली कुस्ती, लेझीम, कला आणि तरुणांच्या मैदानाला व्यासपीठ', color: Color(0xFFC34E38)),
+    (icon: Icons.water_drop_rounded, title: 'जलविश्व', detail: 'कृष्णा–भीमा खोऱ्यातील जलसंधारण आणि सिंचन', color: Color(0xFF55C8F2)),
+    (icon: Icons.agriculture_rounded, title: 'शेतमाती', detail: 'ऊस, शेतकरी, दूध आणि सहकार', color: Color(0xFF8ED081)),
+    (icon: Icons.factory_rounded, title: 'सहकार', detail: 'साखर उद्योग, रोजगार आणि ग्रामविकास', color: Color(0xFFFFD166)),
+    (icon: Icons.school_rounded, title: 'ज्ञानदीप', detail: 'शाळा, महाविद्यालये आणि कौशल्य', color: Color(0xFFC9A7FF)),
+    (icon: Icons.sports_martial_arts_rounded, title: 'मातीचा खेळ', detail: 'कुस्ती, कला आणि क्रीडा संस्कृती', color: Color(0xFFFF8A70)),
   ];
 
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,
-    padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+    height: 390,
+    clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
-      gradient: const LinearGradient(
-        colors: [Color(0xFF092C3B), Color(0xFF14543D)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-      borderRadius: BorderRadius.circular(24),
-      boxShadow: const [BoxShadow(color: Color(0x22072D26), blurRadius: 20, offset: Offset(0, 9))],
+      gradient: const LinearGradient(colors: [Color(0xFF071C2C), Color(0xFF103D38)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+      borderRadius: BorderRadius.circular(28),
+      boxShadow: const [BoxShadow(color: Color(0x33072D26), blurRadius: 24, offset: Offset(0, 12))],
     ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    child: Stack(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(9),
-              decoration: BoxDecoration(color: const Color(0x22FFFFFF), borderRadius: BorderRadius.circular(14)),
-              child: const Icon(Icons.explore_rounded, color: Color(0xFFF3C96B), size: 23),
-            ),
-            const SizedBox(width: 11),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('माढ्याची विकासकथा', style: TextStyle(color: Color(0xFFF3C96B), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: .5)),
-                  SizedBox(height: 3),
-                  Text('एक व्यक्ती नाही — एक संपूर्ण परिसंस्था', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, height: 1.15)),
-                  SizedBox(height: 4),
-                  Text('पाणी, माती, शिक्षण, सहकार आणि संस्कृती यांना एकत्र पाहण्याचा नवा नकाशा.', style: TextStyle(color: Color(0xD9FFFFFF), fontSize: 12, height: 1.35)),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [for (final domain in _domains) _DomainPill(domain: domain)],
-        ),
+        Positioned.fill(child: CustomPaint(painter: _AtlasPainter())),
+        const Positioned(top: 20, left: 18, child: Text('MĀḌHĀ / LIVING ATLAS', style: TextStyle(color: Color(0xFF9BC9BD), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.8))),
+        const Positioned(top: 43, left: 18, right: 18, child: Text('माढ्याची विकासकथा', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w900, height: 1.1))),
+        const Positioned(top: 76, left: 18, right: 80, child: Text('पाणी ते पहिलवान — एका भूमीची धडधडती परिसंस्था', style: TextStyle(color: Color(0xC8FFFFFF), fontSize: 12, height: 1.3))),
+        Positioned.fill(child: LayoutBuilder(builder: (context, constraints) {
+          final center = Offset(constraints.maxWidth * .5, constraints.maxHeight * .59);
+          final radius = constraints.maxWidth < 500 ? constraints.maxWidth * .29 : 145.0;
+          return Stack(children: [
+            Positioned(left: center.dx - 72, top: center.dy - 72, child: const _AtlasCore()),
+            for (var i = 0; i < _domains.length; i++) _OrbitNode(domain: _domains[i], index: i, center: center, radius: radius),
+          ]);
+        })),
       ],
     ),
   );
+}
+
+class _AtlasCore extends StatelessWidget {
+  const _AtlasCore();
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 144, height: 144,
+    decoration: BoxDecoration(shape: BoxShape.circle, gradient: const RadialGradient(colors: [Color(0xFFFFE7A3), Color(0xFFD08A35), Color(0xFF6E3B25)]), border: Border.all(color: const Color(0x99FFE6A0), width: 2), boxShadow: const [BoxShadow(color: Color(0x88F6B94D), blurRadius: 35, spreadRadius: 4)]),
+    child: const Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.landscape_rounded, color: Color(0xFF4A2A1A), size: 34), SizedBox(height: 4), Text('MADHA', style: TextStyle(color: Color(0xFF4A2A1A), fontSize: 17, fontWeight: FontWeight.w900, letterSpacing: 2)), Text('THE HEARTLAND', style: TextStyle(color: Color(0xFF5C321F), fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 1))]),
+  );
+}
+
+class _OrbitNode extends StatelessWidget {
+  const _OrbitNode({required this.domain, required this.index, required this.center, required this.radius});
+  final ({IconData icon, String title, String detail, Color color}) domain;
+  final int index;
+  final Offset center;
+  final double radius;
+  @override
+  Widget build(BuildContext context) {
+    final angle = -math.pi / 2 + index * (math.pi * 2 / 5);
+    final x = center.dx + math.cos(angle) * radius - 48;
+    final y = center.dy + math.sin(angle) * radius - 29;
+    return Positioned(left: x, top: y, child: Tooltip(message: domain.detail, child: Container(width: 96, padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7), decoration: BoxDecoration(color: const Color(0xCC102C36), borderRadius: BorderRadius.circular(16), border: Border.all(color: domain.color.withOpacity(.75)), boxShadow: [BoxShadow(color: domain.color.withOpacity(.18), blurRadius: 14)]), child: Column(children: [Icon(domain.icon, color: domain.color, size: 20), const SizedBox(height: 3), Text(domain.title, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))])));
+  }
+}
+
+class _AtlasPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width * .5, size.height * .59);
+    final radius = size.width < 500 ? size.width * .29 : 145.0;
+    final paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x447BD6C2);
+    for (final r in [radius * .55, radius, radius * 1.45]) canvas.drawCircle(center, r, paint);
+    final dot = Paint()..style = PaintingStyle.fill..color = const Color(0x667BD6C2);
+    for (var i = 0; i < 30; i++) canvas.drawCircle(Offset((i * 83.0) % size.width, 110 + ((i * 47.0) % (size.height - 120))), i % 3 == 0 ? 1.5 : .7, dot);
+  }
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _DomainPill extends StatelessWidget {
