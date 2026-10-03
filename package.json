@@ -1,0 +1,8 @@
+{
+  "name": "voter-finder-preview",
+  "private": true,
+  "description": "Local preview wrapper for the Flutter web build (used by the v0 preview only).",
+  "scripts": {
+    "dev": "node tools/preview-server.mjs"
+  }
+}
