@@ -10,6 +10,7 @@ import 'widgets/hero_header.dart';
 import 'widgets/heritage_sections.dart';
 import 'widgets/info_sections.dart';
 import 'widgets/install_app_banner.dart';
+import 'widgets/regional_story_section.dart';
 import 'widgets/results_section.dart';
 import 'widgets/search_card.dart';
 
@@ -73,6 +74,7 @@ class _UserDashboardView extends StatelessWidget {
                         const _CollapsedHeritage()
                       else ...[
                         const HeritageStorySection(),
+                        const RegionalStorySection(),
                         const InstitutionJourneySection(),
                       ],
                       const SizedBox(height: 28),
@@ -122,7 +124,11 @@ class _CollapsedHeritage extends StatelessWidget {
       ),
       subtitle: const Text('परिवार आणि संस्थांच्या कार्याची सविस्तर माहिती'),
       childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 18),
-      children: const [HeritageStorySection(), InstitutionJourneySection()],
+      children: const [
+        HeritageStorySection(),
+        RegionalStorySection(),
+        InstitutionJourneySection(),
+      ],
     ),
   );
 }
