@@ -2,15 +2,41 @@
 // Production is still deployed to Cloudflare; this file is only for previewing UI changes.
 import { createServer } from "node:http";
 import { existsSync, readFileSync, statSync } from "node:fs";
-import { execSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { extname, join, normalize } from "node:path";
 
 const root = join(process.cwd(), "build", "web");
-const flutterBin = "/vercel/share/flutter-sdk/bin/flutter";
+const sdkDir = "/vercel/share/flutter-sdk";
+const flutterBin = join(sdkDir, "bin", "flutter");
+let buildStatus = "ready";
 
-if (!existsSync(join(root, "index.html")) && existsSync(flutterBin)) {
-  console.log("Building Flutter web...");
-  execSync(`${flutterBin} build web --release`, { stdio: "inherit" });
+function run(cmd, args, opts = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args, { stdio: "inherit", ...opts });
+    child.on("exit", (code) => (code === 0 ? resolve() : reject(new Error(`${cmd} exited with ${code}`))));
+    child.on("error", reject);
+  });
+}
+
+// The sandbox can be reset, wiping the SDK and the gitignored build output,
+// so install Flutter and rebuild on demand while the server is already listening.
+async function ensureBuild() {
+  if (existsSync(join(root, "index.html"))) return;
+  try {
+    if (!existsSync(flutterBin)) {
+      buildStatus = "Installing Flutter SDK (first run only)...";
+      console.log(buildStatus);
+      await run("git", ["clone", "--depth", "1", "-b", "stable", "https://github.com/flutter/flutter.git", sdkDir]);
+    }
+    buildStatus = "Building Flutter web app...";
+    console.log(buildStatus);
+    await run(flutterBin, ["build", "web", "--release"], { env: { ...process.env, CI: "true" } });
+    buildStatus = "ready";
+    console.log("Flutter web build complete");
+  } catch (error) {
+    buildStatus = `Build failed: ${error.message}`;
+    console.error(buildStatus);
+  }
 }
 
 const types = {
@@ -42,7 +68,11 @@ createServer((req, res) => {
     file = join(root, "index.html");
   }
   if (!existsSync(file)) {
-    res.writeHead(503, { "Content-Type": "text/plain" }).end("Flutter web build not found. Run: flutter build web");
+    res
+      .writeHead(503, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" })
+      .end(
+        `<!doctype html><meta http-equiv="refresh" content="10"><body style="font-family:system-ui;background:#111;color:#eee;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><p>${buildStatus === "ready" ? "Preparing preview..." : buildStatus} This page refreshes automatically.</p></body>`,
+      );
     return;
   }
   res.writeHead(200, {
@@ -52,4 +82,5 @@ createServer((req, res) => {
   res.end(readFileSync(file));
 }).listen(port, "0.0.0.0", () => {
   console.log(`Flutter web preview on http://localhost:${port}`);
+  ensureBuild();
 });
