@@ -29,39 +29,42 @@ class _ImpactAtlas extends StatelessWidget {
   const _ImpactAtlas();
 
   static const _domains = <({IconData icon, String title, String detail, Color color})>[
-    (icon: Icons.water_drop_rounded, title: 'जलविश्व', detail: 'कृष्णा–भीमा खोऱ्यातील जलसंधारण आणि सिंचन', color: Color(0xFF55C8F2)),
-    (icon: Icons.agriculture_rounded, title: 'शेतमाती', detail: 'ऊस, शेतकरी, दूध आणि सहकार', color: Color(0xFF8ED081)),
-    (icon: Icons.factory_rounded, title: 'सहकार', detail: 'साखर उद्योग, रोजगार आणि ग्रामविकास', color: Color(0xFFFFD166)),
-    (icon: Icons.school_rounded, title: 'ज्ञानदीप', detail: 'शाळा, महाविद्यालये आणि कौशल्य', color: Color(0xFFC9A7FF)),
-    (icon: Icons.sports_martial_arts_rounded, title: 'मातीचा खेळ', detail: 'कुस्ती, कला आणि क्रीडा संस्कृती', color: Color(0xFFFF8A70)),
+    (icon: Icons.water_drop_rounded, title: 'कृष्णा–भीमा', detail: 'उजनी, सिंचन आणि नदी-जोडणीची जीवनरेषा', color: Color(0xFF66D9FF)),
+    (icon: Icons.agriculture_rounded, title: 'शेतमाती', detail: 'ऊस, शेती, दूध आणि सहकाराची अर्थव्यवस्था', color: Color(0xFFB8E986)),
+    (icon: Icons.school_rounded, title: 'ज्ञानग्राम', detail: 'शाळा, महाविद्यालये आणि कौशल्याची पायाभरणी', color: Color(0xFFFFD166)),
+    (icon: Icons.alt_route_rounded, title: 'जोडणारे रस्ते', detail: 'गाव, बाजार आणि संधी जोडणारी वाहतूक', color: Color(0xFFFFA07A)),
+    (icon: Icons.sports_martial_arts_rounded, title: 'मातीचा खेळ', detail: 'कुस्ती, कला आणि क्रीडेतून घडणारी ओळख', color: Color(0xFFC9A7FF)),
   ];
 
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,
-    height: 390,
+    height: 430,
     clipBehavior: Clip.antiAlias,
     decoration: BoxDecoration(
-      gradient: const LinearGradient(colors: [Color(0xFF071C2C), Color(0xFF103D38)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-      borderRadius: BorderRadius.circular(28),
-      boxShadow: const [BoxShadow(color: Color(0x33072D26), blurRadius: 24, offset: Offset(0, 12))],
+      gradient: const LinearGradient(colors: [Color(0xFF061522), Color(0xFF102D36), Color(0xFF173F35)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: const [BoxShadow(color: Color(0x44072D26), blurRadius: 30, offset: Offset(0, 16))],
     ),
-    child: Stack(
-      children: [
-        Positioned.fill(child: CustomPaint(painter: _AtlasPainter())),
-        const Positioned(top: 20, left: 18, child: Text('MĀḌHĀ / LIVING ATLAS', style: TextStyle(color: Color(0xFF9BC9BD), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.8))),
-        const Positioned(top: 43, left: 18, right: 18, child: Text('माढ्याची विकासकथा', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w900, height: 1.1))),
-        const Positioned(top: 76, left: 18, right: 80, child: Text('पाणी ते पहिलवान — एका भूमीची धडधडती परिसंस्था', style: TextStyle(color: Color(0xC8FFFFFF), fontSize: 12, height: 1.3))),
-        Positioned.fill(child: LayoutBuilder(builder: (context, constraints) {
-          final center = Offset(constraints.maxWidth * .5, constraints.maxHeight * .59);
-          final radius = constraints.maxWidth < 500 ? constraints.maxWidth * .29 : 145.0;
-          return Stack(children: [
-            Positioned(left: center.dx - 72, top: center.dy - 72, child: const _AtlasCore()),
-            for (var i = 0; i < _domains.length; i++) _OrbitNode(domain: _domains[i], index: i, center: center, radius: radius),
-          ]);
-        })),
-      ],
-    ),
+    child: Stack(children: [
+      Positioned.fill(child: CustomPaint(painter: _AtlasPainter())),
+      const Positioned(top: 18, left: 20, child: Text('MADHA / A LIVING LANDSCAPE', style: TextStyle(color: Color(0xFF9BC9BD), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.8))),
+      const Positioned(top: 42, left: 20, child: Text('पाण्यापासून प्रगतीपर्यंत', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w900, height: 1.1))),
+      const Positioned(top: 76, left: 20, right: 22, child: Text('कृष्णा–भीमा खोरे • उजनी • शेतमाती • ज्ञान • खेळ', style: TextStyle(color: Color(0xC8FFFFFF), fontSize: 12, height: 1.3))),
+      Positioned.fill(child: LayoutBuilder(builder: (context, constraints) {
+        final center = Offset(constraints.maxWidth * .5, constraints.maxHeight * .61);
+        final radius = constraints.maxWidth < 500 ? constraints.maxWidth * .32 : 155.0;
+        return Stack(children: [
+          Positioned(left: center.dx - 78, top: center.dy - 78, child: const _AtlasCore()),
+          for (var i = 0; i < _domains.length; i++) _OrbitNode(domain: _domains[i], index: i, center: center, radius: radius),
+        ]);
+      })),
+      const Positioned(left: 20, bottom: 18, child: Row(children: [
+        Icon(Icons.explore_rounded, color: Color(0xFFB8E986), size: 15),
+        SizedBox(width: 6),
+        Text('एक मतदारसंघ. अनेक शक्यता.', style: TextStyle(color: Color(0xFFD9F4E5), fontSize: 11, fontWeight: FontWeight.w800)),
+      ])),
+    ]),
   );
 }
 
@@ -603,7 +606,7 @@ class InstitutionJourneySection extends StatelessWidget {
       ),
       (
         Icons.volunteer_activism_rounded,
-        'लोकसेवा',
+        'लोकसे��ा',
         'नागरिक-केंद्रित उपक्रम',
         'public-service',
         'assets/images/sector_public_service.png',
