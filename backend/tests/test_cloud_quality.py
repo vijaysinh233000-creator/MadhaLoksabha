@@ -42,22 +42,27 @@ assert any("retained and searchable" in warning for warning in mixed_report["war
 
 repeated_serial = rows(100)
 repeated_serial[24]["serial"] = "24"
-try:
-    validate(repeated_serial, pages=5, ocr_pages=5)
-except QualityError as error:
-    assert error.report["duplicate_serials"] == 1
-else:
-    raise AssertionError("Quality gate accepted a duplicated voter serial")
+repeated_serial_report = validate(repeated_serial, pages=5, ocr_pages=5)
+assert repeated_serial_report["status"] == "passed"
+assert repeated_serial_report["duplicate_serials"] == 1
+assert any("isolated" in warning for warning in repeated_serial_report["warnings"])
 
 wrong_unique_serial = rows(100)
 wrong_unique_serial[24]["serial"] = "125"
+wrong_unique_report = validate(wrong_unique_serial, pages=5, ocr_pages=5)
+assert wrong_unique_report["status"] == "passed"
+assert wrong_unique_report["serial_sequence_missing"] >= 1
+assert wrong_unique_report["serial_order_anomalies"]
+
+many_serial_errors = rows(100)
+for index in range(10, 16):
+    many_serial_errors[index]["serial"] = ""
 try:
-    validate(wrong_unique_serial, pages=5, ocr_pages=5)
+    validate(many_serial_errors, pages=5, ocr_pages=5)
 except QualityError as error:
-    assert error.report["serial_sequence_missing"] >= 1
-    assert error.report["serial_order_anomalies"]
+    assert error.report["blank_serials"] == 6
 else:
-    raise AssertionError("Quality gate accepted an incorrect unique serial")
+    raise AssertionError("Quality gate accepted a repeated serial extraction failure")
 
 repeated_identity = rows(100)
 repeated_identity[24]["name"] = repeated_identity[23]["name"]
@@ -83,7 +88,6 @@ assert skipped_code == 3
 
 for bad_rows, pages, reason in [
     (rows(5), 20, "too few records"),
-    (rows(100, marathi=False), 5, "non-Marathi output"),
     (rows(100, serials=False), 5, "missing serials"),
 ]:
     try:
@@ -92,5 +96,17 @@ for bad_rows, pages, reason in [
         pass
     else:
         raise AssertionError(f"Quality gate accepted {reason}")
+
+latin_report = validate(rows(100, marathi=False), pages=5, ocr_pages=5)
+assert latin_report["status"] == "passed"
+assert any("not Devanagari" in warning for warning in latin_report["warnings"])
+
+missing_epics = rows(100)
+missing_epics[10]["epic"] = ""
+missing_epics[11]["epic"] = ""
+epic_report = validate(missing_epics, pages=5, ocr_pages=5)
+assert epic_report["status"] == "passed"
+assert epic_report["blank_epics"] == 2
+assert epic_report["epic_coverage"] == 0.98
 
 print("PASS: cloud OCR quality gate")

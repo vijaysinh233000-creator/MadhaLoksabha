@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import json
+import math
 import os
 import re
 import sys
@@ -113,7 +114,14 @@ def voter_rows(document: dict, result) -> list[dict]:
 
 
 def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
-    """Reject only structurally broken OCR; retain every extracted name."""
+    """Reject systemic OCR failures while retaining isolated imperfect rows.
+
+    Electoral-roll scans are source documents, not clean database exports.  A
+    single faint card must not make hundreds of otherwise searchable voters
+    disappear.  The quality gate therefore publishes raw isolated anomalies
+    and sends a document to review only when an anomaly is repeated enough to
+    indicate a broken layout/page parse.
+    """
     names = [r["name"] for r in rows]
     serials = [r["serial"] for r in rows if r["serial"]]
     blank_serials = len(rows) - len(serials)
@@ -122,6 +130,16 @@ def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
     numeric_serials = {int(value) for value in serials if str(value).isdigit()}
     sequence_gaps = (set(range(min(numeric_serials), max(numeric_serials) + 1)) - numeric_serials
                      if numeric_serials else set())
+    # A single badly read serial can make the mathematical min..max gap look
+    # enormous (25 misread as 125 creates 99 apparent gaps).  Count affected
+    # records for the publish decision while retaining the full gap count for
+    # diagnostics.
+    expected_window = (
+        set(range(min(numeric_serials), min(numeric_serials) + len(rows)))
+        if numeric_serials else set()
+    )
+    missing_window_serials = expected_window - numeric_serials
+    unexpected_window_serials = numeric_serials - expected_window
     page_ranges = []
     for page in sorted({int(r["page"]) for r in rows}):
         values = [int(r["serial"]) for r in rows
@@ -134,7 +152,10 @@ def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
         for previous, current in zip(page_ranges, page_ranges[1:])
         if previous[2] >= current[1]
     ]
-    epics = [r["epic"].replace(" ", "").upper() for r in rows if r["epic"]]
+    epics = [r["epic"].replace(" ", "").replace("/", "").upper() for r in rows if r["epic"]]
+    valid_epics = [value for value in epics if re.fullmatch(r"[A-Z]{3}\d{7}", value)]
+    invalid_epics = len(epics) - len(valid_epics)
+    blank_epics = len(rows) - len(epics)
     dev_names = sum(bool(re.search(r"[\u0900-\u097f]", name)) for name in names)
     invalid_pages = sum(not 1 <= int(r["page"]) <= pages for r in rows)
     duplicate_epics = len(epics) - len(set(epics))
@@ -163,8 +184,14 @@ def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
         "duplicate_serials": duplicate_serials,
         "serial_sequence_missing": len(sequence_gaps),
         "serial_sequence_unexpected": 0,
+        "serial_sequence_issue_records": max(
+            len(missing_window_serials), len(unexpected_window_serials)
+        ),
         "serial_order_anomalies": serial_order_anomalies,
         "duplicate_epics": duplicate_epics,
+        "epic_coverage": round(len(valid_epics) / max(len(rows), 1), 4),
+        "blank_epics": blank_epics,
+        "invalid_epics": invalid_epics,
         "duplicate_names": duplicate_names,
         "duplicate_records": duplicate_records,
         "invalid_page_records": invalid_pages,
@@ -173,29 +200,52 @@ def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
         "checks": [],
         "warnings": [],
     }
+    # Always tolerate at least two isolated record-level defects.  Larger
+    # rolls receive a small proportional allowance, capped at five, so a few
+    # damaged cards pass but a repeating OCR/layout problem does not.
+    isolated_allowance = max(2, min(5, math.ceil(len(rows) * 0.005)))
+    report["isolated_error_allowance"] = isolated_allowance
     failures = []
     if pages <= 0:
         failures.append("PDF has no readable pages")
     if len(rows) < max(10, pages * 3):
         failures.append(f"Only {len(rows)} voter records were extracted from {pages} pages")
     if report["marathi_name_ratio"] < 0.60:
-        failures.append("Too few extracted names contain Marathi text")
-    if blank_serials:
-        failures.append(f"{blank_serials} voter serial numbers are blank")
-    if invalid_serials:
-        failures.append(f"{invalid_serials} voter serial numbers are not numeric")
-    if duplicate_serials:
-        failures.append(f"{duplicate_serials} voter serial numbers are duplicated")
-    if sequence_gaps:
-        failures.append(f"Voter serial sequence has {len(sequence_gaps)} unresolved gaps")
-    if serial_order_anomalies:
-        failures.append(f"Voter serial ranges overlap or go backwards across {len(serial_order_anomalies)} page boundaries")
+        report["warnings"].append("Most extracted names are not Devanagari; retained for searchable review")
+    serial_defects = blank_serials + invalid_serials + duplicate_serials
+    sequence_defects = report["serial_sequence_issue_records"] + len(serial_order_anomalies)
+    if serial_defects > isolated_allowance:
+        failures.append(
+            f"Serial extraction has {serial_defects} repeated record-level defects "
+            f"(allowance {isolated_allowance})"
+        )
+    elif serial_defects:
+        report["warnings"].append(
+            f"{serial_defects} isolated blank, invalid, or duplicate serial values retained as OCR output"
+        )
+    if sequence_defects > isolated_allowance:
+        failures.append(
+            f"Serial sequence has {sequence_defects} repeated gaps/order anomalies "
+            f"(allowance {isolated_allowance})"
+        )
+    elif sequence_defects:
+        report["warnings"].append(
+            f"{sequence_defects} isolated serial sequence anomalies retained for searchability"
+        )
     if invalid_pages:
         failures.append(f"{invalid_pages} records refer to invalid PDF pages")
     if duplicate_names:
         report["warnings"].append(f"{duplicate_names} repeated voter names; retained as separate PDF records")
     if duplicate_epics:
         report["warnings"].append(f"{duplicate_epics} repeated EPIC numbers; retained with each record's page and serial")
+    if blank_epics:
+        report["warnings"].append(
+            f"{blank_epics} voters have no readable EPIC; voter names remain indexed"
+        )
+    if invalid_epics:
+        report["warnings"].append(
+            f"{invalid_epics} EPIC values do not match the strict format; retained exactly as OCR output"
+        )
     if duplicate_records:
         report["warnings"].append(f"{duplicate_records} identical parsed voter blocks; retained for review")
     if mixed_script:
@@ -237,9 +287,6 @@ def pending_documents(supabase: Supabase, limit: int) -> list[dict]:
 def process_document(
     supabase: Supabase, document_id: str, workers: int, claim: bool, final_attempt: bool
 ) -> int:
-    import boto3  # Imported only by processor jobs, not the lightweight queue discovery.
-    from app.pdf_manager.pdf_parser import parse_pdf
-
     worker = worker_name()
     if claim:
         claimed = supabase.rpc("claim_document_for_indexing", {
@@ -248,6 +295,11 @@ def process_document(
         if claimed is not True:
             print(json.dumps({"document": document_id, "status": "skipped", "reason": "not claimable; inspect its current status"}))
             return 3
+
+    # Keep heavyweight OCR/R2 dependencies out of queue discovery and the
+    # unclaimable fast path.
+    import boto3  # Imported only by processor jobs.
+    from app.pdf_manager.pdf_parser import parse_pdf
 
     query = (
         "documents?select=id,village_id,original_filename,r2_key,status,size_bytes,r2_etag"
