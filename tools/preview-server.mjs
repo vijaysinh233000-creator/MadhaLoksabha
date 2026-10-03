@@ -8,6 +8,7 @@ import { extname, join, normalize } from "node:path";
 const root = join(process.cwd(), "build", "web");
 const sdkDir = "/vercel/share/flutter-sdk";
 const flutterBin = join(sdkDir, "bin", "flutter");
+const requiredBuildFiles = ["index.html", "flutter_bootstrap.js", "main.dart.js"];
 let buildStatus = "ready";
 
 function run(cmd, args, opts = {}) {
@@ -21,7 +22,7 @@ function run(cmd, args, opts = {}) {
 // The sandbox can be reset, wiping the SDK and the gitignored build output,
 // so install Flutter and rebuild on demand while the server is already listening.
 async function ensureBuild() {
-  if (existsSync(join(root, "index.html"))) return;
+  if (requiredBuildFiles.every((fileName) => existsSync(join(root, fileName)))) return;
   try {
     if (!existsSync(flutterBin)) {
       buildStatus = "Installing Flutter SDK (first run only)...";
@@ -90,11 +91,15 @@ createServer(async (req, res) => {
       );
     return;
   }
+  const body = readFileSync(file);
   res.writeHead(200, {
     "Content-Type": types[extname(file)] || "application/octet-stream",
+    "Content-Length": body.byteLength,
     "Cache-Control": "no-cache",
+    "Accept-Ranges": "bytes",
   });
-  res.end(readFileSync(file));
+  if (req.method !== "HEAD") res.end(body);
+  else res.end();
 }).listen(port, "0.0.0.0", () => {
   console.log(`Flutter web preview on http://localhost:${port}`);
 });
