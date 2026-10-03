@@ -56,8 +56,14 @@ const types = {
 };
 
 const port = Number(process.env.PORT) || 3000;
+const buildPromise = ensureBuild();
 
-createServer((req, res) => {
+createServer(async (req, res) => {
+  // Do not let the browser start loading a partially-created Flutter bundle.
+  // Otherwise the shell can return HTML for JS/Wasm requests, producing
+  // `Unexpected token '<'` and aborted Wasm compilation errors.
+  await buildPromise;
+
   const urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
   let file = normalize(join(root, urlPath));
   if (!file.startsWith(root)) {
@@ -91,5 +97,4 @@ createServer((req, res) => {
   res.end(readFileSync(file));
 }).listen(port, "0.0.0.0", () => {
   console.log(`Flutter web preview on http://localhost:${port}`);
-  ensureBuild();
 });
