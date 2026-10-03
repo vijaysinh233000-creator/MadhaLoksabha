@@ -9,7 +9,8 @@ const root = join(process.cwd(), "build", "web");
 const sdkDir = "/vercel/share/flutter-sdk";
 const flutterBin = join(sdkDir, "bin", "flutter");
 const requiredBuildFiles = ["index.html", "flutter_bootstrap.js", "main.dart.js"];
-let buildStatus = "ready";
+let buildStatus = "starting";
+let buildReady = false;
 
 function run(cmd, args, opts = {}) {
   return new Promise((resolve, reject) => {
@@ -22,7 +23,11 @@ function run(cmd, args, opts = {}) {
 // The sandbox can be reset, wiping the SDK and the gitignored build output,
 // so install Flutter and rebuild on demand while the server is already listening.
 async function ensureBuild() {
-  if (requiredBuildFiles.every((fileName) => existsSync(join(root, fileName)))) return;
+  if (requiredBuildFiles.every((fileName) => existsSync(join(root, fileName)))) {
+    buildReady = true;
+    buildStatus = "ready";
+    return;
+  }
   try {
     if (!existsSync(flutterBin)) {
       buildStatus = "Installing Flutter SDK (first run only)...";
@@ -33,6 +38,7 @@ async function ensureBuild() {
     console.log(buildStatus);
     await run(flutterBin, ["build", "web", "--release"], { env: { ...process.env, CI: "true" } });
     buildStatus = "ready";
+    buildReady = true;
     console.log("Flutter web build complete");
   } catch (error) {
     buildStatus = `Build failed: ${error.message}`;
@@ -57,13 +63,20 @@ const types = {
 };
 
 const port = Number(process.env.PORT) || 3000;
-const buildPromise = ensureBuild();
+void ensureBuild();
 
 createServer(async (req, res) => {
-  // Do not let the browser start loading a partially-created Flutter bundle.
-  // Otherwise the shell can return HTML for JS/Wasm requests, producing
-  // `Unexpected token '<'` and aborted Wasm compilation errors.
-  await buildPromise;
+  // Keep the socket responsive while Flutter installs/builds. Serving a
+  // partial bundle makes browsers parse the loading HTML as JavaScript and
+  // abort Wasm compilation.
+  if (!buildReady) {
+    res.writeHead(503, {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store",
+      "Retry-After": "5",
+    }).end(`<!doctype html><meta http-equiv="refresh" content="5"><body style="font-family:system-ui;background:#111;color:#eee;display:grid;place-items:center;height:100vh;margin:0"><p>${buildStatus} Refreshing...</p></body>`);
+    return;
+  }
 
   const urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
   let file = normalize(join(root, urlPath));
