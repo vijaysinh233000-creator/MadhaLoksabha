@@ -26,6 +26,13 @@ class AppColors {
   static const danger = Color(0xFFD64545);
   static const heritageGold = Color(0xFFC99A3D);
   static const heritageBrown = Color(0xFF79552B);
+
+  // Editorial / documentary palette used for cinematic full-bleed panels.
+  static const ink = Color(0xFF0A1512);
+  static const inkDeep = Color(0xFF060D0B);
+  static const gold = Color(0xFFD4AF37);
+  static const goldSoft = Color(0xFFF2E2AE);
+  static const cream = Color(0xFFFBF6EA);
 }
 
 class AppTheme {

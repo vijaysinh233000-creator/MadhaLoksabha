@@ -1,12 +1,28 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_theme.dart';
 
-class HeroHeader extends StatelessWidget {
+/// Full-bleed, documentary-style masthead: a single cinematic photograph with
+/// a slow Ken Burns drift, an editorial headline, and a transparent nav
+/// overlay — no separate white toolbar, no decorative 3D props.
+class HeroHeader extends StatefulWidget {
   const HeroHeader({super.key});
+
+  @override
+  State<HeroHeader> createState() => _HeroHeaderState();
+}
+
+class _HeroHeaderState extends State<HeroHeader>
+    with TickerProviderStateMixin {
+  late final AnimationController _kenBurns = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 18),
+  );
+  late final AnimationController _cue = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  );
 
   static final Uri _whatsAppShare = Uri.https('wa.me', '/', {
     'text':
@@ -14,6 +30,22 @@ class HeroHeader extends StatelessWidget {
         'माझे नाव मतदार यादीत शोधा:\n'
         'https://independent-voter.madhaloksabha.workers.dev/',
   });
+
+  @override
+  void initState() {
+    super.initState();
+    if (!MediaQuery.disableAnimationsOf(context)) {
+      _kenBurns.repeat(reverse: true);
+      _cue.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _kenBurns.dispose();
+    _cue.dispose();
+    super.dispose();
+  }
 
   Future<void> _shareOnWhatsApp(BuildContext context) async {
     final opened = await launchUrl(
@@ -29,161 +61,265 @@ class HeroHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mobile = MediaQuery.sizeOf(context).width < 700;
+    final size = MediaQuery.sizeOf(context);
+    final mobile = size.width < 700;
+    final heroHeight = mobile ? 520.0 : (size.width < 1100 ? 600.0 : 660.0);
+
     return ColoredBox(
-      color: const Color(0xFFFFFCF5),
-      child: Column(
-        children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1180),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: mobile ? 14 : 24,
-                  vertical: mobile ? 10 : 13,
+      color: AppColors.inkDeep,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1600),
+          child: SizedBox(
+            height: heroHeight,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Ken Burns photograph.
+                AnimatedBuilder(
+                  animation: _kenBurns,
+                  builder: (context, child) {
+                    final t = Curves.easeInOutSine.transform(_kenBurns.value);
+                    return Transform.scale(
+                      scale: 1.0 + t * 0.07,
+                      alignment: Alignment.lerp(
+                        const Alignment(-0.15, -0.05),
+                        const Alignment(0.15, 0.05),
+                        t,
+                      )!,
+                      child: child,
+                    );
+                  },
+                  child: Semantics(
+                    label: 'धैर्यशील मोहिते-पाटील आणि माढा मतदारसंघाचे चित्र',
+                    image: true,
+                    child: Image.asset(
+                      'assets/images/madha_loksabha_banner.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'धैर्यशील मोहिते-पाटील',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontFamily: 'NotoSansDevanagari',
-                              fontSize: mobile ? 19 : 25,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.navyText,
+                // Duotone grade for a cohesive editorial tone.
+                const ExcludeSemantics(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0x660A1512),
+                          Color(0x330A1512),
+                          Color(0xE6060D0B),
+                        ],
+                        stops: [0, 0.45, 1],
+                      ),
+                    ),
+                  ),
+                ),
+                const ExcludeSemantics(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0x44051A14), Color(0x00000000)],
+                        stops: [0, 0.5],
+                      ),
+                    ),
+                  ),
+                ),
+                // Vignette for focus.
+                const ExcludeSemantics(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment.center,
+                        radius: 1.1,
+                        colors: [Color(0x00000000), Color(0x4D000000)],
+                        stops: [0.6, 1],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Transparent masthead overlay.
+                Positioned(
+                  left: mobile ? 16 : 40,
+                  right: mobile ? 16 : 40,
+                  top: mobile ? 16 : 26,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'धैर्यशील मोहिते-पाटील',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: 'NotoSansDevanagari',
+                                fontSize: mobile ? 17 : 20,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                shadows: const [
+                                  Shadow(color: Color(0xCC000000), blurRadius: 10),
+                                ],
+                              ),
                             ),
-                          ),
+                            Text(
+                              'माढा लोकसभा मतदारसंघ',
+                              style: TextStyle(
+                                fontFamily: 'NotoSansDevanagari',
+                                fontSize: mobile ? 10 : 11.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.4,
+                                color: AppColors.goldSoft,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _GlassIconButton(
+                        tooltip: 'WhatsApp वर शेअर करा',
+                        icon: Icons.share_rounded,
+                        onTap: () => _shareOnWhatsApp(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Editorial headline block.
+                Positioned(
+                  left: mobile ? 18 : 48,
+                  right: mobile ? 18 : 48,
+                  bottom: mobile ? 56 : 68,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(width: 28, height: 2, color: AppColors.gold),
+                          const SizedBox(width: 9),
                           Text(
-                            'माढा लोकसभा',
+                            'कृष्णा • भीमा • माढा',
                             style: TextStyle(
-                              fontFamily: 'NotoSansDevanagari',
+                              color: AppColors.goldSoft,
                               fontSize: mobile ? 10.5 : 12.5,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.greenDark,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 2.4,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    if (!mobile)
-                      const Padding(
-                        padding: EdgeInsets.only(right: 6),
-                        child: Text(
-                          'मतदार शोध  •  लोकसेवा  •  सार्वजनिक कार्य',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textSecondary,
+                      const SizedBox(height: 14),
+                      Text(
+                        'पाणी, शेती आणि शिक्षणाचा\nपुढचा अध्याय',
+                        style: TextStyle(
+                          fontFamily: 'NotoSansDevanagari',
+                          color: Colors.white,
+                          fontSize: mobile ? 28 : 46,
+                          fontWeight: FontWeight.w900,
+                          height: 1.12,
+                          shadows: const [
+                            Shadow(color: Color(0xB3000000), blurRadius: 18, offset: Offset(0, 4)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      if (!mobile)
+                        const SizedBox(
+                          width: 460,
+                          child: Text(
+                            'तीन पिढ्यांच्या लोकसेवेतून उभा राहिलेला माढा — धरणांपासून शाळांपर्यंत, साखर कारखान्यांपासून कुस्तीच्या मातीपर्यंत.',
+                            style: TextStyle(
+                              color: Color(0xD9FFFFFF),
+                              fontSize: 14.5,
+                              height: 1.5,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                    Tooltip(
-                      message: 'WhatsApp वर शेअर करा',
-                      child: IconButton.filledTonal(
-                        onPressed: () => _shareOnWhatsApp(context),
-                        icon: const Icon(Icons.share_rounded),
-                        color: AppColors.greenDark,
-                        style: IconButton.styleFrom(
-                          backgroundColor: const Color(0xFFE4F5E9),
+                      const SizedBox(height: 18),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                        decoration: BoxDecoration(
+                          color: const Color(0x1AFFFFFF),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: const Color(0x66D4AF37)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.verified_rounded, color: AppColors.gold, size: 15),
+                            const SizedBox(width: 7),
+                            Text(
+                              'अधिकृत माढा लोकसभा मतदार सेवा',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: mobile ? 10.5 : 11.5,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+
+                // Scroll cue.
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 16,
+                  child: AnimatedBuilder(
+                    animation: _cue,
+                    builder: (context, child) => Transform.translate(
+                      offset: Offset(0, 5 * Curves.easeInOut.transform(_cue.value)),
+                      child: child,
+                    ),
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xAAFFFFFF), size: 22),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Container(
-            constraints: const BoxConstraints(maxWidth: 1440),
-            decoration: const BoxDecoration(
-              border: Border.symmetric(horizontal: BorderSide(color: Color(0x22000000))),
-            ),
-            child: AspectRatio(
-              aspectRatio: 2048 / 931,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Semantics(
-                    label: 'धैर्यशील मोहिते-पाटील आणि माढा मतदारसंघाचे चित्र',
-                    image: true,
-                    child: Image.asset('assets/images/madha_loksabha_banner.jpg', fit: BoxFit.cover, alignment: Alignment.center),
-                  ),
-                  const ExcludeSemantics(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0x22052E2A), Color(0x00000000), Color(0xE6052725)], stops: [0, .44, 1])))),
-                  Positioned.fill(child: ExcludeSemantics(child: IgnorePointer(child: CustomPaint(painter: _HeroContourPainter())))),
-                  Positioned(
-                    left: mobile ? 14 : 34,
-                    right: mobile ? 14 : 34,
-                    top: mobile ? 14 : 24,
-                    child: Row(children: [
-                      _HeroTag(icon: Icons.water_drop_rounded, label: 'कृष्णा–भीमा'),
-                      const SizedBox(width: 7),
-                      _HeroTag(icon: Icons.explore_rounded, label: 'माढा 360°'),
-                      const Spacer(),
-                      if (!mobile) const Text('एक मतदारसंघ • अनेक कथा', style: TextStyle(color: Color(0xE6FFFFFF), fontWeight: FontWeight.w800, fontSize: 12)),
-                    ]),
-                  ),
-                  Positioned(
-                    left: mobile ? 14 : 34,
-                    right: mobile ? 14 : 34,
-                    bottom: mobile ? 12 : 24,
-                    child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('माढ्याच्या विकासाचा पुढचा अध्याय', style: TextStyle(color: const Color(0xFFFFD77A), fontSize: mobile ? 10 : 14, fontWeight: FontWeight.w800, letterSpacing: .3)),
-                        const SizedBox(height: 3),
-                        Text('पाणी • शेती • शिक्षण • रोजगार', style: TextStyle(color: Colors.white, fontSize: mobile ? 15 : 26, fontWeight: FontWeight.w900, height: 1.05)),
-                      ])),
-                      if (!mobile) Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10), decoration: BoxDecoration(color: const Color(0xDDFCF7E9), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0x99FFD77A))), child: const Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.verified_rounded, color: AppColors.greenDark, size: 17), SizedBox(width: 6), Text('लोकसेवा प्रथम', style: TextStyle(color: AppColors.greenDark, fontWeight: FontWeight.w900))])),
-                    ]),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _HeroTag extends StatelessWidget {
-  const _HeroTag({required this.icon, required this.label});
+class _GlassIconButton extends StatelessWidget {
+  const _GlassIconButton({
+    required this.icon,
+    required this.onTap,
+    required this.tooltip,
+  });
   final IconData icon;
-  final String label;
+  final VoidCallback onTap;
+  final String tooltip;
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-    decoration: BoxDecoration(
-      color: const Color(0x99112625),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: const Color(0x66D7F1D3)),
+  Widget build(BuildContext context) => Tooltip(
+    message: tooltip,
+    child: Material(
+      color: const Color(0x26FFFFFF),
+      shape: const CircleBorder(side: BorderSide(color: Color(0x40FFFFFF))),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Icon(icon, color: Colors.white, size: 19),
+        ),
+      ),
     ),
-    child: Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(icon, size: 14, color: const Color(0xFFFFD77A)),
-      const SizedBox(width: 5),
-      Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
-    ]),
   );
-}
-
-class _HeroContourPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x55D7F1D3);
-    for (var i = 0; i < 5; i++) {
-      final path = Path()..moveTo(-20, size.height * (.54 + i * .08));
-      for (var x = 0.0; x <= size.width + 40; x += 24) {
-        path.lineTo(x, size.height * (.54 + i * .08) + 10 * math.sin(x / 70 + i));
-      }
-      canvas.drawPath(path, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

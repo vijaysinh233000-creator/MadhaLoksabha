@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -27,63 +25,124 @@ class HeritageStorySection extends StatelessWidget {
   );
 }
 
-class _ImpactAtlas extends StatefulWidget {
+/// Cinematic, full-bleed documentary panel — a single real photograph with
+/// an editorial headline and a caption strip. No illustrated diagrams.
+class _ImpactAtlas extends StatelessWidget {
   const _ImpactAtlas();
 
-  @override
-  State<_ImpactAtlas> createState() => _ImpactAtlasState();
-
-  static const _domains = <({IconData icon, String title, String detail, Color color})>[
-    (icon: Icons.water_drop_rounded, title: 'कृष्णा–भीमा', detail: 'उजनी, सिंचन आणि नदी-जोडणीची जीवनरेषा', color: Color(0xFF66D9FF)),
-    (icon: Icons.agriculture_rounded, title: 'शेतमाती', detail: 'ऊस, शेती, दूध आणि सहकाराची अर्थव्यवस्था', color: Color(0xFFB8E986)),
-    (icon: Icons.school_rounded, title: 'ज्ञानग्राम', detail: 'शाळा, महाविद्यालये आणि कौशल्याची पायाभरणी', color: Color(0xFFFFD166)),
-    (icon: Icons.alt_route_rounded, title: 'जोडणारे रस्ते', detail: 'गाव, बाजार आणि संधी जोडणारी वाहतूक', color: Color(0xFFFFA07A)),
-    (icon: Icons.sports_martial_arts_rounded, title: 'मातीचा खेळ', detail: 'कुस्ती, कला आणि क्रीडेतून घडणारी ओळख', color: Color(0xFFC9A7FF)),
+  static const _domains = <({IconData icon, String label})>[
+    (icon: Icons.water_drop_rounded, label: 'कृष्णा–भीमा'),
+    (icon: Icons.agriculture_rounded, label: 'शेतमाती'),
+    (icon: Icons.school_rounded, label: 'ज्ञानग्राम'),
+    (icon: Icons.alt_route_rounded, label: 'जोडणारे रस्ते'),
+    (icon: Icons.sports_martial_arts_rounded, label: 'मातीचा खेळ'),
   ];
-}
-
-class _ImpactAtlasState extends State<_ImpactAtlas> with SingleTickerProviderStateMixin {
-  late final AnimationController _pulse = AnimationController(vsync: this, duration: const Duration(seconds: 6))..repeat();
 
   @override
-  void dispose() {
-    _pulse.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _pulse,
-    builder: (context, _) => Container(
-      width: double.infinity,
-      height: 430,
-    clipBehavior: Clip.antiAlias,
-    decoration: BoxDecoration(
-      gradient: const LinearGradient(colors: [Color(0xFF061522), Color(0xFF102D36), Color(0xFF173F35)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-      borderRadius: BorderRadius.circular(30),
-      boxShadow: const [BoxShadow(color: Color(0x44072D26), blurRadius: 30, offset: Offset(0, 16))],
-    ),
-    child: Stack(children: [
-      Positioned.fill(child: CustomPaint(painter: _AtlasPainter(phase: _pulse.value))),
-      const Positioned(top: 18, left: 20, child: Text('MADHA / A LIVING LANDSCAPE', style: TextStyle(color: Color(0xFF9BC9BD), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.8))),
-      const Positioned(top: 42, left: 20, child: Text('पाण्यापासून प्रगतीपर्यंत', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w900, height: 1.1))),
-      const Positioned(top: 76, left: 20, right: 22, child: Text('कृष्णा–भीमा खोरे • उजनी • शेतमाती • ज्ञान • खेळ', style: TextStyle(color: Color(0xC8FFFFFF), fontSize: 12, height: 1.3))),
-      Positioned.fill(child: LayoutBuilder(builder: (context, constraints) {
-        final center = Offset(constraints.maxWidth * .5, constraints.maxHeight * .61);
-        final radius = constraints.maxWidth < 500 ? constraints.maxWidth * .32 : 155.0;
-        return Stack(children: [
-          Positioned(left: center.dx - 78, top: center.dy - 78, child: const _AtlasCore()),
-          for (var i = 0; i < _ImpactAtlas._domains.length; i++) _OrbitNode(domain: _ImpactAtlas._domains[i], index: i, center: center, radius: radius),
-        ]);
-      })),
-      const Positioned(left: 20, bottom: 18, child: Row(children: [
-        Icon(Icons.explore_rounded, color: Color(0xFFB8E986), size: 15),
-        SizedBox(width: 6),
-        Text('एक मतदारसंघ. अनेक शक्यता.', style: TextStyle(color: Color(0xFFD9F4E5), fontSize: 11, fontWeight: FontWeight.w800)),
-      ])),
-    ]),
+  Widget build(BuildContext context) {
+    final compact = MediaQuery.sizeOf(context).width < 650;
+    return HeritageMotion(
+      enableTilt: false,
+      child: Container(
+        width: double.infinity,
+        height: compact ? 420 : 460,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: const [
+            BoxShadow(color: Color(0x44051A14), blurRadius: 30, offset: Offset(0, 16)),
+          ],
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Semantics(
+              label: 'उजनी धरण आणि कृष्णा-भीमा खोऱ्याचे दृश्य',
+              image: true,
+              child: Image.asset(
+                'assets/images/heritage_floating_landscape.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x99060D0B), Color(0x22060D0B), Color(0xE6060D0B)],
+                  stops: [0, 0.4, 1],
+                ),
+              ),
+            ),
+            Positioned(
+              left: compact ? 18 : 28,
+              right: compact ? 18 : 28,
+              top: compact ? 20 : 28,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    Container(width: 22, height: 2, color: AppColors.gold),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'एक जिवंत भूप्रदेश',
+                      style: TextStyle(color: AppColors.goldSoft, fontSize: 10.5, fontWeight: FontWeight.w900, letterSpacing: 2),
+                    ),
+                  ]),
+                  const SizedBox(height: 10),
+                  Text(
+                    'पाण्यापासून प्रगतीपर्यंत',
+                    style: TextStyle(
+                      fontFamily: 'NotoSansDevanagari',
+                      color: Colors.white,
+                      fontSize: compact ? 24 : 32,
+                      fontWeight: FontWeight.w900,
+                      height: 1.1,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const SizedBox(
+                    width: 360,
+                    child: Text(
+                      'कृष्णा–भीमा खोरे, उजनी सिंचन आणि त्यातून फुललेली शेतमाती — माढ्याच्या विकासाचा पाया.',
+                      style: TextStyle(color: Color(0xCCFFFFFF), fontSize: 12.5, height: 1.45, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 24, vertical: compact ? 12 : 16),
+                decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: Color(0x33D4AF37))),
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    children: [
+                      for (var i = 0; i < _domains.length; i++) ...[
+                        if (i > 0) const Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: Text('•', style: TextStyle(color: Color(0x66FFFFFF)))),
+                        Row(mainAxisSize: MainAxisSize.min, children: [
+                          Icon(_domains[i].icon, color: AppColors.goldSoft, size: 15),
+                          const SizedBox(width: 6),
+                          Text(_domains[i].label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800)),
+                        ]),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
 }
 
 class _LivingChapters extends StatelessWidget {
@@ -158,63 +217,7 @@ class _ChapterCard extends StatelessWidget {
   );
 }
 
-class _AtlasCore extends StatelessWidget {
-  const _AtlasCore();
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 144, height: 144,
-    decoration: BoxDecoration(shape: BoxShape.circle, gradient: const RadialGradient(colors: [Color(0xFFFFE7A3), Color(0xFFD08A35), Color(0xFF6E3B25)]), border: Border.all(color: const Color(0x99FFE6A0), width: 2), boxShadow: const [BoxShadow(color: Color(0x88F6B94D), blurRadius: 35, spreadRadius: 4)]),
-    child: const Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.landscape_rounded, color: Color(0xFF4A2A1A), size: 34), SizedBox(height: 4), Text('MADHA', style: TextStyle(color: Color(0xFF4A2A1A), fontSize: 17, fontWeight: FontWeight.w900, letterSpacing: 2)), Text('THE HEARTLAND', style: TextStyle(color: Color(0xFF5C321F), fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 1))]),
-  );
-}
 
-class _OrbitNode extends StatelessWidget {
-  const _OrbitNode({required this.domain, required this.index, required this.center, required this.radius});
-  final ({IconData icon, String title, String detail, Color color}) domain;
-  final int index;
-  final Offset center;
-  final double radius;
-  @override
-  Widget build(BuildContext context) {
-    final angle = -math.pi / 2 + index * (math.pi * 2 / 5);
-    final x = center.dx + math.cos(angle) * radius - 48;
-    final y = center.dy + math.sin(angle) * radius - 29;
-    return Positioned(left: x, top: y, child: Semantics(label: '${domain.title}: ${domain.detail}', child: Tooltip(message: domain.detail, child: Container(width: 96, padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7), decoration: BoxDecoration(color: const Color(0xCC102C36), borderRadius: BorderRadius.circular(16), border: Border.all(color: domain.color.withValues(alpha: .75)), boxShadow: [BoxShadow(color: domain.color.withValues(alpha: .18), blurRadius: 14)]), child: Column(children: [Icon(domain.icon, color: domain.color, size: 20), const SizedBox(height: 3), Text(domain.title, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))])))));
-  }
-}
-
-class _AtlasPainter extends CustomPainter {
-  const _AtlasPainter({required this.phase});
-  final double phase;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width * .5, size.height * .59);
-    final radius = size.width < 500 ? size.width * .29 : 145.0;
-    final paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x447BD6C2);
-    for (final r in [radius * .55, radius, radius * 1.45]) {
-      canvas.drawCircle(center, r, paint);
-    }
-    final river = Path()
-      ..moveTo(size.width * .04, size.height * .76)
-      ..cubicTo(size.width * .22, size.height * (.54 + phase * .04), size.width * .38, size.height * (.82 - phase * .05), size.width * .55, size.height * .68)
-      ..cubicTo(size.width * .72, size.height * (.54 + phase * .03), size.width * .83, size.height * .75, size.width * 1.02, size.height * .58);
-    final riverPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.5
-      ..strokeCap = StrokeCap.round
-      ..color = const Color(0xAA67D9F0);
-    canvas.drawPath(river, riverPaint);
-    final glow = Paint()..color = const Color(0x2267D9F0)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
-    canvas.drawPath(river, glow..style = PaintingStyle.stroke..strokeWidth = 12);
-    final dot = Paint()..style = PaintingStyle.fill..color = const Color(0x667BD6C2);
-    for (var i = 0; i < 30; i++) {
-      canvas.drawCircle(Offset((i * 83.0) % size.width, 110 + ((i * 47.0) % (size.height - 120))), i % 3 == 0 ? 1.5 : .7, dot);
-    }
-  }
-  @override
-  bool shouldRepaint(covariant _AtlasPainter oldDelegate) => oldDelegate.phase != phase;
-}
 
 class _FamilyTree extends StatelessWidget {
   const _FamilyTree();
