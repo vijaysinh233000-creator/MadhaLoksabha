@@ -105,10 +105,76 @@ class HeroHeader extends StatelessWidget {
             ),
             child: AspectRatio(
               aspectRatio: 2048 / 931,
-              child: Image.asset(
-                'assets/images/madha_loksabha_banner.jpg',
-                fit: BoxFit.contain,
-                alignment: Alignment.center,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/images/madha_loksabha_banner.jpg',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Color(0xCC062D28)],
+                        stops: [0.48, 1],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: mobile ? 14 : 34,
+                    right: mobile ? 14 : 34,
+                    bottom: mobile ? 12 : 24,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'माढ्याच्या विकासाचा पुढचा अध्याय',
+                                style: TextStyle(
+                                  color: const Color(0xFFFFD77A),
+                                  fontSize: mobile ? 10 : 14,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: .3,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                'पाणी • शेती • शिक्षण • रोजगार',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: mobile ? 15 : 24,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.05,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!mobile)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
+                            decoration: BoxDecoration(
+                              color: const Color(0xDDFFFFFF),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: const Text(
+                              'लोकसेवा प्रथम',
+                              style: TextStyle(
+                                color: AppColors.greenDark,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
