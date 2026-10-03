@@ -167,4 +167,15 @@ assert _merge_complete_page(primary, alternate, {481, 482})
 assert [row["serial"] for row in primary] == ["481", "482"]
 assert primary[1]["name"] == "नाव 482"
 
+# The primary Marathi pass may retain the correct name but miss the Latin EPIC.
+# A card aligned by its verified serial may safely inherit that EPIC from the
+# bilingual alternate pass without replacing the primary Marathi text.
+primary_without_epic = [{"name": "मूळ मराठी नाव", "epic": "", "serial": "670"}]
+alternate_with_epic = [
+    VoterRecord(name="alternate text", epic="MMQ0594309", serial="670"),
+]
+assert _merge_complete_page(primary_without_epic, alternate_with_epic, {670})
+assert primary_without_epic[0]["name"] == "मूळ मराठी नाव"
+assert primary_without_epic[0]["epic"] == "MMQ0594309"
+
 print("PASS: serial recovery requires matching cards and complete sequence")

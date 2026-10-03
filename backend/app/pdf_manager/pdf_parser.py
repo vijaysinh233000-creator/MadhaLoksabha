@@ -125,9 +125,15 @@ def ocr_language_for(text: str, *, scanned: bool = False) -> str:
             return config.OCR_LANG or "eng"
         # On Marathi voter cards the English model can turn Devanagari names
         # into plausible-looking Latin fragments ("AGA", "agar", "Goats").
-        # The Marathi model usually reads the numeric headers too. Suspect
-        # serials are verified with a second bilingual pass after parsing.
-        return config.OCR_LANG_DEV
+        # Electoral cards mix Devanagari names with Latin EPIC identifiers.
+        # Marathi-only OCR preserves names but can silently drop every EPIC.
+        # Prefer Marathi first, with English enabled specifically to retain
+        # those identifiers; deployments can disable blending if required.
+        return (
+            f'{config.OCR_LANG_DEV}+{config.OCR_LANG or "eng"}'
+            if config.OCR_LANG_BLEND
+            else config.OCR_LANG_DEV
+        )
     prof = mar.page_profile(text)
     if prof["script"] == "latin" and looks_english(text):
         return config.OCR_LANG or "eng"
@@ -833,6 +839,8 @@ def _merge_complete_page(rows: list[dict], other: list[VoterRecord], expected: s
             used.add(index)
             kept = dict(original)
             kept["serial"] = record.serial
+            if not str(kept.get("epic") or "").strip() and epic:
+                kept["epic"] = epic
             merged.append(kept)
         else:
             alternate_only += 1

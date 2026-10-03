@@ -49,7 +49,7 @@ check("pure devanagari", dev.detect_script("रामचंद्र जाध�
 check("pure latin", dev.detect_script("Ramchandra Jadhav"), "latin")
 check("marathi page profile -> mar+eng", mar.page_profile("नाव : रामचंद्र जाधव EPIC ZCG1234567")["suggested_lang"], "mar+eng")
 check("english page profile -> eng", mar.page_profile("Name : Vinayshree Bharat Jadhav")["suggested_lang"], "eng")
-check("scanned Marathi page uses Marathi OCR", ocr_language_for("नाव : राजकुमार गुंड", scanned=True), "mar")
+check("scanned Marathi page preserves Latin EPIC", ocr_language_for("नाव : राजकुमार गुंड", scanned=True), "mar+eng")
 check("scanned English page uses English OCR", ocr_language_for("Name: Vinayshree Jadhav Father Name: Bharat Jadhav", scanned=True), "eng")
 with tempfile.TemporaryDirectory() as temp_dir:
     sample = Path(temp_dir) / "short-text-layer.pdf"
@@ -58,7 +58,7 @@ with tempfile.TemporaryDirectory() as temp_dir:
         pdf.save(sample)
     with patch("app.pdf_manager.pdf_parser._ocr_lines", return_value=[]) as mocked_ocr:
         _parse_page_job((str(sample), 0))
-    check("short text layer still uses scanned Marathi OCR", mocked_ocr.call_args.kwargs["lang"], "mar")
+    check("short text layer preserves Latin EPIC", mocked_ocr.call_args.kwargs["lang"], "mar+eng")
 
 print("\n== cross-script skeleton (the accuracy core) ==")
 for latin, deva in [
