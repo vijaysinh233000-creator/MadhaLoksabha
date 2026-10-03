@@ -64,6 +64,19 @@ except QualityError as error:
 else:
     raise AssertionError("Quality gate accepted a repeated serial extraction failure")
 
+large_roll_with_isolated_serial_damage = rows(1115)
+for index in (305, 405, 505, 605, 705, 805, 905, 1005):
+    large_roll_with_isolated_serial_damage[index]["serial"] = str(index)
+large_roll_report = validate(
+    large_roll_with_isolated_serial_damage,
+    pages=56,
+    ocr_pages=56,
+)
+assert large_roll_report["status"] == "passed"
+assert large_roll_report["duplicate_serials"] == 8
+assert large_roll_report["isolated_error_allowance"] == 12
+assert any("isolated" in warning for warning in large_roll_report["warnings"])
+
 repeated_identity = rows(100)
 repeated_identity[24]["name"] = repeated_identity[23]["name"]
 repeated_identity[24]["name_normalized"] = repeated_identity[23]["name_normalized"]

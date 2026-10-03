@@ -200,10 +200,11 @@ def validate(rows: list[dict], pages: int, ocr_pages: int) -> dict:
         "checks": [],
         "warnings": [],
     }
-    # Always tolerate at least two isolated record-level defects.  Larger
-    # rolls receive a small proportional allowance, capped at five, so a few
-    # damaged cards pass but a repeating OCR/layout problem does not.
-    isolated_allowance = max(2, min(5, math.ceil(len(rows) * 0.005)))
+    # Always tolerate at least two isolated record-level defects. Large rolls
+    # receive a one-percent allowance, capped at fifteen. This keeps a handful
+    # of damaged serial boxes searchable instead of withholding an otherwise
+    # healthy thousand-voter roll, while repeated/systemic damage still fails.
+    isolated_allowance = max(2, min(15, math.ceil(len(rows) * 0.01)))
     report["isolated_error_allowance"] = isolated_allowance
     failures = []
     if pages <= 0:
