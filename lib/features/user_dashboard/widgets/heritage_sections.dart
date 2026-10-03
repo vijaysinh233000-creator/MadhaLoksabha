@@ -12,7 +12,96 @@ class HeritageStorySection extends StatelessWidget {
     subtitle:
         'विविध पिढ्यांमधून पुढे आलेल्या सार्वजनिक आणि संस्थात्मक कार्याचा प्रवास.',
     child: const Column(
-      children: [_SugarInstitutionNames(), SizedBox(height: 18), _FamilyTree()],
+      children: [
+        _ImpactAtlas(),
+        SizedBox(height: 18),
+        _SugarInstitutionNames(),
+        SizedBox(height: 18),
+        _FamilyTree(),
+      ],
+    ),
+  );
+}
+
+class _ImpactAtlas extends StatelessWidget {
+  const _ImpactAtlas();
+
+  static const _domains = <({IconData icon, String title, String detail, Color color})>[
+    (icon: Icons.water_drop_rounded, title: 'पाणी आणि सिंचन', detail: 'कृष्णा–भीमा खोऱ्यातील जलसंधारण, सिंचन आणि ग्रामीण पाणीप्रश्न', color: Color(0xFF1976A8)),
+    (icon: Icons.agriculture_rounded, title: 'शेती आणि सहकार', detail: 'ऊस, शेतकरी, दूध आणि सहकारी संस्थांना जोडणारे स्थानिक अर्थविश्व', color: Color(0xFF2F7D4B)),
+    (icon: Icons.factory_rounded, title: 'साखर उद्योग', detail: 'सहकारातून रोजगार, उत्पादन आणि गावांच्या अर्थव्यवस्थेला आधार', color: Color(0xFFB7791F)),
+    (icon: Icons.school_rounded, title: 'शाळा आणि महाविद्यालये', detail: 'अकलूज परिसरातील शिक्षण संस्था, कौशल्य आणि पुढच्या पिढीची वाट', color: Color(0xFF6D4AA2)),
+    (icon: Icons.sports_martial_arts_rounded, title: 'कुस्ती, कला आणि क्रीडा', detail: 'मातीशी जोडलेली कुस्ती, लेझीम, कला आणि तरुणांच्या मैदानाला व्यासपीठ', color: Color(0xFFC34E38)),
+  ];
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [Color(0xFF092C3B), Color(0xFF14543D)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(24),
+      boxShadow: const [BoxShadow(color: Color(0x22072D26), blurRadius: 20, offset: Offset(0, 9))],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(color: const Color(0x22FFFFFF), borderRadius: BorderRadius.circular(14)),
+              child: const Icon(Icons.explore_rounded, color: Color(0xFFF3C96B), size: 23),
+            ),
+            const SizedBox(width: 11),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('माढ्याची विकासकथा', style: TextStyle(color: Color(0xFFF3C96B), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: .5)),
+                  SizedBox(height: 3),
+                  Text('एक व्यक्ती नाही — एक संपूर्ण परिसंस्था', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, height: 1.15)),
+                  SizedBox(height: 4),
+                  Text('पाणी, माती, शिक्षण, सहकार आणि संस्कृती यांना एकत्र पाहण्याचा नवा नकाशा.', style: TextStyle(color: Color(0xD9FFFFFF), fontSize: 12, height: 1.35)),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [for (final domain in _domains) _DomainPill(domain: domain)],
+        ),
+      ],
+    ),
+  );
+}
+
+class _DomainPill extends StatelessWidget {
+  const _DomainPill({required this.domain});
+  final ({IconData icon, String title, String detail, Color color}) domain;
+
+  @override
+  Widget build(BuildContext context) => Tooltip(
+    message: domain.detail,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      decoration: BoxDecoration(color: const Color(0x18FFFFFF), borderRadius: BorderRadius.circular(15), border: Border.all(color: const Color(0x28FFFFFF))),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(domain.icon, color: domain.color, size: 17),
+          const SizedBox(width: 6),
+          Text(domain.title, style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w800)),
+        ],
+      ),
     ),
   );
 }
