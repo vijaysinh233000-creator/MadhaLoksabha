@@ -17,6 +17,8 @@ class HeritageStorySection extends StatelessWidget {
       children: [
         _ImpactAtlas(),
         SizedBox(height: 18),
+        _LivingChapters(),
+        SizedBox(height: 18),
         _SugarInstitutionNames(),
         SizedBox(height: 18),
         _FamilyTree(),
@@ -65,6 +67,78 @@ class _ImpactAtlas extends StatelessWidget {
         Text('एक मतदारसंघ. अनेक शक्यता.', style: TextStyle(color: Color(0xFFD9F4E5), fontSize: 11, fontWeight: FontWeight.w800)),
       ])),
     ]),
+  );
+}
+
+class _LivingChapters extends StatelessWidget {
+  const _LivingChapters();
+
+  static const _chapters = <({String number, String title, String story, String asset, IconData icon, Color accent})>[
+    (number: '01', title: 'पाणी', story: 'नदी, धरण आणि शेतापर्यंत पोहोचणारी आशा', asset: 'assets/images/heritage_floating_landscape.png', icon: Icons.water_drop_rounded, accent: Color(0xFF64D9F0)),
+    (number: '02', title: 'माती', story: 'ऊस, शेती आणि सहकारातून उभे राहणारे गाव', asset: 'assets/images/heritage_green_landscape.png', icon: Icons.grass_rounded, accent: Color(0xFFB9E77A)),
+    (number: '03', title: 'ज्ञान', story: 'शाळेपासून महाविद्यालयापर्यंतची संधी', asset: 'assets/images/heritage_college.png', icon: Icons.school_rounded, accent: Color(0xFFFFD166)),
+    (number: '04', title: 'जोडणी', story: 'रस्ते, बाजार आणि गावांना जोडणारा प्रवास', asset: 'assets/images/sector_roads.png', icon: Icons.alt_route_rounded, accent: Color(0xFFFFA06B)),
+    (number: '05', title: 'ओळख', story: 'कुस्ती, कला आणि खेळातून जिवंत राहणारी माती', asset: 'assets/images/sector_culture.png', icon: Icons.sports_martial_arts_rounded, accent: Color(0xFFD2A7FF)),
+  ];
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Padding(
+        padding: EdgeInsets.only(left: 4, bottom: 10),
+        child: Row(children: [
+          Icon(Icons.auto_awesome_rounded, color: Color(0xFFD19A3B), size: 18),
+          SizedBox(width: 7),
+          Text('जिवंत माढा', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.navyText)),
+          SizedBox(width: 8),
+          Text('एक अनुभव • पाच अध्याय', style: TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w700)),
+        ]),
+      ),
+      SizedBox(
+        height: 245,
+        child: LayoutBuilder(builder: (context, constraints) {
+          final compact = constraints.maxWidth < 650;
+          return ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: _chapters.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (_, index) => _ChapterCard(chapter: _chapters[index], width: compact ? 220 : 250),
+          );
+        }),
+      ),
+    ],
+  );
+}
+
+class _ChapterCard extends StatelessWidget {
+  const _ChapterCard({required this.chapter, required this.width});
+  final ({String number, String title, String story, String asset, IconData icon, Color accent}) chapter;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) => HeritageMotion(
+    child: Semantics(
+      label: '${chapter.title}: ${chapter.story}',
+      child: Container(
+        width: width,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: const Color(0xFF102B31),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: chapter.accent.withOpacity(.55)),
+          boxShadow: [BoxShadow(color: chapter.accent.withOpacity(.15), blurRadius: 20, offset: const Offset(0, 9))],
+        ),
+        child: Stack(fit: StackFit.expand, children: [
+          Image.asset(chapter.asset, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox()),
+          DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, const Color(0xF20A2028)]))),
+          Positioned(top: 14, left: 15, child: Text(chapter.number, style: TextStyle(color: chapter.accent, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.5))),
+          Positioned(top: 12, right: 14, child: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0x66101F26), shape: BoxShape.circle, border: Border.all(color: chapter.accent.withOpacity(.7))), child: Icon(chapter.icon, color: chapter.accent, size: 18))),
+          Positioned(left: 15, right: 14, bottom: 15, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(chapter.title, style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text(chapter.story, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xD9FFFFFF), fontSize: 11.5, height: 1.35, fontWeight: FontWeight.w700))])),
+        ]),
+      ),
+    ),
   );
 }
 
@@ -593,7 +667,7 @@ class InstitutionJourneySection extends StatelessWidget {
       (
         Icons.route_rounded,
         'रस्ते व संपर्क',
-        'पायाभूत सुविधा व वाहतूक',
+        'पायाभूत ���ुविधा व वाहतूक',
         'roads',
         'assets/images/sector_roads.png',
       ),
