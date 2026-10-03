@@ -7,7 +7,7 @@ class HeritageStorySection extends StatelessWidget {
   const HeritageStorySection({super.key});
   @override
   Widget build(BuildContext context) => _Section(
-      eyebrow: 'मोहिते-पाटील कार्यपरंपरा',
+    eyebrow: 'मोहिते-पाटील कार्यपरंपरा',
     title: 'सहकारातून लोकसेवेपर्यंत',
     subtitle:
         'विविध पिढ्यांमधून पुढे आलेल्या सार्वजनिक आणि संस्थात्मक कार्याचा प्रवास.',
@@ -29,78 +29,84 @@ class _FamilyTree extends StatelessWidget {
     ),
     child: Column(
       children: [
-            const _GenerationLabel('पहिली पिढी'),
-            const SizedBox(height: 4),
-            const FractionallySizedBox(
-              widthFactor: .74,
+        const _GenerationLabel('पहिली पिढी'),
+        const SizedBox(height: 4),
+        const FractionallySizedBox(
+          widthFactor: .74,
+          child: _Person(
+            slug: 'shankarrao',
+            name: 'सहकार महर्षी शंकरराव मोहिते-पाटील',
+            role: 'सहकार आणि लोकसेवेच्या वारशाचे शिल्पकार',
+            highestPosition: 'विधानसभा सदस्य (आमदार)',
+            highestPeriod: '१९५२–१९७७ · सलग २५ वर्षे',
+            institutions: ['सहकार महर्षी साखर कारखाना', 'शिक्षण प्रसारक मंडळ'],
+            image: 'assets/images/shankarrao_mohite_patil.jpg',
+            imageAlignment: Alignment(-.55, -.15),
+            featured: true,
+          ),
+        ),
+        const SizedBox(height: 22),
+        const _GenerationLabel('दुसरी पिढी'),
+        const SizedBox(height: 4),
+        const Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
               child: _Person(
-                slug: 'shankarrao',
-                name: 'सहकार महर्षी शंकरराव मोहिते-पाटील',
-                role: 'सहकार आणि लोकसेवेच्या वारशाचे शिल्पकार',
-                institutions: [
-                  'सहकार महर्षी साखर कारखाना',
-                  'शिक्षण प्रसारक मंडळ',
-                ],
-                image: 'assets/images/shankarrao_mohite_patil.jpg',
-                imageAlignment: Alignment(-.55, -.15),
+                slug: 'vijaysinh',
+                name: 'विजयसिंह मोहिते-पाटील',
+                role: 'राज्य व प्रादेशिक सार्वजनिक जीवन',
+                highestPosition: 'उपमुख्यमंत्री, महाराष्ट्र राज्य',
+                highestPeriod: '२००३–२००४',
+                institutions: ['सिंचन', 'शिक्षण', 'सहकार'],
+                image: 'assets/images/vijaysinh_mohite_patil.jpg',
+              ),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: _Person(
+                slug: 'jaysinh',
+                name: 'जयसिंह (बाळ दादा) मोहिते-पाटील',
+                role: 'शिक्षण, सहकार आणि महालेझीम चळवळ',
+                highestPosition: 'ज्येष्ठ संस्थात्मक नेतृत्व व अध्यक्ष',
+                image: 'assets/images/jaysinh_mohite_patil.jpg',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 28),
+        const _GenerationLabel('तिसरी पिढी'),
+        const SizedBox(height: 4),
+        const Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _Person(
+                slug: 'ranjitsinh',
+                name: 'रणजितसिंह मोहिते-पाटील',
+                role: 'युवा नेतृत्व आणि सहकार',
+                highestPosition: 'खासदार, राज्यसभा',
+                highestPeriod: '२००९–२०१२',
+                institutions: ['DCC बँक', 'युवा संघटन'],
+                image: 'assets/images/ranjitsinh_mohite_patil.jpg',
                 featured: true,
               ),
             ),
-            const SizedBox(height: 22),
-            const _GenerationLabel('दुसरी पिढी'),
-            const SizedBox(height: 4),
-            const Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _Person(
-                    slug: 'vijaysinh',
-                    name: 'विजयसिंह मोहिते-पाटील',
-                    role: 'राज्य व प्रादेशिक सार्वजनिक जीवन',
-                    institutions: ['सिंचन', 'शिक्षण', 'सहकार'],
-                    image: 'assets/images/vijaysinh_mohite_patil.jpg',
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: _Person(
-                    slug: 'jaysinh',
-                    name: 'जयसिंह (बालदादा) मोहिते-पाटील',
-                    role: 'शिक्षण, सहकार आणि महालेझीम चळवळ',
-                    image: 'assets/images/jaysinh_mohite_patil.jpg',
-                  ),
-                ),
-              ],
+            SizedBox(width: 10),
+            Expanded(
+              child: _Person(
+                slug: 'dhairyasheel',
+                name: 'धैर्यशील (भैयासाहेब) मोहिते-पाटील',
+                role: 'माढा लोकसभा मतदारसंघाचे प्रतिनिधित्व',
+                highestPosition: 'खासदार, लोकसभा',
+                highestPeriod: '२०२४ पासून विद्यमान',
+                institutions: ['शिवमृत दूध संघ', 'शिवरत्न शिक्षण संस्था'],
+                image: 'assets/images/dhairyashil_mohite_patil.jpg',
+                featured: true,
+              ),
             ),
-            const SizedBox(height: 28),
-            const _GenerationLabel('तिसरी पिढी'),
-            const SizedBox(height: 4),
-            const Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _Person(
-                    slug: 'ranjitsinh',
-                    name: 'रणजितसिंह मोहिते-पाटील',
-                    role: 'युवा नेतृत्व आणि सहकार',
-                    institutions: ['DCC बँक', 'युवा संघटन'],
-                    image: 'assets/images/ranjitsinh_mohite_patil.jpg',
-                    featured: true,
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: _Person(
-                    slug: 'dhairyasheel',
-                    name: 'खासदार धैर्यशील राजसिंह मोहिते-पाटील',
-                    role: 'माढा लोकसभा मतदारसंघाचे प्रतिनिधित्व',
-                    institutions: ['शिवमृत दूध संघ', 'शिवरत्न शिक्षण संस्था'],
-                    image: 'assets/images/dhairyashil_mohite_patil.jpg',
-                    featured: true,
-                  ),
-                ),
-              ],
-            ),
+          ],
+        ),
       ],
     ),
   );
@@ -226,6 +232,8 @@ class _Person extends StatelessWidget {
     required this.slug,
     required this.name,
     required this.role,
+    required this.highestPosition,
+    this.highestPeriod = '',
     this.institutions = const [],
     this.image,
     this.imageAlignment = Alignment.topCenter,
@@ -234,6 +242,8 @@ class _Person extends StatelessWidget {
   final String slug;
   final String name;
   final String role;
+  final String highestPosition;
+  final String highestPeriod;
   final List<String> institutions;
   final String? image;
   final Alignment imageAlignment;
@@ -243,63 +253,67 @@ class _Person extends StatelessWidget {
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 700;
     return SizedBox(
-      height: compact ? 340 : 365,
+      height: compact ? 405 : 430,
       child: HeritageMotion(
         child: Semantics(
-      button: true,
-      label: '$name — जीवनप्रवास वाचा',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => Navigator.of(context).pushNamed('/profile/$slug'),
-          borderRadius: BorderRadius.circular(22),
-          child: Ink(
-            padding: EdgeInsets.fromLTRB(
-              compact ? 9 : 14,
-              compact ? 14 : 18,
-              compact ? 9 : 14,
-              compact ? 12 : 15,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
+          button: true,
+          label: '$name — जीवनप्रवास वाचा',
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => Navigator.of(context).pushNamed('/profile/$slug'),
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: featured
-                    ? const Color(0xFFD3A746)
-                    : const Color(0x2B176B3A),
-                width: featured ? 1.5 : 1,
+              child: Ink(
+                padding: EdgeInsets.fromLTRB(
+                  compact ? 9 : 14,
+                  compact ? 14 : 18,
+                  compact ? 9 : 14,
+                  compact ? 12 : 15,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: featured
+                        ? const Color(0xFFD3A746)
+                        : const Color(0x2B176B3A),
+                    width: featured ? 1.5 : 1,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x130A3A22),
+                      blurRadius: 18,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _Portrait(
+                      image: image,
+                      icon: icon,
+                      alignment: imageAlignment,
+                      size: featured
+                          ? (compact ? 104 : 132)
+                          : (compact ? 82 : 100),
+                      borderWidth: featured ? 3 : 2,
+                    ),
+                    const SizedBox(height: 11),
+                    _PersonCopy(
+                      name: name,
+                      role: role,
+                      highestPosition: highestPosition,
+                      highestPeriod: highestPeriod,
+                      institutions: institutions,
+                      centered: true,
+                      compact: compact,
+                    ),
+                  ],
+                ),
               ),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x130A3A22),
-                  blurRadius: 18,
-                  offset: Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _Portrait(
-                  image: image,
-                  icon: icon,
-                  alignment: imageAlignment,
-                  size: featured ? (compact ? 104 : 132) : (compact ? 82 : 100),
-                  borderWidth: featured ? 3 : 2,
-                ),
-                const SizedBox(height: 11),
-                _PersonCopy(
-                  name: name,
-                  role: role,
-                  institutions: institutions,
-                  centered: true,
-                  compact: compact,
-                ),
-              ],
             ),
           ),
-        ),
-      ),
         ),
       ),
     );
@@ -348,12 +362,16 @@ class _PersonCopy extends StatelessWidget {
   const _PersonCopy({
     required this.name,
     required this.role,
+    required this.highestPosition,
+    required this.highestPeriod,
     required this.institutions,
     this.centered = false,
     this.compact = false,
   });
   final String name;
   final String role;
+  final String highestPosition;
+  final String highestPeriod;
   final List<String> institutions;
   final bool centered;
   final bool compact;
@@ -388,6 +406,75 @@ class _PersonCopy extends StatelessWidget {
           color: AppColors.textSecondary,
         ),
       ),
+      const SizedBox(height: 8),
+      Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 7 : 10,
+          vertical: compact ? 7 : 9,
+        ),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF8E8),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0x66C99A3D)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.workspace_premium_rounded,
+                  size: compact ? 13 : 16,
+                  color: AppColors.heritageBrown,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'सर्वोच्च पद',
+                  style: TextStyle(
+                    fontFamily: 'NotoSansDevanagari',
+                    fontSize: compact ? 9 : 11,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.heritageBrown,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 3),
+            Text(
+              highestPosition,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: 'NotoSansDevanagari',
+                fontSize: compact ? 10 : 13,
+                height: 1.25,
+                fontWeight: FontWeight.w900,
+                color: AppColors.navyText,
+              ),
+            ),
+            if (highestPeriod.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                highestPeriod,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'NotoSansDevanagari',
+                  fontSize: compact ? 8.5 : 10.5,
+                  height: 1.2,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.greenDark,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
       if (institutions.isNotEmpty) ...[
         const SizedBox(height: 8),
         Wrap(
@@ -397,7 +484,10 @@ class _PersonCopy extends StatelessWidget {
           children: institutions
               .map(
                 (item) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEAF5EC),
                     borderRadius: BorderRadius.circular(99),
@@ -418,7 +508,9 @@ class _PersonCopy extends StatelessWidget {
       ],
       const SizedBox(height: 9),
       Row(
-        mainAxisAlignment: centered ? MainAxisAlignment.center : MainAxisAlignment.start,
+        mainAxisAlignment: centered
+            ? MainAxisAlignment.center
+            : MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: const [
           Icon(Icons.menu_book_rounded, size: 19, color: AppColors.greenDark),
@@ -806,7 +898,7 @@ class NewBrandFooter extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             const Text(
-                'माढा लोकसभा',
+              'माढा लोकसभा',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'NotoSansDevanagari',
