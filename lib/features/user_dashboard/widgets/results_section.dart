@@ -9,7 +9,6 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/common_widgets.dart';
 import '../../pdf_viewer/pdf_viewer.dart';
 import '../search_controller.dart';
-import 'voter_slip_card.dart';
 
 /// Search results: loading / error / empty / list + pagination.
 class ResultsSection extends StatelessWidget {
@@ -653,7 +652,7 @@ class ResultCard extends StatelessWidget {
                             ),
                           if (r.part.isNotEmpty)
                             Pill(
-                              label: 'Booth ${r.part}',
+                              label: 'बूथ ${r.part}',
                               icon: Icons.tag_rounded,
                             ),
                           Pill(
@@ -687,8 +686,6 @@ class ResultCard extends StatelessWidget {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      VoterSlipCard(result: r),
                       const SizedBox(height: 12),
                       Wrap(
                         spacing: 8,
