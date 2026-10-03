@@ -383,6 +383,80 @@ def _repair_ocr_epics(lines: list[Line]) -> list[Line]:
     return repaired
 
 
+_FLEXIBLE_EPIC_RE = re.compile(
+    r"(?<![A-Z0-9])([A-Z]{3})[\s/\-]*(\d(?:[\s/\-]*\d){6})(?!\d)", re.I
+)
+
+
+def _epic_from_ocr_text(text: str) -> str:
+    """Return a canonical EPIC from noisy English OCR, or empty string."""
+    upper = to_ascii_digits(text).upper()
+    match = EPIC_RE.search(upper)
+    if match:
+        compact = re.sub(r"[^A-Z0-9]", "", match.group(1))
+        return compact if re.fullmatch(r"[A-Z]{3}\d{7}", compact) else ""
+    flexible = _FLEXIBLE_EPIC_RE.search(upper)
+    if not flexible:
+        return ""
+    digits = re.sub(r"\D", "", flexible.group(2))
+    return flexible.group(1).upper() + digits if len(digits) == 7 else ""
+
+
+def _merge_positioned_epics(
+    rows: list[dict], primary_lines: list[Line], epic_lines: list[Line], page_width: float
+) -> int:
+    """Fill blank EPICs using same-card coordinates, preserving Marathi data."""
+    if not rows or page_width <= 0:
+        return 0
+    anchors = [line for line in primary_lines
+               if NAME_RE.match(line[2]) or DEV_NAME_RE.match(line[2])]
+    column_width = page_width / 3
+
+    def card_order(line: Line) -> tuple[int, float]:
+        return max(0, min(2, int(line[0] / column_width))), line[1]
+
+    anchors.sort(key=card_order)
+    # A one-to-one anchor/record mapping is required. Uncertain pages remain
+    # searchable with a blank EPIC instead of risking a wrong identity.
+    if len(anchors) != len(rows):
+        return 0
+
+    candidates: dict[int, set[str]] = {}
+    for x, y, text in _repair_ocr_epics(epic_lines):
+        epic = _epic_from_ocr_text(text)
+        if not epic:
+            continue
+        column = max(0, min(2, int(x / column_width)))
+        eligible = [
+            (anchor_y - y, index)
+            for index, (anchor_x, anchor_y, _) in enumerate(anchors)
+            if max(0, min(2, int(anchor_x / column_width))) == column
+            and -8 <= anchor_y - y <= 125
+        ]
+        if eligible:
+            _, index = min(eligible)
+            candidates.setdefault(index, set()).add(epic)
+
+    recovered = 0
+    already_used = {
+        re.sub(r"[^A-Z0-9]", "", str(row.get("epic") or "").upper())
+        for row in rows if str(row.get("epic") or "").strip()
+    }
+    for index, row in enumerate(rows):
+        if str(row.get("epic") or "").strip():
+            continue
+        values = candidates.get(index, set())
+        if len(values) != 1:
+            continue
+        epic = next(iter(values))
+        if epic in already_used:
+            continue
+        row["epic"] = epic
+        already_used.add(epic)
+        recovered += 1
+    return recovered
+
+
 def order_by_columns(lines: list[Line]) -> list[str]:
     """Group lines into vertical columns (left-edge clustering) and read each
     column top-to-bottom.  Electoral rolls print voter boxes in a 3-column
@@ -750,6 +824,16 @@ def _parse_page_job(args: tuple[str, int]) -> tuple[int, str, bool, list[dict]]:
                 lines = ocr
                 used_ocr = True
         result = parse_page_text(order_by_columns(lines), page_index + 1, "")
+        if (used_ocr and config.OCR_EPIC_RECOVERY and result.records
+                and any(not record.epic for record in result.records)):
+            # Marathi OCR owns names; English sparse OCR contributes only
+            # coordinate-verified EPICs and never replaces existing fields.
+            epic_lines = _ocr_lines(page, lang=config.OCR_LANG or "eng", psm=11)
+            row_data = [record.to_row() for record in result.records]
+            recovered = _merge_positioned_epics(row_data, lines, epic_lines, page.rect.width)
+            if recovered:
+                log.info("Recovered %d EPIC identifiers on page %d", recovered, page_index + 1)
+                result.records = [VoterRecord(**row) for row in row_data]
         return page_index + 1, result.part, used_ocr, [r.to_row() for r in result.records]
 
 

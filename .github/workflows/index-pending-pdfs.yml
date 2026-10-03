@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - "backend/app/pdf_manager/**"
+      - "backend/app/config.py"
       - "backend/tools/sync_cloud.py"
       - "backend/tests/**"
       - ".github/workflows/index-pending-pdfs.yml"
@@ -37,6 +38,7 @@ env:
   VF_OCR_LANG_DEV: mar
   VF_OCR_LANG_AUTO: "1"
   VF_OCR_LANG_BLEND: "1"
+  VF_OCR_EPIC_RECOVERY: "1"
   OMP_THREAD_LIMIT: "1"
 
 jobs:

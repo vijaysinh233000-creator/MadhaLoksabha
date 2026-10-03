@@ -34,6 +34,9 @@ OCR_LANG = os.environ.get("VF_OCR_LANG", "eng")          # language for Latin/En
 OCR_LANG_DEV = os.environ.get("VF_OCR_LANG_DEV", "mar")   # language for Devanagari/Marathi pages
 OCR_LANG_AUTO = os.environ.get("VF_OCR_LANG_AUTO", "1") == "1"  # pick per page from the script
 OCR_LANG_BLEND = os.environ.get("VF_OCR_LANG_BLEND", "1") == "1"  # Marathi pages: "mar+eng"
+# A second English-only pass recovers Latin EPIC identifiers missed by the
+# Marathi layout pass. It fills only coordinate-verified blank fields.
+OCR_EPIC_RECOVERY = os.environ.get("VF_OCR_EPIC_RECOVERY", "1") == "1"
 TESSDATA_DIR = Path(os.environ.get("VF_TESSDATA_DIR", str(PROJECT_ROOT / "backend" / "tessdata")))
 TESSERACT_CMD = os.environ.get("VF_TESSERACT_CMD", "")
 TRANSLIT_DB = Path(os.environ.get("VF_TRANSLIT_DB", str(PROJECT_ROOT / "data" / "translit.sqlite")))

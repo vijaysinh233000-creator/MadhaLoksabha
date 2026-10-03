@@ -12,6 +12,7 @@ from backend.app.pdf_manager.pdf_parser import (
     _apply_verified_page_serials,
     _card_record_from_text,
     _merge_complete_page,
+    _merge_positioned_epics,
     _neighbour_expected,
     _recover_single_card_serial,
     _recover_missing_sequence_serials,
@@ -177,5 +178,35 @@ alternate_with_epic = [
 assert _merge_complete_page(primary_without_epic, alternate_with_epic, {670})
 assert primary_without_epic[0]["name"] == "मूळ मराठी नाव"
 assert primary_without_epic[0]["epic"] == "MMQ0594309"
+
+# A separate English OCR pass may recover spaced Latin EPICs. They are merged
+# by voter-card position without replacing an existing value.
+positioned_rows = [
+    {"name": "voter one", "epic": "", "serial": "1"},
+    {"name": "voter two", "epic": "OLD0000002", "serial": "2"},
+    {"name": "voter three", "epic": "", "serial": "3"},
+]
+positioned_names = [
+    (62.0, 140.0, "Name: voter one"),
+    (696.0, 140.0, "Name: voter two"),
+    (1329.0, 140.0, "Name: voter three"),
+]
+positioned_epics = [
+    (510.0, 100.0, "ZCG 100 0001"),
+    (1145.0, 100.0, "NEW1000002"),
+    (1778.0, 100.0, "MMQ0594309"),
+]
+assert _merge_positioned_epics(positioned_rows, positioned_names, positioned_epics, 1983.0) == 2
+assert [row["epic"] for row in positioned_rows] == ["ZCG1000001", "OLD0000002", "MMQ0594309"]
+
+# Conflicting OCR readings are not guessed.
+ambiguous_rows = [{"name": "voter", "epic": "", "serial": "1"}]
+assert _merge_positioned_epics(
+    ambiguous_rows,
+    [(62.0, 140.0, "Name: voter")],
+    [(510.0, 100.0, "ABC0000001"), (510.0, 101.0, "XYZ0000001")],
+    1983.0,
+) == 0
+assert ambiguous_rows[0]["epic"] == ""
 
 print("PASS: serial recovery requires matching cards and complete sequence")
