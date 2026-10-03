@@ -57,7 +57,7 @@ function positionHighlight() {
   const box = locator.box;
   // Keep the marker just outside the voter card so its border never covers
   // the serial number or any voter details printed along the card edges.
-  const gap = 6;
+  const gap = 12;
   voterHighlight.style.left = `calc(${box.x * 100}% - ${gap}px)`;
   voterHighlight.style.top = `calc(${box.y * 100}% - ${gap}px)`;
   voterHighlight.style.width = `calc(${box.width * 100}% + ${gap * 2}px)`;
