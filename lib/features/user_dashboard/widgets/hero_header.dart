@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -99,80 +101,40 @@ class HeroHeader extends StatelessWidget {
           Container(
             constraints: const BoxConstraints(maxWidth: 1440),
             decoration: const BoxDecoration(
-              border: Border.symmetric(
-                horizontal: BorderSide(color: Color(0x1A000000)),
-              ),
+              border: Border.symmetric(horizontal: BorderSide(color: Color(0x22000000))),
             ),
             child: AspectRatio(
               aspectRatio: 2048 / 931,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    'assets/images/madha_loksabha_banner.jpg',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                  ),
-                  const DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Color(0xCC062D28)],
-                        stops: [0.48, 1],
-                      ),
-                    ),
+                  Image.asset('assets/images/madha_loksabha_banner.jpg', fit: BoxFit.cover, alignment: Alignment.center),
+                  const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0x22052E2A), Color(0x00000000), Color(0xE6052725)], stops: [0, .44, 1]))),
+                  Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _HeroContourPainter()))),
+                  Positioned(
+                    left: mobile ? 14 : 34,
+                    right: mobile ? 14 : 34,
+                    top: mobile ? 14 : 24,
+                    child: Row(children: [
+                      _HeroTag(icon: Icons.water_drop_rounded, label: 'कृष्णा–भीमा'),
+                      const SizedBox(width: 7),
+                      _HeroTag(icon: Icons.explore_rounded, label: 'माढा 360°'),
+                      const Spacer(),
+                      if (!mobile) const Text('एक मतदारसंघ • अनेक कथा', style: TextStyle(color: Color(0xE6FFFFFF), fontWeight: FontWeight.w800, fontSize: 12)),
+                    ]),
                   ),
                   Positioned(
                     left: mobile ? 14 : 34,
                     right: mobile ? 14 : 34,
                     bottom: mobile ? 12 : 24,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'माढ्याच्या विकासाचा पुढचा अध्याय',
-                                style: TextStyle(
-                                  color: const Color(0xFFFFD77A),
-                                  fontSize: mobile ? 10 : 14,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: .3,
-                                ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                'पाणी • शेती • शिक्षण • रोजगार',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: mobile ? 15 : 24,
-                                  fontWeight: FontWeight.w900,
-                                  height: 1.05,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (!mobile)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
-                            decoration: BoxDecoration(
-                              color: const Color(0xDDFFFFFF),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: const Text(
-                              'लोकसेवा प्रथम',
-                              style: TextStyle(
-                                color: AppColors.greenDark,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('माढ्याच्या विकासाचा पुढचा अध्याय', style: TextStyle(color: const Color(0xFFFFD77A), fontSize: mobile ? 10 : 14, fontWeight: FontWeight.w800, letterSpacing: .3)),
+                        const SizedBox(height: 3),
+                        Text('पाणी • शेती • शिक्षण • रोजगार', style: TextStyle(color: Colors.white, fontSize: mobile ? 15 : 26, fontWeight: FontWeight.w900, height: 1.05)),
+                      ])),
+                      if (!mobile) Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10), decoration: BoxDecoration(color: const Color(0xDDFCF7E9), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0x99FFD77A))), child: const Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.verified_rounded, color: AppColors.greenDark, size: 17), SizedBox(width: 6), Text('लोकसेवा प्रथम', style: TextStyle(color: AppColors.greenDark, fontWeight: FontWeight.w900))])),
+                    ]),
                   ),
                 ],
               ),
@@ -182,4 +144,42 @@ class HeroHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+class _HeroTag extends StatelessWidget {
+  const _HeroTag({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+    decoration: BoxDecoration(
+      color: const Color(0x99112625),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: const Color(0x66D7F1D3)),
+    ),
+    child: Row(mainAxisSize: MainAxisSize.min, children: [
+      Icon(icon, size: 14, color: const Color(0xFFFFD77A)),
+      const SizedBox(width: 5),
+      Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
+    ]),
+  );
+}
+
+class _HeroContourPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x55D7F1D3);
+    for (var i = 0; i < 5; i++) {
+      final path = Path()..moveTo(-20, size.height * (.54 + i * .08));
+      for (var x = 0.0; x <= size.width + 40; x += 24) {
+        path.lineTo(x, size.height * (.54 + i * .08) + 10 * math.sin(x / 70 + i));
+      }
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
