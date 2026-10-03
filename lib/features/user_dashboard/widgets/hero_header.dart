@@ -108,9 +108,13 @@ class HeroHeader extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset('assets/images/madha_loksabha_banner.jpg', fit: BoxFit.cover, alignment: Alignment.center),
-                  const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0x22052E2A), Color(0x00000000), Color(0xE6052725)], stops: [0, .44, 1]))),
-                  Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _HeroContourPainter()))),
+                  Semantics(
+                    label: 'धैर्यशील मोहिते-पाटील आणि माढा मतदारसंघाचे चित्र',
+                    image: true,
+                    child: Image.asset('assets/images/madha_loksabha_banner.jpg', fit: BoxFit.cover, alignment: Alignment.center),
+                  ),
+                  const ExcludeSemantics(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0x22052E2A), Color(0x00000000), Color(0xE6052725)], stops: [0, .44, 1])))),
+                  Positioned.fill(child: ExcludeSemantics(child: IgnorePointer(child: CustomPaint(painter: _HeroContourPainter())))),
                   Positioned(
                     left: mobile ? 14 : 34,
                     right: mobile ? 14 : 34,

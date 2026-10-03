@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../core/models/models.dart';
 import '../../../core/services/voice_search.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/common_widgets.dart';
 import '../search_controller.dart';
 
 /// "नाव शोधा" card: village dropdown + search input + suggestions + recents.
@@ -79,15 +78,59 @@ class _SearchCardState extends State<SearchCard> {
   Widget build(BuildContext context) {
     final c = context.watch<VoterSearchController>();
     final narrow = MediaQuery.sizeOf(context).width < 600;
-    return AppCard(
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.white, Color(0xFFF4FBF6)],
+        ),
+        border: Border.all(color: AppColors.green.withValues(alpha: 0.14)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navy.withValues(alpha: 0.14),
+            blurRadius: 32,
+            offset: const Offset(0, 18),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(18, 22, 18, 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SectionTitle(
-            icon: Icons.search_rounded,
-            title: 'नाव शोधा',
-            center: true,
+          Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.greenLight,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Text(
+              'मोफत · तात्काळ · विश्वासार्ह',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: AppColors.greenDark,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.travel_explore_rounded, color: AppColors.green, size: 22),
+              SizedBox(width: 8),
+              Text(
+                'तुमचे नाव शोधा',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.navyText,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 4),
           const Text(
@@ -187,20 +230,15 @@ class _SearchCardState extends State<SearchCard> {
               ),
             ),
           ],
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          const SizedBox(height: 12),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 14,
+            runSpacing: 6,
             children: const [
-              Icon(Icons.verified_rounded, size: 15, color: AppColors.green),
-              SizedBox(width: 5),
-              Text(
-                'शोध पूर्णपणे मोफत आहे',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.green,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              _TrustBadge(icon: Icons.verified_rounded, label: 'पूर्णपणे मोफत'),
+              _TrustBadge(icon: Icons.lock_rounded, label: 'खाजगी व सुरक्षित'),
+              _TrustBadge(icon: Icons.flash_on_rounded, label: 'तात्काळ निकाल'),
             ],
           ),
           if (c.recent.isNotEmpty && c.response == null && !c.loading) ...[
@@ -281,6 +319,31 @@ class _SearchCardState extends State<SearchCard> {
             )
           : const Icon(Icons.search_rounded, size: 22),
       label: const Text('शोधा', style: TextStyle(fontSize: 16)),
+    );
+  }
+}
+
+class _TrustBadge extends StatelessWidget {
+  const _TrustBadge({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: AppColors.green),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11.5,
+            color: AppColors.greenDark,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
     );
   }
 }

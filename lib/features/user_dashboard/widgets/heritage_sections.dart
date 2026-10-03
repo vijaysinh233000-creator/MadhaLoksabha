@@ -73,7 +73,7 @@ class _ImpactAtlasState extends State<_ImpactAtlas> with SingleTickerProviderSta
         final radius = constraints.maxWidth < 500 ? constraints.maxWidth * .32 : 155.0;
         return Stack(children: [
           Positioned(left: center.dx - 78, top: center.dy - 78, child: const _AtlasCore()),
-          for (var i = 0; i < _domains.length; i++) _OrbitNode(domain: _domains[i], index: i, center: center, radius: radius),
+          for (var i = 0; i < _ImpactAtlas._domains.length; i++) _OrbitNode(domain: _ImpactAtlas._domains[i], index: i, center: center, radius: radius),
         ]);
       })),
       const Positioned(left: 20, bottom: 18, child: Row(children: [
@@ -143,14 +143,14 @@ class _ChapterCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF102B31),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: chapter.accent.withOpacity(.55)),
-          boxShadow: [BoxShadow(color: chapter.accent.withOpacity(.15), blurRadius: 20, offset: const Offset(0, 9))],
+          border: Border.all(color: chapter.accent.withValues(alpha: .55)),
+          boxShadow: [BoxShadow(color: chapter.accent.withValues(alpha: .15), blurRadius: 20, offset: const Offset(0, 9))],
         ),
         child: Stack(fit: StackFit.expand, children: [
           Image.asset(chapter.asset, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox()),
           DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, const Color(0xF20A2028)]))),
           Positioned(top: 14, left: 15, child: Text(chapter.number, style: TextStyle(color: chapter.accent, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.5))),
-          Positioned(top: 12, right: 14, child: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0x66101F26), shape: BoxShape.circle, border: Border.all(color: chapter.accent.withOpacity(.7))), child: Icon(chapter.icon, color: chapter.accent, size: 18))),
+          Positioned(top: 12, right: 14, child: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0x66101F26), shape: BoxShape.circle, border: Border.all(color: chapter.accent.withValues(alpha: .7))), child: Icon(chapter.icon, color: chapter.accent, size: 18))),
           Positioned(left: 15, right: 14, bottom: 15, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(chapter.title, style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.w900)), const SizedBox(height: 3), Text(chapter.story, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Color(0xD9FFFFFF), fontSize: 11.5, height: 1.35, fontWeight: FontWeight.w700))])),
         ]),
       ),
@@ -179,7 +179,7 @@ class _OrbitNode extends StatelessWidget {
     final angle = -math.pi / 2 + index * (math.pi * 2 / 5);
     final x = center.dx + math.cos(angle) * radius - 48;
     final y = center.dy + math.sin(angle) * radius - 29;
-    return Positioned(left: x, top: y, child: Tooltip(message: domain.detail, child: Container(width: 96, padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7), decoration: BoxDecoration(color: const Color(0xCC102C36), borderRadius: BorderRadius.circular(16), border: Border.all(color: domain.color.withOpacity(.75)), boxShadow: [BoxShadow(color: domain.color.withOpacity(.18), blurRadius: 14)]), child: Column(children: [Icon(domain.icon, color: domain.color, size: 20), const SizedBox(height: 3), Text(domain.title, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))])));
+    return Positioned(left: x, top: y, child: Semantics(label: '${domain.title}: ${domain.detail}', child: Tooltip(message: domain.detail, child: Container(width: 96, padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7), decoration: BoxDecoration(color: const Color(0xCC102C36), borderRadius: BorderRadius.circular(16), border: Border.all(color: domain.color.withValues(alpha: .75)), boxShadow: [BoxShadow(color: domain.color.withValues(alpha: .18), blurRadius: 14)]), child: Column(children: [Icon(domain.icon, color: domain.color, size: 20), const SizedBox(height: 3), Text(domain.title, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900))])))));
   }
 }
 
@@ -192,7 +192,9 @@ class _AtlasPainter extends CustomPainter {
     final center = Offset(size.width * .5, size.height * .59);
     final radius = size.width < 500 ? size.width * .29 : 145.0;
     final paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 1..color = const Color(0x447BD6C2);
-    for (final r in [radius * .55, radius, radius * 1.45]) canvas.drawCircle(center, r, paint);
+    for (final r in [radius * .55, radius, radius * 1.45]) {
+      canvas.drawCircle(center, r, paint);
+    }
     final river = Path()
       ..moveTo(size.width * .04, size.height * .76)
       ..cubicTo(size.width * .22, size.height * (.54 + phase * .04), size.width * .38, size.height * (.82 - phase * .05), size.width * .55, size.height * .68)
@@ -206,32 +208,12 @@ class _AtlasPainter extends CustomPainter {
     final glow = Paint()..color = const Color(0x2267D9F0)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
     canvas.drawPath(river, glow..style = PaintingStyle.stroke..strokeWidth = 12);
     final dot = Paint()..style = PaintingStyle.fill..color = const Color(0x667BD6C2);
-    for (var i = 0; i < 30; i++) canvas.drawCircle(Offset((i * 83.0) % size.width, 110 + ((i * 47.0) % (size.height - 120))), i % 3 == 0 ? 1.5 : .7, dot);
+    for (var i = 0; i < 30; i++) {
+      canvas.drawCircle(Offset((i * 83.0) % size.width, 110 + ((i * 47.0) % (size.height - 120))), i % 3 == 0 ? 1.5 : .7, dot);
+    }
   }
   @override
   bool shouldRepaint(covariant _AtlasPainter oldDelegate) => oldDelegate.phase != phase;
-}
-
-class _DomainPill extends StatelessWidget {
-  const _DomainPill({required this.domain});
-  final ({IconData icon, String title, String detail, Color color}) domain;
-
-  @override
-  Widget build(BuildContext context) => Tooltip(
-    message: domain.detail,
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-      decoration: BoxDecoration(color: const Color(0x18FFFFFF), borderRadius: BorderRadius.circular(15), border: Border.all(color: const Color(0x28FFFFFF))),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(domain.icon, color: domain.color, size: 17),
-          const SizedBox(width: 6),
-          Text(domain.title, style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w800)),
-        ],
-      ),
-    ),
-  );
 }
 
 class _FamilyTree extends StatelessWidget {
