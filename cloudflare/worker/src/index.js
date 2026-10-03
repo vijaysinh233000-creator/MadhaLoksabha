@@ -89,6 +89,8 @@ function latinIndexVariants(value) {
 
   const canonicalWord = (word) => {
     let result = word
+      .replace(/ee/g, "i")
+      .replace(/oo/g, "u")
       .replace(/nj/g, "naj")
       .replace(/dny/g, "jny")
       .replace(/w/g, "v");
@@ -161,6 +163,12 @@ function editDistance(a, b) {
 function tokenSimilarity(a, b) {
   if (!a || !b) return 0;
   if (a === b) return 1;
+  // A person often types the shorter everyday form (Ranjeet) while the roll
+  // contains the extended given name (रणजितसिंह). A four-consonant prefix is
+  // specific enough to retrieve it without treating a surname/relative hit
+  // as an own-name exact match.
+  if (a.length >= 4 && b.startsWith(a)) return 0.92;
+  if (b.length >= 4 && a.startsWith(b)) return 0.88;
   return 1 - editDistance(a, b) / Math.max(a.length, b.length);
 }
 
@@ -171,6 +179,8 @@ function englishNameMatch(query, marathiName) {
     .map(phoneticKey)
     .filter(Boolean);
   const nameWords = String(marathiName || "")
+    .replace(/मोहिते[-\s]*पाटील/g, "मोहिते पाटील")
+    .replace(/[-‐‑‒–—]+/g, " ")
     .trim()
     .split(/\s+/);
   const nameTokens = nameWords.map(phoneticKey);

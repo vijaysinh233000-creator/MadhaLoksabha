@@ -11,6 +11,10 @@ import worker, {
 test("single English sinh names produce OCR-index compatible variants", () => {
   assert.deepEqual(latinIndexVariants("Ranjitsinh"), ["ranajitasinha"]);
   assert.deepEqual(latinIndexVariants("Vijaysinh"), ["vijayasinha"]);
+  assert.deepEqual(latinIndexVariants("Ranjeet Mohite Patil"), [
+    "ranajita mohite patila",
+    "ranajitamohitepatila",
+  ]);
 });
 
 test("English single-name matching accepts indexed Marathi spellings", () => {
@@ -20,6 +24,59 @@ test("English single-name matching accepts indexed Marathi spellings", () => {
   assert.ok(
     englishNameMatch("Vijaysinh", "रणजितसिंह विजयसिंह मोहितेपाटील").tier > 0,
   );
+});
+
+test("Ranjeet matches extended given name and spaced compound surname", () => {
+  const name = "रणजितसिंह विजयसिंह मोहितेपाटील";
+  assert.ok(englishNameMatch("Ranjeet", name).tier > 0);
+  assert.ok(englishNameMatch("Ranjeet Mohite Patil", name).tier > 0);
+});
+
+test("compound surname query recovers a candidate from transliterated tokens", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (_url, init) => {
+    const args = JSON.parse(init.body);
+    calls.push(args);
+    const matched = args.search_text === "ranajita mohite patila";
+    return new Response(
+      JSON.stringify({
+        results: matched
+          ? [{ id: 42, name: "रणजितसिंह विजयसिंह मोहितेपाटील" }]
+          : [],
+        total: matched ? 1 : 0,
+        page: 1,
+        page_size: args.page_size,
+        query: { text: args.search_text },
+      }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+  };
+  try {
+    const response = await worker.fetch(
+      new Request(
+        "https://api.test/api/search?q=Ranjeet%20Mohite%20Patil&page=1&page_size=10",
+      ),
+      {
+        SUPABASE_URL: "https://database.test",
+        SUPABASE_SECRET_KEY: "test-secret",
+      },
+      { waitUntil() {} },
+    );
+    const body = await response.json();
+    assert.equal(response.status, 200);
+    assert.deepEqual(
+      body.results.map((row) => row.id),
+      [42],
+    );
+    assert.equal(body.query.transliterated, "रणजितसिंह मोहिते पाटील");
+    assert.equal(calls.length, 3);
+    assert.equal(calls[0].search_text, "Ranjeet Mohite Patil");
+    assert.equal(calls[1].search_text, "ranajita mohite patila");
+    assert.equal(calls[2].search_text, "ranajitamohitepatila");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("Vijaysinh exactly matches the Marathi first-name token", () => {
