@@ -346,42 +346,83 @@
       }
     };
 
-    window.shareDuplicateVoterList = async (title, groupsJson) => {
+    window.downloadDuplicateVoterReport = async (title, basis, verifiedAt, groupsJson) => {
       try {
         const groups = JSON.parse(groupsJson);
         if (!Array.isArray(groups) || !groups.length) return false;
-        const value = (input) => String(input || '').trim() || '—';
+        const escapeHtml = (input) => String(input ?? '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+        const value = (input) => escapeHtml(String(input || '').trim() || '—');
         const verification = {
-          confirmed: 'पुष्टी झालेली जुळणी',
-          strong_match: 'मजबूत जुळणी',
+          confirmed: 'अत्यंत मजबूत जुळणी — मूळ नोंद तपासा',
+          strong_match: 'मजबूत जुळणी — प्रत्यक्ष पडताळणी करा',
           manual_review: 'प्रत्यक्ष पडताळणी आवश्यक',
         };
-        const lines = [title, `एकूण गट: ${groups.length}`, ''];
-        groups.forEach((group, groupIndex) => {
-          lines.push(`${groupIndex + 1}. ${value(group.label)} — ${verification[group.verification] || verification.manual_review}`);
-          if (group.relationLabel) lines.push(`नातेवाईक: ${group.relationLabel}`);
-          (group.records || []).forEach((voter, voterIndex) => {
-            lines.push(
-              `  ${voterIndex + 1}) नाव: ${value(voter.name)}`,
-              `     नातेवाईक: ${value(voter.relationName)}`,
-              `     गाव: ${value(voter.village)} | भाग: ${value(voter.part)} | अनुक्रमांक: ${value(voter.serial)}`,
-              `     EPIC: ${value(voter.epic)} | घर: ${value(voter.house)} | वय: ${value(voter.age)} | लिंग: ${value(voter.gender)}`,
-              `     PDF: ${value(voter.pdfName)} | पान: ${value(voter.page)}`,
-            );
-          });
-          lines.push('');
-        });
-        lines.push('https://independent-voter.madhaloksabha.workers.dev/');
-        const text = lines.join('\n');
-        if (navigator.share) {
-          await navigator.share({title, text});
-          return true;
-        }
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+        const relationType = {
+          father: 'वडील', husband: 'पती', mother: 'आई', guardian: 'पालक',
+        };
+        const recordCount = groups.reduce((sum, group) => sum + (group.records || []).length, 0);
+        const villages = [...new Set(groups.flatMap((group) =>
+          (group.records || []).map((record) => String(record.village || '').trim()).filter(Boolean)
+        ))].sort((a, b) => a.localeCompare(b, 'mr'));
+        const generatedAt = new Intl.DateTimeFormat('mr-IN', {
+          dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Kolkata',
+        }).format(new Date());
+        const groupHtml = groups.map((group, groupIndex) => {
+          const rows = (group.records || []).map((voter, voterIndex) => `
+            <tr>
+              <td class="number">${voterIndex + 1}</td>
+              <td><strong>${value(voter.name)}</strong></td>
+              <td>${value(relationType[voter.relationType] || 'नातेवाईक')} — ${value(voter.relationName)}</td>
+              <td>${value(voter.village)}</td>
+              <td>${value(voter.part)}</td>
+              <td>${value(voter.serial)}</td>
+              <td>${value(voter.epic)}</td>
+              <td>${value(voter.house)}</td>
+              <td>${value(voter.age)}</td>
+              <td>${value(voter.gender)}</td>
+              <td>${value(voter.pdfName)}<br>पान ${value(voter.page)}</td>
+            </tr>`).join('');
+          return `<section class="group">
+            <div class="group-heading">
+              <div><span class="group-number">गट ${groupIndex + 1}</span><h2>${value(group.label)}</h2></div>
+              <span class="status">${value(verification[group.verification] || verification.manual_review)}</span>
+            </div>
+            ${group.relationLabel ? `<p class="relative"><strong>समान नातेवाईकाचे नाव:</strong> ${value(group.relationLabel)}</p>` : ''}
+            <p class="count">या गटातील नोंदी: ${(group.records || []).length}</p>
+            <div class="table-wrap"><table>
+              <thead><tr><th>क्र.</th><th>मतदाराचे पूर्ण नाव</th><th>नातेवाईक</th><th>गाव</th><th>भाग</th><th>अनु.</th><th>EPIC</th><th>घर</th><th>वय</th><th>लिंग</th><th>मूळ स्रोत</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table></div>
+          </section>`;
+        }).join('');
+        const documentHtml = `<!doctype html><html lang="mr"><head><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1"><title>${value(title)}</title>
+          <style>
+            @page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{margin:0;background:#eef5f0;color:#102b45;font-family:"Noto Sans Devanagari","Nirmala UI",Arial,sans-serif;line-height:1.45}.report{max-width:1400px;margin:auto;background:#fff;min-height:100vh}.cover{padding:34px 38px;background:linear-gradient(135deg,#0b3929,#176b3a);color:#fff;border-bottom:6px solid #d9b766}.eyebrow{margin:0 0 8px;color:#f4d88d;font-weight:800}.cover h1{margin:0;font-size:30px;line-height:1.25}.basis{margin:18px 0 0;padding:14px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:12px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 38px}.metric{padding:15px;border:1px solid #d7e8dc;border-radius:12px;background:#f7fbf8}.metric strong{display:block;font-size:22px;color:#176b3a}.notice{margin:0 38px 22px;padding:16px 18px;border-left:5px solid #d9b766;background:#fff9e8}.content{padding:0 38px 40px}.group{margin:0 0 22px;padding:18px;border:1px solid #d7e8dc;border-radius:14px;break-inside:avoid;page-break-inside:avoid}.group-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.group-heading h2{margin:3px 0 0;font-size:21px}.group-number{font-size:12px;font-weight:800;color:#176b3a;text-transform:uppercase}.status{padding:7px 10px;border-radius:999px;background:#fff3cd;color:#725500;font-size:12px;font-weight:800}.relative,.count{margin:8px 0;color:#40566a}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102b45;color:#fff;text-align:left}th,td{padding:8px 7px;border:1px solid #d7e1e8;vertical-align:top}.number{text-align:center;font-weight:800}.footer{padding:20px 38px;background:#102b45;color:#fff}.footer p{margin:4px 0}.print{position:fixed;right:18px;bottom:18px;border:0;border-radius:999px;background:#d9b766;color:#102b45;padding:12px 18px;font-weight:800;box-shadow:0 8px 24px #0003;cursor:pointer}@media(max-width:800px){.summary{grid-template-columns:1fr 1fr}.cover,.summary,.content,.footer{padding-left:18px;padding-right:18px}.cover h1{font-size:24px}.group-heading{display:block}.status{display:inline-block;margin-top:10px}}@media print{body{background:#fff}.report{max-width:none}.print{display:none}.group{border-color:#aaa}}
+          </style></head><body><main class="report">
+          <header class="cover"><p class="eyebrow">माढा लोकसभा मतदारसंघ • प्रशासकीय तपासणी</p><h1>${value(title)}</h1><p class="basis"><strong>अहवालाचा आधार:</strong> ${value(basis)}</p></header>
+          <section class="summary"><div class="metric"><strong>${groups.length}</strong>समान नोंदींचे गट</div><div class="metric"><strong>${recordCount}</strong>एकूण मतदार नोंदी</div><div class="metric"><strong>${villages.length}</strong>समाविष्ट गावे</div><div class="metric"><strong>${value(generatedAt)}</strong>अहवाल तयार केला</div></section>
+          <aside class="notice"><strong>महत्त्वाची सूचना:</strong> संपूर्ण नाव किंवा इतर तपशील समान आढळणे म्हणजे मतदार निश्चितपणे दुबार आहे असे नाही. अंतिम निर्णयापूर्वी नातेवाईकाचे नाव, EPIC क्रमांक, वय, घर क्रमांक आणि मूळ PDF नोंद तपासावी. या अहवालामुळे कोणतीही नोंद आपोआप वगळली किंवा हटवली जात नाही.</aside>
+          <div class="content"><p><strong>समाविष्ट गावे:</strong> ${villages.map(value).join(', ') || '—'}</p>${verifiedAt ? `<p><strong>नवीनतम index पडताळणी:</strong> ${value(verifiedAt)}</p>` : ''}${groupHtml}</div>
+          <footer class="footer"><p><strong>पुढील कार्यवाही:</strong> प्रत्येक गटातील EPIC, नातेवाईकाचे नाव, वय, घर क्रमांक आणि मूळ PDF पान यांची प्रत्यक्ष तुलना करा.</p><p>स्रोत: नवीनतम active आणि ready मतदार PDF index • independent-voter.madhaloksabha.workers.dev</p></footer>
+          </main><button class="print" onclick="window.print()">PDF म्हणून जतन / Print</button></body></html>`;
+        const blob = new Blob([documentHtml], {type: 'text/html;charset=utf-8'});
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `duplicate-voter-report-${new Date().toISOString().slice(0, 10)}.html`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
         return true;
       } catch (error) {
-        if (error && error.name === 'AbortError') return true;
-        console.error('Duplicate voter list sharing failed', error);
+        console.error('Duplicate voter report download failed', error);
         return false;
       }
     };

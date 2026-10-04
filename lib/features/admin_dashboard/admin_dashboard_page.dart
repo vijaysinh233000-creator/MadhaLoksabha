@@ -86,19 +86,48 @@ class _AdminViewState extends State<_AdminView> {
     }
   }
 
-  Future<void> _shareDuplicateList(
+  Future<void> _downloadDuplicateList(
     String title,
+    String basis,
+    String verifiedAt,
     List<DuplicateGroup> groups,
   ) async {
-    final shared = await shareDuplicateGroups(title, groups);
-    if (!shared && mounted) {
+    final downloaded = await downloadDuplicateReport(
+      title,
+      basis,
+      verifiedAt,
+      groups,
+    );
+    if (!mounted) return;
+    if (downloaded) {
+      showSnack(context, 'सविस्तर दुबार मतदार अहवाल डाउनलोड झाला.');
+    } else {
       showSnack(
         context,
-        'Could not open sharing for this duplicate list.',
+        'अहवाल डाउनलोड करता आला नाही. पुन्हा प्रयत्न करा.',
         error: true,
       );
     }
   }
+
+  (String, String) _duplicateReportCopy() => switch (_duplicateSection) {
+    0 => (
+      'समान EPIC क्रमांक असलेल्या संभाव्य दुबार मतदारांचा अहवाल',
+      'नवीनतम सक्रिय मतदार याद्यांमध्ये समान आणि रिक्त नसलेला EPIC क्रमांक',
+    ),
+    1 => (
+      'संपूर्ण नाव समान असलेल्या संभाव्य दुबार मतदारांचा अहवाल',
+      'एकाच गावात मतदाराचे संपूर्ण नाव आणि नातेवाईकाचे संपूर्ण नाव समान',
+    ),
+    _ when _sameRelativeAcrossVillages => (
+      'वेगवेगळ्या गावांतील समान नावांच्या मतदारांचा अहवाल',
+      'वेगवेगळ्या गावांत मतदाराचे संपूर्ण नाव आणि नातेवाईकाचे संपूर्ण नाव समान',
+    ),
+    _ => (
+      'वेगवेगळ्या गावांतील समान नावांच्या तपासणीचा अहवाल',
+      'वेगवेगळ्या गावांत मतदाराचे संपूर्ण नाव समान; नातेवाईकांची नावे वेगळी असल्यामुळे प्रत्यक्ष पडताळणी आवश्यक',
+    ),
+  };
 
   @override
   void dispose() {
@@ -476,6 +505,7 @@ class _AdminViewState extends State<_AdminView> {
                 0,
                 (total, group) => total + group.records.length,
               );
+              final (reportTitle, reportBasis) = _duplicateReportCopy();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -500,12 +530,14 @@ class _AdminViewState extends State<_AdminView> {
                           FilledButton.icon(
                             onPressed: groups.isEmpty
                                 ? null
-                                : () => _shareDuplicateList(
-                                    'Duplicate voter review',
+                                : () => _downloadDuplicateList(
+                                    reportTitle,
+                                    reportBasis,
+                                    overview.verifiedAt,
                                     groups,
                                   ),
-                            icon: const Icon(Icons.share_rounded, size: 18),
-                            label: const Text('Share full list'),
+                            icon: const Icon(Icons.download_rounded, size: 18),
+                            label: const Text('सविस्तर अहवाल डाउनलोड करा'),
                           ),
                         ],
                       ),
@@ -574,12 +606,14 @@ class _AdminViewState extends State<_AdminView> {
                 _verificationBadge(group.verification),
                 const Spacer(),
                 TextButton.icon(
-                  onPressed: () => _shareDuplicateList(
-                    'Duplicate voter group: ${group.label}',
+                  onPressed: () => _downloadDuplicateList(
+                    '${group.label} — संभाव्य दुबार मतदार अहवाल',
+                    _duplicateReportCopy().$2,
+                    '',
                     [group],
                   ),
-                  icon: const Icon(Icons.share_rounded, size: 18),
-                  label: const Text('Share all details'),
+                  icon: const Icon(Icons.download_rounded, size: 18),
+                  label: const Text('पूर्ण तपशील डाउनलोड करा'),
                 ),
               ],
             ),

@@ -60,14 +60,18 @@ Future<bool> shareVoterCards(List<VoterResult> voters) async {
   return shared.toDart;
 }
 
-@JS('shareDuplicateVoterList')
-external JSPromise<JSBoolean> _shareDuplicateVoterList(
+@JS('downloadDuplicateVoterReport')
+external JSPromise<JSBoolean> _downloadDuplicateVoterReport(
   JSString title,
+  JSString basis,
+  JSString verifiedAt,
   JSString groupsJson,
 );
 
-Future<bool> shareDuplicateGroups(
+Future<bool> downloadDuplicateReport(
   String title,
+  String basis,
+  String verifiedAt,
   List<DuplicateGroup> groups,
 ) async {
   final payload = groups
@@ -98,9 +102,11 @@ Future<bool> shareDuplicateGroups(
         },
       )
       .toList();
-  final shared = await _shareDuplicateVoterList(
+  final downloaded = await _downloadDuplicateVoterReport(
     title.toJS,
+    basis.toJS,
+    verifiedAt.toJS,
     jsonEncode(payload).toJS,
   ).toDart;
-  return shared.toDart;
+  return downloaded.toDart;
 }
