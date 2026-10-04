@@ -929,42 +929,45 @@ class ResultCard extends StatelessWidget {
                       if (r.house.isNotEmpty ||
                           r.age.isNotEmpty ||
                           r.gender.isNotEmpty)
-                        Theme(
-                          data: Theme.of(context).copyWith(
-                            dividerColor: Colors.transparent,
-                            visualDensity: VisualDensity.compact,
-                          ),
-                          child: ExpansionTile(
-                            tilePadding: EdgeInsets.zero,
-                            childrenPadding: const EdgeInsets.only(bottom: 6),
-                            title: const Text(
-                              'अधिक माहिती',
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textSecondary,
-                              ),
+                        Material(
+                          color: Colors.transparent,
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              dividerColor: Colors.transparent,
+                              visualDensity: VisualDensity.compact,
                             ),
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Wrap(
-                                  spacing: 6,
-                                  runSpacing: 6,
-                                  children: [
-                                    if (r.house.isNotEmpty)
-                                      Pill(
-                                        label: 'घर ${r.house}',
-                                        icon: Icons.home_outlined,
-                                      ),
-                                    if (r.age.isNotEmpty)
-                                      Pill(label: 'वय ${r.age}'),
-                                    if (r.gender.isNotEmpty)
-                                      Pill(label: _genderMr(r.gender)),
-                                  ],
+                            child: ExpansionTile(
+                              tilePadding: EdgeInsets.zero,
+                              childrenPadding: const EdgeInsets.only(bottom: 6),
+                              title: const Text(
+                                'अधिक माहिती',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
-                            ],
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Wrap(
+                                    spacing: 6,
+                                    runSpacing: 6,
+                                    children: [
+                                      if (r.house.isNotEmpty)
+                                        Pill(
+                                          label: 'घर ${r.house}',
+                                          icon: Icons.home_outlined,
+                                        ),
+                                      if (r.age.isNotEmpty)
+                                        Pill(label: 'वय ${r.age}'),
+                                      if (r.gender.isNotEmpty)
+                                        Pill(label: _genderMr(r.gender)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       const SizedBox(height: 10),

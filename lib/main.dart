@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/services/api_client.dart';
 import 'core/theme/app_theme.dart';
+import 'core/widgets/common_widgets.dart';
 import 'features/admin_dashboard/admin_dashboard_page.dart';
 import 'features/pdf_viewer/pdf_viewer.dart';
 import 'features/profiles/person_profile_page.dart';
@@ -13,27 +16,110 @@ import 'features/sectors/sector_data.dart';
 import 'features/sectors/sector_detail_page.dart';
 import 'features/user_dashboard/user_dashboard_page.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy(); // clean URLs: "/" and "/super-admin"
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
   const supabasePublishableKey = String.fromEnvironment(
     'SUPABASE_PUBLISHABLE_KEY',
   );
-  SupabaseClient? supabaseClient;
-  if (supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty) {
-    await Supabase.initialize(
-      url: supabaseUrl,
-      publishableKey: supabasePublishableKey,
-      authOptions: const FlutterAuthClientOptions(detectSessionInUri: false),
-    );
-    supabaseClient = Supabase.instance.client;
-  }
-  final api = ApiClient(
-    accessTokenProvider: () async =>
-        supabaseClient?.auth.currentSession?.accessToken,
+  runApp(
+    AppStartupGate(
+      supabaseUrl: supabaseUrl,
+      supabasePublishableKey: supabasePublishableKey,
+    ),
   );
-  runApp(VoterFinderApp(api: api, supabaseClient: supabaseClient));
+}
+
+class AppStartupGate extends StatefulWidget {
+  const AppStartupGate({
+    this.api,
+    this.supabaseClient,
+    this.supabaseUrl = '',
+    this.supabasePublishableKey = '',
+    super.key,
+  });
+
+  final ApiClient? api;
+  final SupabaseClient? supabaseClient;
+  final String supabaseUrl;
+  final String supabasePublishableKey;
+
+  @override
+  State<AppStartupGate> createState() => _AppStartupGateState();
+}
+
+class _AppStartupGateState extends State<AppStartupGate> {
+  late final ApiClient _api;
+  SupabaseClient? _supabaseClient;
+  bool _videoFinished = false;
+  bool _supabaseFinished = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _supabaseClient = widget.supabaseClient;
+    _api =
+        widget.api ??
+        ApiClient(
+          accessTokenProvider: () async =>
+              _supabaseClient?.auth.currentSession?.accessToken,
+        );
+    if (_supabaseClient != null) {
+      _supabaseFinished = true;
+    } else if (widget.supabaseUrl.isNotEmpty &&
+        widget.supabasePublishableKey.isNotEmpty) {
+      unawaited(_initializeSupabase());
+    } else {
+      _supabaseFinished = true;
+    }
+  }
+
+  Future<void> _initializeSupabase() async {
+    try {
+      await Supabase.initialize(
+        url: widget.supabaseUrl,
+        publishableKey: widget.supabasePublishableKey,
+        authOptions: const FlutterAuthClientOptions(detectSessionInUri: false),
+      ).timeout(const Duration(seconds: 15));
+      _supabaseClient = Supabase.instance.client;
+    } catch (error, stackTrace) {
+      debugPrint('Supabase initialization failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      if (mounted) {
+        setState(() => _supabaseFinished = true);
+      }
+    }
+  }
+
+  void _handleSplashComplete() {
+    if (!mounted || _videoFinished) {
+      return;
+    }
+    setState(() => _videoFinished = true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ready = _videoFinished && _supabaseFinished;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 420),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child: ready
+          ? VoterFinderApp(
+              key: const ValueKey('voter-finder-app'),
+              api: _api,
+              supabaseClient: _supabaseClient,
+            )
+          : Directionality(
+              key: const ValueKey('intro-video'),
+              textDirection: TextDirection.ltr,
+              child: AppVideoLoadingScreen(onComplete: _handleSplashComplete),
+            ),
+    );
+  }
 }
 
 class VoterFinderApp extends StatelessWidget {

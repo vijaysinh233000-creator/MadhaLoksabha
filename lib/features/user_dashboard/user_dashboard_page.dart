@@ -104,30 +104,81 @@ class _UserDashboardView extends StatelessWidget {
   }
 }
 
-class _CollapsedHeritage extends StatelessWidget {
+class _CollapsedHeritage extends StatefulWidget {
   const _CollapsedHeritage();
 
   @override
-  Widget build(BuildContext context) => AppCard(
-    padding: EdgeInsets.zero,
-    child: ExpansionTile(
-      leading: const Icon(
-        Icons.account_balance_rounded,
-        color: AppColors.heritageBrown,
-      ),
-      title: const Text(
-        'मोहिते-पाटील कार्यप्रवास पहा',
-        style: TextStyle(
-          fontWeight: FontWeight.w800,
-          color: AppColors.navyText,
+  State<_CollapsedHeritage> createState() => _CollapsedHeritageState();
+}
+
+class _CollapsedHeritageState extends State<_CollapsedHeritage> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: Colors.white,
+    elevation: 2,
+    shadowColor: const Color(0x0F000000),
+    shape: RoundedRectangleBorder(
+      side: const BorderSide(color: AppColors.border),
+      borderRadius: BorderRadius.circular(14),
+    ),
+    clipBehavior: Clip.antiAlias,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          onTap: () => setState(() => _expanded = !_expanded),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.account_balance_rounded,
+                  color: AppColors.heritageBrown,
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'मोहिते-पाटील कार्यप्रवास पहा',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.navyText,
+                        ),
+                      ),
+                      Text('परिवार आणि संस्थांच्या कार्याची सविस्तर माहिती'),
+                    ],
+                  ),
+                ),
+                Icon(
+                  _expanded
+                      ? Icons.expand_less_rounded
+                      : Icons.expand_more_rounded,
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
-      subtitle: const Text('परिवार आणि संस्थांच्या कार्याची सविस्तर माहिती'),
-      childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 18),
-      children: const [
-        HeritageStorySection(),
-        RegionalStorySection(),
-        InstitutionJourneySection(),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          child: _expanded
+              ? const Padding(
+                  padding: EdgeInsets.fromLTRB(14, 0, 14, 18),
+                  child: Column(
+                    children: [
+                      HeritageStorySection(),
+                      RegionalStorySection(),
+                      InstitutionJourneySection(),
+                    ],
+                  ),
+                )
+              : const SizedBox(width: double.infinity),
+        ),
       ],
     ),
   );

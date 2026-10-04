@@ -44,6 +44,7 @@ dependencies:
   url_launcher: ^6.3.1
   intl: ^0.20.2
   supabase_flutter: ^2.18.0
+  video_player: ^2.10.0
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/videos/
   # Devanagari font bundled so Marathi voter names render identically on
   # Android, iOS and web (some Android builds ship no Devanagari fallback).
   fonts:

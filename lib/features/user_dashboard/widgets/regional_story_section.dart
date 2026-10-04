@@ -29,7 +29,23 @@ class RegionalStorySection extends StatelessWidget {
                 subtitle: 'विकास आणि नेतृत्वाचा प्रवास',
                 description:
                     'सहकार आणि स्थानिक नेतृत्वापासून राज्याच्या विधिमंडळापर्यंत, लोकसभा आणि राज्यसभेपर्यंतचा सार्वजनिक प्रवास.',
-                child: const _JourneyStops(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _JourneyStops(),
+                    const SizedBox(height: 18),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _gold,
+                        side: const BorderSide(color: _gold),
+                      ),
+                      onPressed: () => Navigator.of(
+                        context,
+                      ).pushNamed('/sector/regional-journey'),
+                      child: const Text('सविस्तर वाचा →'),
+                    ),
+                  ],
+                ),
               ),
               const Divider(height: 1, color: Color(0x668EAB9A)),
               _Scene(
@@ -109,10 +125,6 @@ class RegionalStorySection extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'AI संकल्पचित्रे • प्रवास व जलसंकल्पनेचे प्रतीकात्मक दृश्य; वास्तविक भूसीमा किंवा पूर्ण झालेल्या प्रकल्पाचा नकाशा नाही.',
-                      style: TextStyle(fontSize: 10, color: Colors.white60),
-                    ),
                   ],
                 ),
               ),

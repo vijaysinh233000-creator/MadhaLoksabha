@@ -549,7 +549,7 @@ class InstitutionJourneySection extends StatelessWidget {
         'पाणी व सिंचन',
         'दुष्काळी भागाचा जलप्रवास',
         'water',
-        'assets/images/sector_water.png',
+        'assets/images/regional_water.png',
       ),
       (
         Icons.route_rounded,
@@ -914,6 +914,12 @@ class NewBrandFooter extends StatelessWidget {
                   style: const TextStyle(color: Colors.white60, fontSize: 10.5),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Made By AlphaSpark Tech Solutions - Vijaysinh Jadhav',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white60, fontSize: 10.5),
             ),
           ],
         ),

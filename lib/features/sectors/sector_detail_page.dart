@@ -118,18 +118,6 @@ class SectorDetailPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text(
-                    'टीप: वरील माहिती वापरकर्त्याने उपलब्ध करून दिलेल्या मजकुरावर आधारित आहे.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'NotoSansDevanagari',
-                      fontSize: 11,
-                      color: AppColors.textMuted,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

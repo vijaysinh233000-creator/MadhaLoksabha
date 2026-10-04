@@ -8,7 +8,7 @@ class HeroHeader extends StatelessWidget {
 
   static final Uri _whatsAppShare = Uri.https('wa.me', '/', {
     'text':
-        'धैर्यशील मोहिते-पाटील | माढा लोकसभा\n'
+        'धैर्यशील मोहिते-पाटील | माढा लोकसभा मतदारसंघ\n'
         'माझे नाव मतदार यादीत शोधा:\n'
         'https://independent-voter.madhaloksabha.workers.dev/',
   });
