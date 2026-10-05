@@ -121,10 +121,10 @@ class HeroHeader extends StatelessWidget {
               ),
             ),
             child: AspectRatio(
-              aspectRatio: 2048 / 931,
+              aspectRatio: 1855 / 848,
               child: Image.asset(
-                'assets/images/madha_loksabha_banner.jpg',
-                fit: BoxFit.contain,
+                'assets/images/madha_loksabha_banner_fresh.png',
+                fit: BoxFit.cover,
                 alignment: Alignment.center,
               ),
             ),
