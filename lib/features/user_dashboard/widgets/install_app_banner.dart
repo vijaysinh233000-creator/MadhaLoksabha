@@ -37,43 +37,85 @@ class _InstallAppBannerState extends State<InstallAppBanner> {
     if (!kIsWeb || isPwaStandalone || _hidden) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-        decoration: BoxDecoration(
-          color: AppColors.greenLight,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.green.withValues(alpha: 0.28)),
-        ),
-        child: Row(
-          children: [
-          const Icon(Icons.install_mobile_rounded, color: AppColors.green),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('फोनवर App म्हणून Install करा', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.navyText)),
-                SizedBox(height: 2),
-                Text('Chrome मधून थेट Home Screen वर जोडा.', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          FilledButton.icon(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 520;
+          final copy = Row(
+            children: [
+              const Icon(
+                Icons.install_mobile_rounded,
+                color: AppColors.saffron,
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'फोनवर App म्हणून Install करा',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.navyText,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Chrome मधून थेट Home Screen वर जोडा.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                tooltip: 'बंद करा',
+                onPressed: () => setState(() => _hidden = true),
+                icon: const Icon(Icons.close_rounded, size: 19),
+              ),
+            ],
+          );
+          final installButton = FilledButton.icon(
             onPressed: _installing ? null : _install,
-            style: FilledButton.styleFrom(backgroundColor: AppColors.green, padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10)),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.saffron,
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+            ),
             icon: _installing
-                ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                ? const SizedBox.square(
+                    dimension: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
                 : const Icon(Icons.download_rounded, size: 18),
             label: const Text('Install'),
-          ),
-          IconButton(
-            tooltip: 'Dismiss',
-            onPressed: () => setState(() => _hidden = true),
-            icon: const Icon(Icons.close_rounded, size: 19),
-          ),
-          ],
-        ),
+          );
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+            decoration: BoxDecoration(
+              color: AppColors.saffronLight,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.saffron.withValues(alpha: 0.28),
+              ),
+            ),
+            child: compact
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [copy, const SizedBox(height: 10), installButton],
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: copy),
+                      const SizedBox(width: 8),
+                      installButton,
+                    ],
+                  ),
+          );
+        },
       ),
     );
   }
