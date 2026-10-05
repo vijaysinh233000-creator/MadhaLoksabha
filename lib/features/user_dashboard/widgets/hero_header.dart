@@ -29,11 +29,17 @@ class HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final mobile = MediaQuery.sizeOf(context).width < 700;
     return ColoredBox(
-      color: AppColors.navy,
+      color: Colors.white,
       child: Column(
         children: [
-          Center(
-            child: ConstrainedBox(
+          DecoratedBox(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(bottom: BorderSide(color: AppColors.border)),
+              boxShadow: AppShadows.subtle,
+            ),
+            child: Center(
+              child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1180),
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -48,7 +54,7 @@ class HeroHeader extends StatelessWidget {
                       margin: const EdgeInsets.only(right: 11),
                       padding: const EdgeInsets.all(2),
                       decoration: const BoxDecoration(
-                        color: AppColors.heritageGold,
+                        color: AppColors.greenDark,
                         shape: BoxShape.circle,
                       ),
                       child: ClipOval(
@@ -71,7 +77,7 @@ class HeroHeader extends StatelessWidget {
                               fontFamily: 'NotoSansDevanagari',
                               fontSize: mobile ? 19 : 25,
                               fontWeight: FontWeight.w900,
-                              color: Colors.white,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           Text(
@@ -80,7 +86,7 @@ class HeroHeader extends StatelessWidget {
                               fontFamily: 'NotoSansDevanagari',
                               fontSize: mobile ? 10.5 : 12.5,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.heritageGold,
+                              color: AppColors.greenDark,
                             ),
                           ),
                         ],
@@ -93,7 +99,7 @@ class HeroHeader extends StatelessWidget {
                           'मतदार शोध  •  लोकसेवा  •  सार्वजनिक कार्य',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Colors.white70,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -102,30 +108,41 @@ class HeroHeader extends StatelessWidget {
                       child: IconButton.filledTonal(
                         onPressed: () => _shareOnWhatsApp(context),
                         icon: const Icon(Icons.share_rounded),
-                        color: Colors.white,
+                        color: AppColors.greenDark,
                         style: IconButton.styleFrom(
-                          backgroundColor: AppColors.saffron,
+                          backgroundColor: AppColors.greenLight,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
+              ),
             ),
           ),
           Container(
             constraints: const BoxConstraints(maxWidth: 1440),
-            decoration: const BoxDecoration(
-              border: Border.symmetric(
-                horizontal: BorderSide(color: AppColors.heritageGold),
-              ),
-            ),
+            decoration: const BoxDecoration(),
             child: AspectRatio(
               aspectRatio: 1855 / 848,
-              child: Image.asset(
-                'assets/images/madha_loksabha_banner_fresh.png',
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    'assets/images/madha_loksabha_banner_fresh.png',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                  const DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(0, .72),
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, AppColors.surface],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

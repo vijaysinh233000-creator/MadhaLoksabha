@@ -1,30 +1,65 @@
 import 'package:flutter/material.dart';
 
-/// Unified navy + burnt-saffron palette used across every interface.
+/// Locked public-facing palette: one forest family, neutrals and one action.
 class AppColors {
   AppColors._();
 
   // Legacy green token names remain aliases while older widgets are migrated.
-  static const saffron = Color(0xFFC96A24);
-  static const saffronDark = Color(0xFFA84F1C);
-  static const saffronLight = Color(0xFFFFF4EC);
-  static const green = saffron;
-  static const greenDark = Color(0xFF102A43);
-  static const greenLight = saffronLight;
+  static const saffron = Color(0xFFE97824);
+  static const saffronDark = Color(0xFFC85E16);
+  static const saffronLight = Color(0xFFFFF1E7);
+  static const green = Color(0xFF173F35);
+  static const greenDark = Color(0xFF173F35);
+  static const greenLight = Color(0xFFEAF3EF);
   static const whatsapp = Color(0xFF25D366);
-  static const navy = Color(0xFF081F33);
-  static const navyText = Color(0xFF102A43);
-  static const blue = Color(0xFF1D4F7A);
-  static const purple = Color(0xFF6D3FC4);
-  static const surface = Color(0xFFF7F8FA);
+  static const navy = greenDark;
+  static const navyText = Color(0xFF18211E);
+  static const blue = greenDark;
+  static const purple = greenDark;
+  static const surface = Color(0xFFFAFBF9);
   static const card = Colors.white;
-  static const border = Color(0xFFDDE3E8);
-  static const textPrimary = Color(0xFF1D2935);
-  static const textSecondary = Color(0xFF68747E);
-  static const textMuted = Color(0xFF929DA7);
-  static const danger = Color(0xFFD64545);
-  static const heritageGold = Color(0xFFD5AE5D);
-  static const heritageBrown = saffron;
+  static const border = Color(0xFFE2E8E5);
+  static const textPrimary = Color(0xFF18211E);
+  static const textSecondary = Color(0xFF68736F);
+  static const textMuted = Color(0xFF8B9692);
+  static const danger = Color(0xFFC93D3D);
+  static const heritageGold = greenDark;
+  static const heritageBrown = greenDark;
+}
+
+class AppShadows {
+  AppShadows._();
+
+  static const subtle = <BoxShadow>[
+    BoxShadow(
+      color: Color(0x0F173F35),
+      blurRadius: 18,
+      offset: Offset(0, 6),
+    ),
+  ];
+  static const prominent = <BoxShadow>[
+    BoxShadow(
+      color: Color(0x1C173F35),
+      blurRadius: 40,
+      offset: Offset(0, 16),
+    ),
+  ];
+  static const floating = <BoxShadow>[
+    BoxShadow(
+      color: Color(0x26173F35),
+      blurRadius: 26,
+      offset: Offset(0, 10),
+    ),
+  ];
+}
+
+class AppMotion {
+  AppMotion._();
+
+  static const quick = Duration(milliseconds: 150);
+  static const standard = Duration(milliseconds: 220);
+  static const reveal = Duration(milliseconds: 420);
+  static const curve = Curves.easeOutCubic;
 }
 
 class AppTheme {
@@ -35,8 +70,8 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.saffron,
-        primary: AppColors.saffron,
-        secondary: AppColors.heritageGold,
+        primary: AppColors.greenDark,
+        secondary: AppColors.saffron,
         surface: AppColors.surface,
       ),
       scaffoldBackgroundColor: AppColors.surface,
@@ -48,8 +83,8 @@ class AppTheme {
         fontFamily: 'NotoSansDevanagari',
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: AppColors.greenDark,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),

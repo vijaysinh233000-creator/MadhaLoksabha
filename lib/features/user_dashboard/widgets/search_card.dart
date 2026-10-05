@@ -80,6 +80,8 @@ class _SearchCardState extends State<SearchCard> {
     final c = context.watch<VoterSearchController>();
     final narrow = MediaQuery.sizeOf(context).width < 600;
     return AppCard(
+      emphasis: true,
+      showBorder: false,
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -366,13 +368,7 @@ class _Suggestions extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 12,
-            offset: Offset(0, 6),
-          ),
-        ],
+        boxShadow: AppShadows.floating,
       ),
       child: Column(
         children: [

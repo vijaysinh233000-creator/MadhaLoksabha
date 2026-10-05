@@ -23,9 +23,8 @@ class _FamilyTree extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.fromLTRB(4, 10, 4, 8),
     decoration: BoxDecoration(
-      color: AppColors.surface,
+      color: AppColors.greenLight,
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: const Color(0x1AC96A24)),
     ),
     child: Column(
       children: [
@@ -123,16 +122,10 @@ class _SugarInstitutionNames extends StatelessWidget {
     width: double.infinity,
     padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
     decoration: BoxDecoration(
-      color: const Color(0xF7FFFDF7),
+      color: Colors.white,
       borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: const Color(0x99C99A3D)),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x16000000),
-          blurRadius: 12,
-          offset: Offset(0, 4),
-        ),
-      ],
+      border: Border.all(color: AppColors.border),
+      boxShadow: AppShadows.subtle,
     ),
     child: const Column(
       children: [
@@ -214,9 +207,9 @@ class _GenerationLabel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
     decoration: BoxDecoration(
-      color: AppColors.saffron,
+      color: AppColors.greenDark,
       borderRadius: BorderRadius.circular(999),
-      border: Border.all(color: const Color(0xFFE5BD64), width: 1),
+      border: Border.all(color: AppColors.greenDark, width: 1),
     ),
     child: Text(
       text,
@@ -277,18 +270,10 @@ class _Person extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
-                    color: featured
-                        ? const Color(0xFFD3A746)
-                        : const Color(0x2BC96A24),
-                    width: featured ? 1.5 : 1,
+                    color: AppColors.border,
+                    width: 1,
                   ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x18081F33),
-                      blurRadius: 18,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
+                  boxShadow: AppShadows.subtle,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -343,15 +328,9 @@ class _Portrait extends StatelessWidget {
     height: size,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: AppColors.saffronLight,
-      border: Border.all(color: const Color(0xFFD3A746), width: borderWidth),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x25102A43),
-          blurRadius: 13,
-          offset: Offset(0, 6),
-        ),
-      ],
+      color: AppColors.greenLight,
+      border: Border.all(color: AppColors.greenDark, width: borderWidth),
+      boxShadow: AppShadows.subtle,
     ),
     child: ClipOval(
       child: image == null
@@ -417,9 +396,9 @@ class _PersonCopy extends StatelessWidget {
           vertical: compact ? 7 : 9,
         ),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFF8E8),
+          color: AppColors.greenLight,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x66C99A3D)),
+          border: Border.all(color: AppColors.border),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -470,7 +449,7 @@ class _PersonCopy extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.saffronLight,
+                    color: AppColors.greenLight,
                     borderRadius: BorderRadius.circular(99),
                   ),
                   child: Text(
@@ -634,9 +613,9 @@ class _InstitutionState extends State<_Institution> {
           : (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedScale(
-        scale: _hovered ? 1.025 : 1,
-        duration: const Duration(milliseconds: 240),
-        curve: Curves.easeOutCubic,
+        scale: _hovered ? 1.008 : 1,
+        duration: AppMotion.standard,
+        curve: AppMotion.curve,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -651,13 +630,7 @@ class _InstitutionState extends State<_Institution> {
                   image: AssetImage(widget.image),
                   fit: BoxFit.cover,
                 ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x290A345E),
-                    blurRadius: 18,
-                    offset: Offset(0, 8),
-                  ),
-                ],
+                boxShadow: _hovered ? AppShadows.floating : AppShadows.subtle,
               ),
               child: Container(
                 padding: const EdgeInsets.all(20),
@@ -666,14 +639,14 @@ class _InstitutionState extends State<_Institution> {
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Color(0x18000000), Color(0xE6001D38)],
+                    colors: [Color(0x10000000), Color(0xE6173F35)],
                   ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Icon(widget.icon, color: const Color(0xFFFFC75A), size: 28),
+                    Icon(widget.icon, color: Colors.white, size: 28),
                     const SizedBox(height: 8),
                     Text(
                       widget.title,
@@ -701,7 +674,7 @@ class _InstitutionState extends State<_Institution> {
                         fontFamily: 'NotoSansDevanagari',
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFFFFD67D),
+                        color: Colors.white,
                       ),
                     ),
                   ],

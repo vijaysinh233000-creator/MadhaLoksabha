@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_theme.dart';
+
 /// Gives the heritage landscape restrained depth without moving foreground UI.
 class HeritageParallaxBackground extends StatefulWidget {
   const HeritageParallaxBackground({super.key, required this.asset});
@@ -82,7 +84,7 @@ class _HeritageMotionState extends State<HeritageMotion>
     with SingleTickerProviderStateMixin {
   late final AnimationController _reveal = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 850),
+    duration: AppMotion.reveal,
   );
   ScrollPosition? _position;
   bool _queued = false;
@@ -145,13 +147,14 @@ class _HeritageMotionState extends State<HeritageMotion>
             },
       onExit: (_) => setState(() => _tilt = Offset.zero),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
+        duration: AppMotion.standard,
+        curve: AppMotion.curve,
         transformAlignment: Alignment.center,
         transform: Matrix4.identity()
           ..setEntry(3, 2, .001)
-          ..rotateX(-_tilt.dy * .13)
-          ..rotateY(_tilt.dx * .13),
+          ..translateByDouble(0, _tilt == Offset.zero ? 0 : -2, 0, 1)
+          ..rotateX(-_tilt.dy * .025)
+          ..rotateY(_tilt.dx * .025),
         child: AnimatedBuilder(
           animation: _reveal,
           child: widget.child,
@@ -163,8 +166,7 @@ class _HeritageMotionState extends State<HeritageMotion>
                 alignment: Alignment.center,
                 transform: Matrix4.identity()
                   ..setEntry(3, 2, .001)
-                  ..translateByDouble(0, 32 * (1 - progress), 0, 1)
-                  ..rotateX(.10 * (1 - progress)),
+                  ..translateByDouble(0, 14 * (1 - progress), 0, 1),
                 child: child,
               ),
             );

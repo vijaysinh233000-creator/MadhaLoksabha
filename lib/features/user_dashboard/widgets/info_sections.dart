@@ -37,7 +37,7 @@ class StatsRow extends StatelessWidget {
       ),
       const _Stat(
         icon: Icons.check_circle_rounded,
-        color: AppColors.saffron,
+        color: AppColors.greenDark,
         value: 'सही व अद्यावत',
         label: 'SIR नंतरची यादी',
         sub: '',
@@ -76,8 +76,11 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppColors.border)),
+      ),
       child: Column(
         children: [
           Container(

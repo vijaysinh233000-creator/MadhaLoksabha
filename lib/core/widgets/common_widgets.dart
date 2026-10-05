@@ -12,11 +12,15 @@ class AppCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(18),
     this.color,
+    this.emphasis = false,
+    this.showBorder = true,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Color? color;
+  final bool emphasis;
+  final bool showBorder;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +28,8 @@ class AppCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color ?? Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14081F33),
-            blurRadius: 22,
-            offset: Offset(0, 8),
-          ),
-        ],
+        border: showBorder ? Border.all(color: AppColors.border) : null,
+        boxShadow: emphasis ? AppShadows.prominent : AppShadows.subtle,
       ),
       padding: padding,
       child: child,
@@ -74,7 +72,7 @@ class SectionTitle extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20, color: iconColor ?? AppColors.saffron),
+          Icon(icon, size: 20, color: iconColor ?? AppColors.greenDark),
           const SizedBox(width: 8),
           Flexible(child: text),
         ],
@@ -82,7 +80,7 @@ class SectionTitle extends StatelessWidget {
     }
     return Row(
       children: [
-        Icon(icon, size: 20, color: iconColor ?? AppColors.saffron),
+        Icon(icon, size: 20, color: iconColor ?? AppColors.greenDark),
         const SizedBox(width: 8),
         Expanded(child: text),
         if (trailing != null) ...[const SizedBox(width: 8), trailing!],

@@ -714,13 +714,7 @@ class _SelectionBar extends StatelessWidget {
     decoration: BoxDecoration(
       color: AppColors.navy,
       borderRadius: BorderRadius.circular(16),
-      boxShadow: const [
-        BoxShadow(
-          color: Color(0x330A345E),
-          blurRadius: 18,
-          offset: Offset(0, 7),
-        ),
-      ],
+      boxShadow: AppShadows.floating,
     ),
     child: LayoutBuilder(
       builder: (context, constraints) {

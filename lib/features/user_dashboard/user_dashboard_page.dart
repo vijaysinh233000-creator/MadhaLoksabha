@@ -43,6 +43,7 @@ class _UserDashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.watch<VoterSearchController>();
+    final mobile = MediaQuery.sizeOf(context).width < 700;
     final hasResults = c.response != null || c.loading || c.error != null;
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -61,20 +62,20 @@ class _UserDashboardView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Transform.translate(
-                        offset: const Offset(0, -18),
+                        offset: Offset(0, mobile ? -18 : -34),
                         child: const SearchCard(),
                       ),
                       if (c.bootLoading)
                         const LoadingIndicator()
                       else
                         StatsRow(stats: c.stats),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 22),
                       if (hasResults) ...[
                         const ResultsSection(),
                         const SizedBox(height: 12),
                       ],
                       const InstallAppBanner(),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 22),
                       if (hasResults)
                         const _CollapsedHeritage()
                       else ...[
