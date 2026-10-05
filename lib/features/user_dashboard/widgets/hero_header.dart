@@ -29,7 +29,7 @@ class HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final mobile = MediaQuery.sizeOf(context).width < 700;
     return ColoredBox(
-      color: const Color(0xFFFFFCF5),
+      color: AppColors.navy,
       child: Column(
         children: [
           Center(
@@ -42,6 +42,23 @@ class HeroHeader extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
+                    Container(
+                      width: mobile ? 40 : 48,
+                      height: mobile ? 40 : 48,
+                      margin: const EdgeInsets.only(right: 11),
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: AppColors.heritageGold,
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/dhairyashil_mohite_patil.jpg',
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                        ),
+                      ),
+                    ),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +71,7 @@ class HeroHeader extends StatelessWidget {
                               fontFamily: 'NotoSansDevanagari',
                               fontSize: mobile ? 19 : 25,
                               fontWeight: FontWeight.w900,
-                              color: AppColors.navyText,
+                              color: Colors.white,
                             ),
                           ),
                           Text(
@@ -63,7 +80,7 @@ class HeroHeader extends StatelessWidget {
                               fontFamily: 'NotoSansDevanagari',
                               fontSize: mobile ? 10.5 : 12.5,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.greenDark,
+                              color: AppColors.heritageGold,
                             ),
                           ),
                         ],
@@ -76,7 +93,7 @@ class HeroHeader extends StatelessWidget {
                           'मतदार शोध  •  लोकसेवा  •  सार्वजनिक कार्य',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textSecondary,
+                            color: Colors.white70,
                           ),
                         ),
                       ),
@@ -85,9 +102,9 @@ class HeroHeader extends StatelessWidget {
                       child: IconButton.filledTonal(
                         onPressed: () => _shareOnWhatsApp(context),
                         icon: const Icon(Icons.share_rounded),
-                        color: AppColors.greenDark,
+                        color: Colors.white,
                         style: IconButton.styleFrom(
-                          backgroundColor: const Color(0xFFE4F5E9),
+                          backgroundColor: AppColors.saffron,
                         ),
                       ),
                     ),
@@ -100,7 +117,7 @@ class HeroHeader extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 1440),
             decoration: const BoxDecoration(
               border: Border.symmetric(
-                horizontal: BorderSide(color: Color(0x1A000000)),
+                horizontal: BorderSide(color: AppColors.heritageGold),
               ),
             ),
             child: AspectRatio(

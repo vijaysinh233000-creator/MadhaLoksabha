@@ -45,7 +45,7 @@ class _UserDashboardView extends StatelessWidget {
     final c = context.watch<VoterSearchController>();
     final hasResults = c.response != null || c.loading || c.error != null;
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F8F3),
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColors.saffron,
@@ -64,6 +64,11 @@ class _UserDashboardView extends StatelessWidget {
                         offset: const Offset(0, -18),
                         child: const SearchCard(),
                       ),
+                      if (c.bootLoading)
+                        const LoadingIndicator()
+                      else
+                        StatsRow(stats: c.stats),
+                      const SizedBox(height: 12),
                       if (hasResults) ...[
                         const ResultsSection(),
                         const SizedBox(height: 12),
@@ -78,11 +83,7 @@ class _UserDashboardView extends StatelessWidget {
                         const InstitutionJourneySection(),
                       ],
                       const SizedBox(height: 28),
-                      if (c.bootLoading)
-                        const LoadingIndicator()
-                      else ...[
-                        StatsRow(stats: c.stats),
-                        const SizedBox(height: 12),
+                      if (!c.bootLoading) ...[
                         VillagesCard(
                           villages: c.villages,
                           selected: c.selectedVillage,

@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
 
-/// Calm, trustworthy palette used across the public and admin interfaces.
+/// Unified navy + burnt-saffron palette used across every interface.
 class AppColors {
   AppColors._();
 
-  // Legacy token names are retained to keep existing widgets stable while
-  // replacing the visually dominant orange palette with emerald.
-  static const saffron = Color(0xFF15803D);
-  static const saffronDark = Color(0xFF166534);
-  static const saffronLight = Color(0xFFF0FDF4);
-  static const green = Color(0xFF15803D);
-  static const greenDark = Color(0xFF166534);
-  static const greenLight = Color(0xFFF0FDF4);
+  // Legacy green token names remain aliases while older widgets are migrated.
+  static const saffron = Color(0xFFC96A24);
+  static const saffronDark = Color(0xFFA84F1C);
+  static const saffronLight = Color(0xFFFFF4EC);
+  static const green = saffron;
+  static const greenDark = Color(0xFF102A43);
+  static const greenLight = saffronLight;
   static const whatsapp = Color(0xFF25D366);
-  static const navy = Color(0xFF05244C);
-  static const navyText = Color(0xFF0D2B5B);
-  static const blue = Color(0xFF1E63C8);
+  static const navy = Color(0xFF081F33);
+  static const navyText = Color(0xFF102A43);
+  static const blue = Color(0xFF1D4F7A);
   static const purple = Color(0xFF6D3FC4);
   static const surface = Color(0xFFF7F8FA);
   static const card = Colors.white;
-  static const border = Color(0xFFE6E9EE);
-  static const textPrimary = Color(0xFF1B1F27);
-  static const textSecondary = Color(0xFF636B7A);
-  static const textMuted = Color(0xFF9AA3B2);
+  static const border = Color(0xFFDDE3E8);
+  static const textPrimary = Color(0xFF1D2935);
+  static const textSecondary = Color(0xFF68747E);
+  static const textMuted = Color(0xFF929DA7);
   static const danger = Color(0xFFD64545);
-  static const heritageGold = Color(0xFFC99A3D);
-  static const heritageBrown = Color(0xFF79552B);
+  static const heritageGold = Color(0xFFD5AE5D);
+  static const heritageBrown = saffron;
 }
 
 class AppTheme {
@@ -35,9 +34,9 @@ class AppTheme {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.green,
-        primary: AppColors.green,
-        secondary: AppColors.green,
+        seedColor: AppColors.saffron,
+        primary: AppColors.saffron,
+        secondary: AppColors.heritageGold,
         surface: AppColors.surface,
       ),
       scaffoldBackgroundColor: AppColors.surface,
@@ -46,13 +45,19 @@ class AppTheme {
       textTheme: base.textTheme.apply(
         bodyColor: AppColors.textPrimary,
         displayColor: AppColors.textPrimary,
-        fontFamily: 'Roboto',
+        fontFamily: 'NotoSansDevanagari',
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.navy,
+        foregroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
       ),
       cardTheme: CardThemeData(
         color: AppColors.card,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: AppColors.border),
         ),
         margin: EdgeInsets.zero,
@@ -101,7 +106,7 @@ class AppTheme {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: AppColors.green),
+        style: TextButton.styleFrom(foregroundColor: AppColors.saffronDark),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: Colors.white,
@@ -109,6 +114,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         labelStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        selectedColor: AppColors.saffronLight,
+        checkmarkColor: AppColors.saffronDark,
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.border,

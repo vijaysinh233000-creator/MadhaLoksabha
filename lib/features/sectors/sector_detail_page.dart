@@ -9,7 +9,7 @@ class SectorDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFFF3F8F3),
+    backgroundColor: AppColors.surface,
     appBar: AppBar(
       backgroundColor: AppColors.navy,
       foregroundColor: Colors.white,

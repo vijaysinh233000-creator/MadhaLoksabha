@@ -23,9 +23,9 @@ class _FamilyTree extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.fromLTRB(4, 10, 4, 8),
     decoration: BoxDecoration(
-      color: const Color(0xFFF8FCF9),
+      color: AppColors.surface,
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: const Color(0x1A176B3A)),
+      border: Border.all(color: const Color(0x1AC96A24)),
     ),
     child: Column(
       children: [
@@ -214,7 +214,7 @@ class _GenerationLabel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
     decoration: BoxDecoration(
-      color: const Color(0xFF176B3A),
+      color: AppColors.saffron,
       borderRadius: BorderRadius.circular(999),
       border: Border.all(color: const Color(0xFFE5BD64), width: 1),
     ),
@@ -279,12 +279,12 @@ class _Person extends StatelessWidget {
                   border: Border.all(
                     color: featured
                         ? const Color(0xFFD3A746)
-                        : const Color(0x2B176B3A),
+                        : const Color(0x2BC96A24),
                     width: featured ? 1.5 : 1,
                   ),
                   boxShadow: const [
                     BoxShadow(
-                      color: Color(0x130A3A22),
+                      color: Color(0x18081F33),
                       blurRadius: 18,
                       offset: Offset(0, 8),
                     ),
@@ -343,11 +343,11 @@ class _Portrait extends StatelessWidget {
     height: size,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: const Color(0xFFEAF5EC),
+      color: AppColors.saffronLight,
       border: Border.all(color: const Color(0xFFD3A746), width: borderWidth),
       boxShadow: const [
         BoxShadow(
-          color: Color(0x25104B2A),
+          color: Color(0x25102A43),
           blurRadius: 13,
           offset: Offset(0, 6),
         ),
@@ -470,7 +470,7 @@ class _PersonCopy extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF5EC),
+                    color: AppColors.saffronLight,
                     borderRadius: BorderRadius.circular(99),
                   ),
                   child: Text(

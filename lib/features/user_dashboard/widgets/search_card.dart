@@ -86,7 +86,7 @@ class _SearchCardState extends State<SearchCard> {
         children: [
           const SectionTitle(
             icon: Icons.search_rounded,
-            title: 'नाव शोधा',
+            title: 'मतदार यादीत नाव शोधा',
             center: true,
           ),
           const SizedBox(height: 4),

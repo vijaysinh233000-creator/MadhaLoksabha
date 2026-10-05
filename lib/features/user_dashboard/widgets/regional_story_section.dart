@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'heritage_motion.dart';
 
-const _gold = Color(0xFFE9C779);
-const _ink = Color(0xFF061E27);
+const _gold = Color(0xFFD5AE5D);
+const _ink = Color(0xFF081F33);
 
 class RegionalStorySection extends StatelessWidget {
   const RegionalStorySection({super.key});
@@ -47,7 +47,7 @@ class RegionalStorySection extends StatelessWidget {
                   ],
                 ),
               ),
-              const Divider(height: 1, color: Color(0x668EAB9A)),
+              const Divider(height: 1, color: Color(0x66D5AE5D)),
               _Scene(
                 asset: 'assets/images/regional_water.png',
                 title: 'कृष्णा–भीमा स्थिरीकरण',
@@ -104,10 +104,10 @@ class RegionalStorySection extends StatelessWidget {
                                 ),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF164739), _ink],
+                                    colors: [Color(0xFF102A43), _ink],
                                   ),
                                   border: Border.all(
-                                    color: const Color(0x668EAC8F),
+                                    color: const Color(0x66D5AE5D),
                                   ),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -172,7 +172,7 @@ class _Scene extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Text(description, style: const TextStyle(color: Color(0xFFE4ECE8))),
+        Text(description, style: const TextStyle(color: Color(0xFFE9EEF2))),
         const SizedBox(height: 20),
         child,
       ],

@@ -447,7 +447,7 @@ class _NoResults extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.greenLight,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFBFE3CC)),
+              border: Border.all(color: const Color(0xFFFFC9A6)),
             ),
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.start,

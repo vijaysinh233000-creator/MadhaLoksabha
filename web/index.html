@@ -102,9 +102,9 @@
       height: 44px;
       padding: 0;
       border-radius: 999px;
-      background: #148a45;
+      background: #c96a24;
       color: #fff;
-      box-shadow: 0 8px 20px rgba(8, 89, 43, .28);
+      box-shadow: 0 8px 20px rgba(168, 79, 28, .28);
       font: 0/0 Arial, sans-serif;
       text-decoration: none;
       transition: transform .25s ease, opacity .25s ease;
@@ -223,7 +223,7 @@
         canvas.width = 1080;
         canvas.height = 1350;
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f5faf6';
+        ctx.fillStyle = '#f7f8fa';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         const banner = await loadShareImage('/share/dhairysheel-mohite-patil.jpg');
@@ -238,14 +238,14 @@
         ctx.fillText('माढा लोकसभा मतदारसंघ', 54, 456);
 
         ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#d7e8dc';
+        ctx.strokeStyle = '#dde3e8';
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.roundRect(42, 520, 996, 760, 34);
         ctx.fill();
         ctx.stroke();
 
-        ctx.fillStyle = '#176b3a';
+        ctx.fillStyle = '#c96a24';
         ctx.font = '800 28px "Noto Sans Devanagari", sans-serif';
         ctx.fillText('मतदार माहिती', 90, 590);
         ctx.fillStyle = '#102b45';
@@ -266,7 +266,7 @@
           ctx.fillStyle = '#102b45';
           y = drawWrappedText(ctx, value, 390, y, 570, 39) + 12;
         }
-        ctx.fillStyle = '#176b3a';
+        ctx.fillStyle = '#c96a24';
         ctx.font = '700 23px "Noto Sans Devanagari", sans-serif';
         ctx.fillText('independent-voter.madhaloksabha.workers.dev', 90, 1240);
 
@@ -403,7 +403,7 @@
         const documentHtml = `<!doctype html><html lang="mr"><head><meta charset="utf-8">
           <meta name="viewport" content="width=device-width,initial-scale=1"><title>${value(title)}</title>
           <style>
-            @page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{margin:0;background:#eef5f0;color:#102b45;font-family:"Noto Sans Devanagari","Nirmala UI",Arial,sans-serif;line-height:1.45}.report{max-width:1400px;margin:auto;background:#fff;min-height:100vh}.cover{padding:34px 38px;background:linear-gradient(135deg,#0b3929,#176b3a);color:#fff;border-bottom:6px solid #d9b766}.eyebrow{margin:0 0 8px;color:#f4d88d;font-weight:800}.cover h1{margin:0;font-size:30px;line-height:1.25}.basis{margin:18px 0 0;padding:14px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:12px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 38px}.metric{padding:15px;border:1px solid #d7e8dc;border-radius:12px;background:#f7fbf8}.metric strong{display:block;font-size:22px;color:#176b3a}.notice{margin:0 38px 22px;padding:16px 18px;border-left:5px solid #d9b766;background:#fff9e8}.content{padding:0 38px 40px}.group{margin:0 0 22px;padding:18px;border:1px solid #d7e8dc;border-radius:14px;break-inside:avoid;page-break-inside:avoid}.group-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.group-heading h2{margin:3px 0 0;font-size:21px}.group-number{font-size:12px;font-weight:800;color:#176b3a;text-transform:uppercase}.status{padding:7px 10px;border-radius:999px;background:#fff3cd;color:#725500;font-size:12px;font-weight:800}.relative,.count{margin:8px 0;color:#40566a}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102b45;color:#fff;text-align:left}th,td{padding:8px 7px;border:1px solid #d7e1e8;vertical-align:top}.number{text-align:center;font-weight:800}.footer{padding:20px 38px;background:#102b45;color:#fff}.footer p{margin:4px 0}.print{position:fixed;right:18px;bottom:18px;border:0;border-radius:999px;background:#d9b766;color:#102b45;padding:12px 18px;font-weight:800;box-shadow:0 8px 24px #0003;cursor:pointer}@media(max-width:800px){.summary{grid-template-columns:1fr 1fr}.cover,.summary,.content,.footer{padding-left:18px;padding-right:18px}.cover h1{font-size:24px}.group-heading{display:block}.status{display:inline-block;margin-top:10px}}@media print{body{background:#fff}.report{max-width:none}.print{display:none}.group{border-color:#aaa}}
+            @page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{margin:0;background:#f7f8fa;color:#102a43;font-family:"Noto Sans Devanagari","Nirmala UI",Arial,sans-serif;line-height:1.45}.report{max-width:1400px;margin:auto;background:#fff;min-height:100vh}.cover{padding:34px 38px;background:linear-gradient(135deg,#081f33,#102a43);color:#fff;border-bottom:6px solid #c96a24}.eyebrow{margin:0 0 8px;color:#d5ae5d;font-weight:800}.cover h1{margin:0;font-size:30px;line-height:1.25}.basis{margin:18px 0 0;padding:14px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:12px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 38px}.metric{padding:15px;border:1px solid #dde3e8;border-radius:12px;background:#f7f8fa}.metric strong{display:block;font-size:22px;color:#c96a24}.notice{margin:0 38px 22px;padding:16px 18px;border-left:5px solid #c96a24;background:#fff4ec}.content{padding:0 38px 40px}.group{margin:0 0 22px;padding:18px;border:1px solid #dde3e8;border-radius:14px;break-inside:avoid;page-break-inside:avoid}.group-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.group-heading h2{margin:3px 0 0;font-size:21px}.group-number{font-size:12px;font-weight:800;color:#c96a24;text-transform:uppercase}.status{padding:7px 10px;border-radius:999px;background:#fff4ec;color:#8b451b;font-size:12px;font-weight:800}.relative,.count{margin:8px 0;color:#68747e}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#102a43;color:#fff;text-align:left}th,td{padding:8px 7px;border:1px solid #dde3e8;vertical-align:top}.number{text-align:center;font-weight:800}.footer{padding:20px 38px;background:#081f33;color:#fff}.footer p{margin:4px 0}.print{position:fixed;right:18px;bottom:18px;border:0;border-radius:999px;background:#c96a24;color:#fff;padding:12px 18px;font-weight:800;box-shadow:0 8px 24px #0003;cursor:pointer}@media(max-width:800px){.summary{grid-template-columns:1fr 1fr}.cover,.summary,.content,.footer{padding-left:18px;padding-right:18px}.cover h1{font-size:24px}.group-heading{display:block}.status{display:inline-block;margin-top:10px}}@media print{body{background:#fff}.report{max-width:none}.print{display:none}.group{border-color:#aaa}}
           </style></head><body><main class="report">
           <header class="cover"><p class="eyebrow">माढा लोकसभा मतदारसंघ • प्रशासकीय तपासणी</p><h1>${value(title)}</h1><p class="basis"><strong>अहवालाचा आधार:</strong> ${value(basis)}</p></header>
           <section class="summary"><div class="metric"><strong>${groups.length}</strong>समान नोंदींचे गट</div><div class="metric"><strong>${recordCount}</strong>एकूण मतदार नोंदी</div><div class="metric"><strong>${villages.length}</strong>समाविष्ट गावे</div><div class="metric"><strong>${value(generatedAt)}</strong>अहवाल तयार केला</div></section>

@@ -346,7 +346,7 @@ class FooterBand extends StatelessWidget {
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
-              colors: [AppColors.green, Colors.white, AppColors.saffron],
+              colors: [AppColors.saffron, Colors.white, Color(0xFF138808)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
