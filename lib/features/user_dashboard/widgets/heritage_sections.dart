@@ -248,57 +248,51 @@ class _Person extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compact = MediaQuery.sizeOf(context).width < 700;
-    return SizedBox(
-      height: compact ? 465 : 490,
-      child: HeritageMotion(
-        child: Semantics(
-          button: true,
-          label: '$name — जीवनप्रवास वाचा',
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => Navigator.of(context).pushNamed('/profile/$slug'),
-              borderRadius: BorderRadius.circular(22),
-              child: Ink(
-                padding: EdgeInsets.fromLTRB(
-                  compact ? 9 : 14,
-                  compact ? 14 : 18,
-                  compact ? 9 : 14,
-                  compact ? 12 : 15,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: AppColors.border,
-                    width: 1,
+    return HeritageMotion(
+      child: Semantics(
+        button: true,
+        label: '$name — जीवनप्रवास वाचा',
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => Navigator.of(context).pushNamed('/profile/$slug'),
+            borderRadius: BorderRadius.circular(22),
+            child: Ink(
+              padding: EdgeInsets.fromLTRB(
+                compact ? 9 : 14,
+                compact ? 14 : 18,
+                compact ? 9 : 14,
+                compact ? 12 : 15,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: AppColors.border, width: 1),
+                boxShadow: AppShadows.subtle,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _Portrait(
+                    image: image,
+                    icon: icon,
+                    alignment: imageAlignment,
+                    size: featured
+                        ? (compact ? 104 : 132)
+                        : (compact ? 82 : 100),
+                    borderWidth: featured ? 3 : 2,
                   ),
-                  boxShadow: AppShadows.subtle,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _Portrait(
-                      image: image,
-                      icon: icon,
-                      alignment: imageAlignment,
-                      size: featured
-                          ? (compact ? 104 : 132)
-                          : (compact ? 82 : 100),
-                      borderWidth: featured ? 3 : 2,
-                    ),
-                    const SizedBox(height: 11),
-                    _PersonCopy(
-                      name: name,
-                      role: role,
-                      highestPosition: highestPosition,
-                      highestPeriod: highestPeriod,
-                      institutions: institutions,
-                      centered: true,
-                      compact: compact,
-                    ),
-                  ],
-                ),
+                  const SizedBox(height: 11),
+                  _PersonCopy(
+                    name: name,
+                    role: role,
+                    highestPosition: highestPosition,
+                    highestPeriod: highestPeriod,
+                    institutions: institutions,
+                    centered: true,
+                    compact: compact,
+                  ),
+                ],
               ),
             ),
           ),
@@ -559,20 +553,25 @@ class InstitutionJourneySection extends StatelessWidget {
           'प्रत्येक क्षेत्रातील सविस्तर कार्य आणि संस्थात्मक प्रवास वाचा.',
       child: LayoutBuilder(
         builder: (context, c) {
-          final width = (c.maxWidth - 10) / 2;
+          final singleColumn = c.maxWidth < 680;
+          final standardWidth = singleColumn
+              ? c.maxWidth
+              : (c.maxWidth - 12) / 2;
           return Wrap(
-            spacing: 10,
-            runSpacing: 10,
+            spacing: 12,
+            runSpacing: 12,
             children: [
-              for (final x in items)
+              for (final entry in items.indexed)
                 SizedBox(
-                  width: width,
+                  width: !singleColumn && entry.$1 == 0
+                      ? c.maxWidth
+                      : standardWidth,
                   child: _Institution(
-                    icon: x.$1,
-                    title: x.$2,
-                    text: x.$3,
-                    slug: x.$4,
-                    image: x.$5,
+                    icon: entry.$2.$1,
+                    title: entry.$2.$2,
+                    text: entry.$2.$3,
+                    slug: entry.$2.$4,
+                    image: entry.$2.$5,
                   ),
                 ),
             ],
@@ -639,7 +638,7 @@ class _InstitutionState extends State<_Institution> {
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Color(0x10000000), Color(0xE6173F35)],
+                    colors: [Color(0x08000000), Color(0xB8242724)],
                   ),
                 ),
                 child: Column(
@@ -833,7 +832,10 @@ class NewBrandFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,
-    color: AppColors.navy,
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      border: Border(top: BorderSide(color: AppColors.border)),
+    ),
     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
     child: Center(
       child: ConstrainedBox(
@@ -845,7 +847,7 @@ class NewBrandFooter extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'NotoSansDevanagari',
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
               ),
@@ -856,12 +858,12 @@ class NewBrandFooter extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'NotoSansDevanagari',
-                color: Colors.white70,
+                color: AppColors.textSecondary,
                 fontSize: 12,
               ),
             ),
             const SizedBox(height: 12),
-            const Divider(color: Colors.white24),
+            const Divider(color: AppColors.border),
             const SizedBox(height: 8),
             Wrap(
               alignment: WrapAlignment.center,
@@ -871,20 +873,23 @@ class NewBrandFooter extends StatelessWidget {
                 const Icon(
                   Icons.shield_outlined,
                   size: 14,
-                  color: Colors.white60,
+                  color: AppColors.textMuted,
                 ),
                 const Text(
                   'शोधासाठी दिलेली वैयक्तिक माहिती संग्रहित केली जात नाही.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'NotoSansDevanagari',
-                    color: Colors.white60,
+                    color: AppColors.textMuted,
                     fontSize: 10.5,
                   ),
                 ),
                 Text(
                   '© ${DateTime.now().year}',
-                  style: const TextStyle(color: Colors.white60, fontSize: 10.5),
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 10.5,
+                  ),
                 ),
               ],
             ),
@@ -892,7 +897,7 @@ class NewBrandFooter extends StatelessWidget {
             const Text(
               'Made By AlphaSpark Tech Solutions - Vijaysinh Jadhav',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white60, fontSize: 10.5),
+              style: TextStyle(color: AppColors.textMuted, fontSize: 10.5),
             ),
           ],
         ),

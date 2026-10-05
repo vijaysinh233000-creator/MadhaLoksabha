@@ -164,8 +164,8 @@ class _ResultsSectionState extends State<ResultsSection> {
           Pill(
             label: '$label: $v',
             icon: icon,
-            color: AppColors.saffronLight,
-            textColor: AppColors.saffronDark,
+            color: AppColors.greenLight,
+            textColor: AppColors.greenDark,
           ),
         );
       }
@@ -291,7 +291,7 @@ class _ResultsSectionState extends State<ResultsSection> {
                       text: '${Formatters.count(r.total)} ',
                       style: const TextStyle(
                         fontWeight: FontWeight.w900,
-                        color: AppColors.saffronDark,
+                        color: AppColors.greenDark,
                         fontSize: 16,
                       ),
                     ),
@@ -353,7 +353,7 @@ class _ResultsSectionState extends State<ResultsSection> {
                   color: Colors.white.withValues(alpha: 0.55),
                   alignment: Alignment.center,
                   child: const CircularProgressIndicator(
-                    color: AppColors.saffron,
+                    color: AppColors.greenDark,
                   ),
                 ),
               ),
@@ -488,14 +488,14 @@ class _NoResults extends StatelessWidget {
                     avatar: const Icon(
                       Icons.person_search_rounded,
                       size: 16,
-                      color: AppColors.saffronDark,
+                      color: AppColors.greenDark,
                     ),
                     label: Text(s),
-                    backgroundColor: AppColors.saffronLight,
-                    side: const BorderSide(color: Color(0xFFFFD3B8)),
+                    backgroundColor: AppColors.greenLight,
+                    side: const BorderSide(color: AppColors.border),
                     labelStyle: const TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.saffronDark,
+                      color: AppColors.greenDark,
                       fontSize: 13,
                     ),
                     onPressed: () => controller.search(s),
@@ -642,7 +642,7 @@ class _Step extends StatelessWidget {
               height: 28,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: n.isOdd ? AppColors.saffron : AppColors.green,
+                color: AppColors.greenDark,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Text(
@@ -800,10 +800,7 @@ class ResultCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                width: 5,
-                color: rank.isOdd ? AppColors.saffron : AppColors.green,
-              ),
+              Container(width: 5, color: AppColors.greenDark),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
@@ -911,8 +908,8 @@ class ResultCard extends StatelessWidget {
                             Pill(
                               label: r.pdfName,
                               icon: Icons.picture_as_pdf_rounded,
-                              color: AppColors.saffronLight,
-                              textColor: AppColors.saffronDark,
+                              color: AppColors.greenLight,
+                              textColor: AppColors.greenDark,
                             ),
                           if (r.serial.isNotEmpty)
                             Pill(label: 'क्र. ${r.serial}'),

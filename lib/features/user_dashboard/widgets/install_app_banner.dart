@@ -44,7 +44,7 @@ class _InstallAppBannerState extends State<InstallAppBanner> {
             children: [
               const Icon(
                 Icons.install_mobile_rounded,
-                color: AppColors.saffron,
+                color: AppColors.greenDark,
               ),
               const SizedBox(width: 10),
               const Expanded(
@@ -79,7 +79,7 @@ class _InstallAppBannerState extends State<InstallAppBanner> {
           final installButton = FilledButton.icon(
             onPressed: _installing ? null : _install,
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.saffron,
+              backgroundColor: AppColors.greenDark,
               padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
             ),
             icon: _installing
@@ -96,10 +96,10 @@ class _InstallAppBannerState extends State<InstallAppBanner> {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
             decoration: BoxDecoration(
-              color: AppColors.saffronLight,
+              color: AppColors.greenLight,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: AppColors.saffron.withValues(alpha: 0.28),
+                color: AppColors.greenDark.withValues(alpha: 0.14),
               ),
             ),
             child: compact

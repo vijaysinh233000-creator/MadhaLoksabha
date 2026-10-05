@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 import 'heritage_motion.dart';
 
-const _gold = AppColors.greenLight;
-const _ink = AppColors.greenDark;
-
 class RegionalStorySection extends StatelessWidget {
   const RegionalStorySection({super.key});
 
@@ -14,12 +11,17 @@ class RegionalStorySection extends StatelessWidget {
     padding: const EdgeInsets.only(top: 28),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(22),
-      child: ColoredBox(
-        color: _ink,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: AppShadows.subtle,
+        ),
         child: DefaultTextStyle(
           style: const TextStyle(
             fontFamily: 'NotoSansDevanagari',
-            color: Colors.white,
+            color: AppColors.textPrimary,
             height: 1.5,
             fontSize: 14,
           ),
@@ -38,8 +40,8 @@ class RegionalStorySection extends StatelessWidget {
                     const SizedBox(height: 18),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: _gold,
-                        side: const BorderSide(color: _gold),
+                        foregroundColor: AppColors.textPrimary,
+                        side: const BorderSide(color: AppColors.border),
                       ),
                       onPressed: () => Navigator.of(
                         context,
@@ -49,7 +51,7 @@ class RegionalStorySection extends StatelessWidget {
                   ],
                 ),
               ),
-              const Divider(height: 1, color: Color(0x33FFFFFF)),
+              const Divider(height: 1, color: AppColors.border),
               _Scene(
                 asset: 'assets/images/regional_water.png',
                 title: 'कृष्णा–भीमा स्थिरीकरण',
@@ -60,8 +62,8 @@ class RegionalStorySection extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: _gold,
-                      side: const BorderSide(color: _gold),
+                      foregroundColor: AppColors.textPrimary,
+                      side: const BorderSide(color: AppColors.border),
                     ),
                     onPressed: () =>
                         Navigator.of(context).pushNamed('/sector/water'),
@@ -105,19 +107,15 @@ class RegionalStorySection extends StatelessWidget {
                                   horizontal: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF1D4C40), _ink],
-                                  ),
-                                  border: Border.all(
-                                    color: const Color(0x33FFFFFF),
-                                  ),
+                                  color: AppColors.surface,
+                                  border: Border.all(color: AppColors.border),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
                                   name,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
-                                    color: _gold,
+                                    color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
@@ -161,7 +159,7 @@ class _Scene extends StatelessWidget {
             fontSize: compact ? 27 : 34,
             height: 1.25,
             fontWeight: FontWeight.w900,
-            color: _gold,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 10),
@@ -170,11 +168,14 @@ class _Scene extends StatelessWidget {
           style: TextStyle(
             fontSize: compact ? 18 : 21,
             fontWeight: FontWeight.w700,
-            color: const Color(0xFFF2DCA6),
+            color: AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
-        Text(description, style: const TextStyle(color: Color(0xFFE9EEF2))),
+        Text(
+          description,
+          style: const TextStyle(color: AppColors.textSecondary),
+        ),
         const SizedBox(height: 20),
         child,
       ],
@@ -200,35 +201,29 @@ class _Scene extends StatelessWidget {
             ],
           );
         }
-        return Stack(
-          alignment: Alignment.centerLeft,
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Positioned.fill(
-              child: Image.asset(
-                asset,
-                fit: BoxFit.cover,
-                excludeFromSemantics: true,
+            Expanded(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 390),
+                child: _copy(false),
               ),
             ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xF5061E27),
-                      const Color(0xB3061E27),
-                      Colors.transparent,
-                    ],
-                    stops: const [0, .34, .72],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: SizedBox(
+                  height: 390,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: Image.asset(
+                      asset,
+                      fit: BoxFit.cover,
+                      excludeFromSemantics: true,
+                    ),
                   ),
                 ),
-              ),
-            ),
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 440),
-              child: SizedBox(
-                width: constraints.maxWidth * .48,
-                child: _copy(false),
               ),
             ),
           ],
@@ -261,9 +256,15 @@ class _Stop extends StatelessWidget {
     children: [
       Text(
         name,
-        style: const TextStyle(color: _gold, fontWeight: FontWeight.w900),
+        style: const TextStyle(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w900,
+        ),
       ),
-      Text(office, style: const TextStyle(fontSize: 10, color: Colors.white70)),
+      Text(
+        office,
+        style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
+      ),
     ],
   );
 }

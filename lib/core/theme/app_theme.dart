@@ -5,23 +5,24 @@ class AppColors {
   AppColors._();
 
   // Legacy green token names remain aliases while older widgets are migrated.
-  static const saffron = Color(0xFFE97824);
+  static const saffron = Color(0xFFF27A21);
   static const saffronDark = Color(0xFFC85E16);
   static const saffronLight = Color(0xFFFFF1E7);
-  static const green = Color(0xFF173F35);
-  static const greenDark = Color(0xFF173F35);
-  static const greenLight = Color(0xFFEAF3EF);
+  static const green = Color(0xFF66736D);
+  static const greenDark = Color(0xFF4F5D57);
+  static const greenHover = Color(0xFF3F4B46);
+  static const greenLight = Color(0xFFF0F2EF);
   static const whatsapp = Color(0xFF25D366);
   static const navy = greenDark;
-  static const navyText = Color(0xFF18211E);
+  static const navyText = Color(0xFF242724);
   static const blue = greenDark;
   static const purple = greenDark;
-  static const surface = Color(0xFFFAFBF9);
+  static const surface = Color(0xFFFAF8F5);
   static const card = Colors.white;
-  static const border = Color(0xFFE2E8E5);
-  static const textPrimary = Color(0xFF18211E);
-  static const textSecondary = Color(0xFF68736F);
-  static const textMuted = Color(0xFF8B9692);
+  static const border = Color(0xFFE7E3DE);
+  static const textPrimary = Color(0xFF242724);
+  static const textSecondary = Color(0xFF68716D);
+  static const textMuted = Color(0xFF909792);
   static const danger = Color(0xFFC93D3D);
   static const heritageGold = greenDark;
   static const heritageBrown = greenDark;
@@ -31,25 +32,13 @@ class AppShadows {
   AppShadows._();
 
   static const subtle = <BoxShadow>[
-    BoxShadow(
-      color: Color(0x0F173F35),
-      blurRadius: 18,
-      offset: Offset(0, 6),
-    ),
+    BoxShadow(color: Color(0x100F1915), blurRadius: 24, offset: Offset(0, 8)),
   ];
   static const prominent = <BoxShadow>[
-    BoxShadow(
-      color: Color(0x1C173F35),
-      blurRadius: 40,
-      offset: Offset(0, 16),
-    ),
+    BoxShadow(color: Color(0x1A0F1915), blurRadius: 48, offset: Offset(0, 18)),
   ];
   static const floating = <BoxShadow>[
-    BoxShadow(
-      color: Color(0x26173F35),
-      blurRadius: 26,
-      offset: Offset(0, 10),
-    ),
+    BoxShadow(color: Color(0x200F1915), blurRadius: 30, offset: Offset(0, 12)),
   ];
 }
 
@@ -69,7 +58,7 @@ class AppTheme {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.saffron,
+        seedColor: AppColors.greenDark,
         primary: AppColors.greenDark,
         secondary: AppColors.saffron,
         surface: AppColors.surface,
@@ -114,13 +103,13 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.saffron, width: 1.6),
+          borderSide: const BorderSide(color: AppColors.greenDark, width: 1.6),
         ),
         hintStyle: const TextStyle(color: AppColors.textMuted),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.saffron,
+          backgroundColor: AppColors.greenDark,
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
@@ -141,7 +130,7 @@ class AppTheme {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: AppColors.saffronDark),
+        style: TextButton.styleFrom(foregroundColor: AppColors.greenDark),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: Colors.white,
@@ -149,8 +138,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         labelStyle: const TextStyle(color: AppColors.textPrimary, fontSize: 13),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        selectedColor: AppColors.saffronLight,
-        checkmarkColor: AppColors.saffronDark,
+        selectedColor: AppColors.greenLight,
+        checkmarkColor: AppColors.greenDark,
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.border,
@@ -164,8 +153,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       tabBarTheme: const TabBarThemeData(
-        labelColor: AppColors.saffron,
-        indicatorColor: AppColors.saffron,
+        labelColor: AppColors.greenDark,
+        indicatorColor: AppColors.greenDark,
         unselectedLabelColor: AppColors.textSecondary,
       ),
     );

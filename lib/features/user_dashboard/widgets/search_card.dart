@@ -271,6 +271,12 @@ class _SearchCardState extends State<SearchCard> {
 
   Widget _button(VoterSearchController c) {
     return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.saffron,
+        foregroundColor: Colors.white,
+        shadowColor: AppColors.saffron.withValues(alpha: .28),
+        elevation: 3,
+      ),
       onPressed: c.loading ? null : () => _submit(_text.text),
       icon: c.loading
           ? const SizedBox(
@@ -401,7 +407,7 @@ class _Suggestions extends StatelessWidget {
                       height: 30,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: AppColors.saffronLight,
+                        color: AppColors.greenLight,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -410,7 +416,7 @@ class _Suggestions extends StatelessWidget {
                             : '?',
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
-                          color: AppColors.saffronDark,
+                          color: AppColors.greenDark,
                           fontSize: 13,
                         ),
                       ),

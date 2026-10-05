@@ -49,7 +49,7 @@ class _UserDashboardView extends StatelessWidget {
       backgroundColor: AppColors.surface,
       body: SafeArea(
         child: RefreshIndicator(
-          color: AppColors.saffron,
+          color: AppColors.greenDark,
           onRefresh: c.refreshStats,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -74,8 +74,6 @@ class _UserDashboardView extends StatelessWidget {
                         const ResultsSection(),
                         const SizedBox(height: 12),
                       ],
-                      const InstallAppBanner(),
-                      const SizedBox(height: 22),
                       if (hasResults)
                         const _CollapsedHeritage()
                       else ...[
@@ -92,6 +90,8 @@ class _UserDashboardView extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         const HowToCard(),
+                        const SizedBox(height: 24),
+                        const InstallAppBanner(),
                       ],
                     ],
                   ),
